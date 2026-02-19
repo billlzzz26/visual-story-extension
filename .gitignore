@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+coverage
+.env
+.DS_Store
+*.log
+.idea
+outputs/
+*-output.*
+test-exports.js
+.github/prompts/
+.github/skills/
+.github/hooks/

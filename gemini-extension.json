@@ -1,0 +1,20 @@
+{
+  "name": "visual-story-planner",
+  "version": "3.0.0",
+  "contextFileName": "GEMINI.md",
+  "settings": [
+    {
+      "name": "Default Mode",
+      "description": "Default render mode (canvas|mermaid|dashboard)",
+      "envVar": "VSP_DEFAULT_MODE",
+      "sensitive": false
+    }
+  ],
+  "mcpServers": {
+    "storyPlannerServer": {
+      "command": "node",
+      "args": ["${extensionPath}${/}dist${/}server.js"],
+      "cwd": "${extensionPath}"
+    }
+  }
+}
