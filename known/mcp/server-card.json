@@ -1,0 +1,217 @@
+{
+  "serverInfo": {
+    "name": "visual-story-planner",
+    "version": "3.0.0",
+    "description": "Canvas-first story planning system with structured story analysis and Mermaid export capabilities"
+  },
+  "authentication": {
+    "required": false
+  },
+  "tools": [
+    {
+      "name": "analyze_story",
+      "description": "Analyze story text and generate comprehensive Story Graph JSON with character arcs, conflicts, and events.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Story text to analyze"
+          },
+          "depth": {
+            "type": "string",
+            "enum": ["basic", "detailed", "deep"],
+            "default": "detailed",
+            "description": "Analysis depth level"
+          },
+          "includeMetadata": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include metadata in output"
+          }
+        },
+        "required": ["text"]
+      }
+    },
+    {
+      "name": "export_mermaid",
+      "description": "Convert Story Graph to Mermaid diagram format for visualization.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph to export"
+          },
+          "includeMetadata": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include title and metadata in diagram"
+          },
+          "style": {
+            "type": "string",
+            "enum": ["default", "dark", "minimal"],
+            "default": "default",
+            "description": "Diagram styling"
+          }
+        },
+        "required": ["graph"]
+      }
+    },
+    {
+      "name": "export_canvas",
+      "description": "Convert Story Graph to Canvas JSON format for interactive visualization.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph to export"
+          },
+          "includeMetadata": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include metadata in export"
+          },
+          "autoLayout": {
+            "type": "boolean",
+            "default": true,
+            "description": "Automatically position nodes"
+          }
+        },
+        "required": ["graph"]
+      }
+    },
+    {
+      "name": "export_dashboard",
+      "description": "Generate interactive HTML dashboard with story statistics and analysis.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph to export"
+          },
+          "includeStats": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include detailed statistics"
+          },
+          "includeRecommendations": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include improvement recommendations"
+          }
+        },
+        "required": ["graph"]
+      }
+    },
+    {
+      "name": "export_markdown",
+      "description": "Convert Story Graph to comprehensive Markdown document.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph to export"
+          },
+          "includeMetadata": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include metadata section"
+          },
+          "includeAnalysis": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include analysis section"
+          }
+        },
+        "required": ["graph"]
+      }
+    },
+    {
+      "name": "validate_story_structure",
+      "description": "Comprehensive validation of story structure with detailed issue reporting and recommendations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph to validate"
+          },
+          "strict": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable strict validation rules"
+          },
+          "includeRecommendations": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include improvement recommendations"
+          }
+        },
+        "required": ["graph"]
+      }
+    },
+    {
+      "name": "extract_characters",
+      "description": "Extract and analyze character information from story graph.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph"
+          },
+          "detailed": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include detailed character analysis"
+          }
+        },
+        "required": ["graph"]
+      }
+    },
+    {
+      "name": "extract_conflicts",
+      "description": "Extract and analyze conflict information from story graph.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph"
+          },
+          "includeEscalation": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include escalation details"
+          }
+        },
+        "required": ["graph"]
+      }
+    },
+    {
+      "name": "build_relationship_graph",
+      "description": "Build and analyze relationship graph between story elements.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graph": {
+            "type": "object",
+            "description": "Story Graph"
+          },
+          "includeStats": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include relationship statistics"
+          }
+        },
+        "required": ["graph"]
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}
