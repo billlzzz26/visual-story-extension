@@ -1,4 +1,4 @@
-import { StoryGraph } from './types.js';
+import { StoryGraph } from '../types.js';
 import { validateGraph } from '../validators.js';
 
 export function toMarkdown(graph: StoryGraph, options: { includeMetadata?: boolean; includeAnalysis?: boolean } = {}): string {

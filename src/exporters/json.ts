@@ -1,4 +1,4 @@
-import { StoryGraph } from "../schema.js";
+import { StoryGraph } from "../types.js";
 
 export function toCanvasJSON(graph: StoryGraph) {
   const nodes = (graph.events || []).map((e, i) => ({
