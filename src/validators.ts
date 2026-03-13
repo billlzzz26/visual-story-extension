@@ -19,30 +19,41 @@ export function validateGraph(graph: StoryGraph, strict = false): ValidationResu
     addIssue('error', 'NO_PROTAGONIST', 'Story must have a protagonist');
   }
   
-  const acts = new Set(graph.events.map(e => e.act));
-  if (!acts.has(1)) addIssue('error', 'MISSING_ACT1', 'Story must have Act 1 events');
-  if (!acts.has(2)) addIssue('error', 'MISSING_ACT2', 'Story must have Act 2 events');
-  if (!acts.has(3)) addIssue('error', 'MISSING_ACT3', 'Story must have Act 3 events');
-  
-  // 2. Climax Check (High Priority)
-  const hasClimax = graph.events.some(e => e.importance === 'climax');
+  // Optimized single pass over events to collect statistics
+  let act1Count = 0;
+  let act2Count = 0;
+  let act3Count = 0;
+  let hasClimax = false;
+  let hasMidpoint = false;
+  const eventCount = graph.events.length;
+
+  for (const e of graph.events) {
+    if (e.act === 1) act1Count++;
+    else if (e.act === 2) act2Count++;
+    else if (e.act === 3) act3Count++;
+
+    if (e.importance === 'climax') hasClimax = true;
+    if (e.importance === 'midpoint') hasMidpoint = true;
+  }
+
+  if (act1Count === 0) addIssue('error', 'MISSING_ACT1', 'Story must have Act 1 events');
+  if (act2Count === 0) addIssue('error', 'MISSING_ACT2', 'Story must have Act 2 events');
+  if (act3Count === 0) addIssue('error', 'MISSING_ACT3', 'Story must have Act 3 events');
+
+  // 2. Climax & Midpoint Check (High Priority)
   if (!hasClimax) {
     addIssue('error', 'MISSING_CLIMAX', 'Story structure is incomplete: Missing a Climax', 'Add an event with importance "climax" in Act 3');
   }
 
-  if (!graph.events.some(e => e.importance === 'midpoint')) {
+  if (!hasMidpoint) {
     addIssue('warning', 'NO_MIDPOINT', 'Story should have a midpoint event', 'Add a midpoint event in Act 2');
   }
-  
+
   if (graph.conflicts.length === 0) {
     addIssue('warning', 'NO_CONFLICTS', 'Story should have at least one conflict to drive the plot');
   }
 
   // 3. Act Distribution Check (25-50-25 Rule)
-  const eventCount = graph.events.length;
-  const act1Count = graph.events.filter(e => e.act === 1).length;
-  const act2Count = graph.events.filter(e => e.act === 2).length;
-  const act3Count = graph.events.filter(e => e.act === 3).length;
 
   if (eventCount >= 4) {
     const act1Pct = (act1Count / eventCount) * 100;
@@ -92,7 +103,7 @@ export function validateGraph(graph: StoryGraph, strict = false): ValidationResu
       characterCount: graph.characters.length,
       conflictCount: graph.conflicts.length,
       eventCount: eventCount,
-      hasMidpoint: graph.events.some(e => e.importance === 'midpoint'),
+      hasMidpoint: hasMidpoint,
       hasClimax: hasClimax,
       pacing: eventCount < 5 ? 'slow' : eventCount > 15 ? 'fast' : 'balanced',
     },
