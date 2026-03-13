@@ -9,15 +9,23 @@
     "start": "node dist/server.js",
     "dev": "npx esbuild src/server.ts src/analyzer.ts src/validators.ts src/types.ts src/exporters/*.ts --bundle --platform=node --format=esm --outdir=dist --splitting --watch",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "markdownlint-cli2 \"**/*.md\"",
+    "format": "biome format --write .",
+    "check": "biome check --apply .",
+    "lint:fix": "markdownlint-cli2 --fix \"**/*.md\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
+    "fs-extra": "^11.2.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.0",
     "esbuild": "^0.27.3",
+    "markdownlint-cli2": "^0.17.2",
     "typescript": "^5.3.3",
     "vitest": "^4.0.18"
   }
