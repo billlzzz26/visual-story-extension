@@ -579,9 +579,9 @@ describe('validateGraph', () => {
 
   describe('Performance Regression Tests', () => {
     it('should only iterate through events once for act counting', () => {
-      // This is a behavioral test to ensure the optimization is in place
+      // This should fail if validateGraph iterates over events more than once
       const graph = createBaseGraph();
-      graph.events = [
+      const rawEvents = [
         { id: 'e1', label: 'E1', description: '', act: 1, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
         { id: 'e2', label: 'E2', description: '', act: 1, importance: 'normal', sequenceInAct: 2, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
         { id: 'e3', label: 'E3', description: '', act: 2, importance: 'midpoint', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
@@ -590,6 +590,13 @@ describe('validateGraph', () => {
         { id: 'e6', label: 'E6', description: '', act: 3, importance: 'climax', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
         { id: 'e7', label: 'E7', description: '', act: 3, importance: 'normal', sequenceInAct: 2, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
       ];
+      let iteratorCalls = 0;
+      graph.events = new Proxy(rawEvents, {
+        get(target, prop, receiver) {
+          if (prop === Symbol.iterator) iteratorCalls += 1;
+          return Reflect.get(target, prop, receiver);
+        },
+      });
 
       const result = validateGraph(graph);
 
@@ -600,6 +607,7 @@ describe('validateGraph', () => {
       expect(result.analysis.hasClimax).toBe(true);
       expect(result.analysis.hasMidpoint).toBe(true);
       expect(result.analysis.eventCount).toBe(7);
+      expect(iteratorCalls).toBe(1);
     });
 
     it('should handle events with climax and midpoint in any order', () => {
