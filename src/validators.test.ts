@@ -601,5 +601,119 @@ describe('validateGraph', () => {
       expect(result.analysis.hasMidpoint).toBe(true);
       expect(result.analysis.eventCount).toBe(7);
     });
+
+    it('should handle events with climax and midpoint in any order', () => {
+      // Test order independence of single-pass optimization
+      const graph1 = createBaseGraph();
+      graph1.events = [
+        { id: 'e1', label: 'E1', description: '', act: 1, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e2', label: 'E2', description: '', act: 2, importance: 'climax', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e3', label: 'E3', description: '', act: 3, importance: 'midpoint', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+      ];
+
+      const graph2 = createBaseGraph();
+      graph2.events = [
+        { id: 'e1', label: 'E1', description: '', act: 1, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e2', label: 'E2', description: '', act: 2, importance: 'midpoint', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e3', label: 'E3', description: '', act: 3, importance: 'climax', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+      ];
+
+      const result1 = validateGraph(graph1);
+      const result2 = validateGraph(graph2);
+
+      // Both should detect climax and midpoint regardless of order
+      expect(result1.analysis.hasClimax).toBe(true);
+      expect(result1.analysis.hasMidpoint).toBe(true);
+      expect(result2.analysis.hasClimax).toBe(true);
+      expect(result2.analysis.hasMidpoint).toBe(true);
+    });
+
+    it('should handle events with invalid act numbers gracefully', () => {
+      const graph = createBaseGraph();
+      graph.events = [
+        { id: 'e1', label: 'E1', description: '', act: 0, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e2', label: 'E2', description: '', act: 1, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e3', label: 'E3', description: '', act: 2, importance: 'midpoint', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e4', label: 'E4', description: '', act: 3, importance: 'climax', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e5', label: 'E5', description: '', act: 4, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+      ];
+
+      const result = validateGraph(graph);
+
+      // Should only count valid acts (1, 2, 3)
+      expect(result.analysis.actBalance.act1).toBe(1);
+      expect(result.analysis.actBalance.act2).toBe(1);
+      expect(result.analysis.actBalance.act3).toBe(1);
+      // Event count should include all events
+      expect(result.analysis.eventCount).toBe(5);
+      expect(result.analysis.hasClimax).toBe(true);
+      expect(result.analysis.hasMidpoint).toBe(true);
+    });
+
+    it('should correctly detect importance in first event of loop', () => {
+      const graph = createBaseGraph();
+      graph.events = [
+        { id: 'e1', label: 'E1', description: '', act: 1, importance: 'climax', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e2', label: 'E2', description: '', act: 2, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e3', label: 'E3', description: '', act: 3, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+      ];
+
+      const result = validateGraph(graph);
+
+      expect(result.analysis.hasClimax).toBe(true);
+      expect(result.issues.some(i => i.code === 'MISSING_CLIMAX')).toBe(false);
+    });
+
+    it('should correctly detect importance in last event of loop', () => {
+      const graph = createBaseGraph();
+      graph.events = [
+        { id: 'e1', label: 'E1', description: '', act: 1, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e2', label: 'E2', description: '', act: 2, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e3', label: 'E3', description: '', act: 3, importance: 'midpoint', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+      ];
+
+      const result = validateGraph(graph);
+
+      expect(result.analysis.hasMidpoint).toBe(true);
+      expect(result.issues.some(i => i.code === 'NO_MIDPOINT')).toBe(false);
+    });
+
+    it('should maintain correct counts with events across all acts in mixed order', () => {
+      const graph = createBaseGraph();
+      graph.events = [
+        { id: 'e1', label: 'E1', description: '', act: 3, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e2', label: 'E2', description: '', act: 1, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e3', label: 'E3', description: '', act: 2, importance: 'midpoint', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e4', label: 'E4', description: '', act: 1, importance: 'normal', sequenceInAct: 2, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e5', label: 'E5', description: '', act: 3, importance: 'climax', sequenceInAct: 2, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e6', label: 'E6', description: '', act: 2, importance: 'normal', sequenceInAct: 2, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+      ];
+
+      const result = validateGraph(graph);
+
+      expect(result.analysis.actBalance.act1).toBe(2);
+      expect(result.analysis.actBalance.act2).toBe(2);
+      expect(result.analysis.actBalance.act3).toBe(2);
+      expect(result.analysis.hasClimax).toBe(true);
+      expect(result.analysis.hasMidpoint).toBe(true);
+    });
+
+    it('should handle balance calculation when all events in one act', () => {
+      const graph = createBaseGraph();
+      graph.events = [
+        { id: 'e1', label: 'E1', description: '', act: 2, importance: 'normal', sequenceInAct: 1, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e2', label: 'E2', description: '', act: 2, importance: 'midpoint', sequenceInAct: 2, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+        { id: 'e3', label: 'E3', description: '', act: 2, importance: 'climax', sequenceInAct: 3, characters: [], conflicts: [], emotionalTone: '', consequence: '' },
+      ];
+
+      const result = validateGraph(graph);
+
+      expect(result.analysis.actBalance.act1).toBe(0);
+      expect(result.analysis.actBalance.act2).toBe(3);
+      expect(result.analysis.actBalance.act3).toBe(0);
+      // balance = min(0,3,0) / max(0,3,0) = 0/3 = 0
+      expect(result.analysis.actBalance.balance).toBe(0);
+    });
   });
 });
+
