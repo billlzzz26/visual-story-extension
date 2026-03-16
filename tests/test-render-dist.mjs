@@ -1,6 +1,6 @@
-import { buildInitialGraph } from './dist/analyzer.js';
-import { toMcpUiDashboard } from './dist/exporters/mcp-ui-dashboard.js';
-import { toMermaid } from './dist/exporters/mermaid.js';
+import { buildInitialGraph } from '../dist/analyzer.js';
+import { toMcpUiDashboard } from '../dist/exporters/mcp-ui-dashboard.js';
+import { toMermaid } from '../dist/exporters/mermaid.js';
 import fs from 'fs';
 import path from 'path';
 
