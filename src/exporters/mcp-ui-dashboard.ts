@@ -41,6 +41,7 @@ import { escape } from 'lodash';
             </div>
         </div>
 
+        ${options.includeStats === false ? '' : `
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="card p-4 flex flex-col items-center justify-center text-center">
@@ -60,6 +61,7 @@ import { escape } from 'lodash';
                 <p class="text-xl font-bold text-slate-700 capitalize">${v.analysis.pacing}</p>
             </div>
         </div>
+        `}
 
         <!-- Main Content -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
