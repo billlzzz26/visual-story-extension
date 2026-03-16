@@ -105,7 +105,7 @@ ${mermaidDiagram}
     </div>
 
     <div id="dashboard" class="tab-content active">
-      <!-- Dashboard content will be inserted here -->
+      ${dashboardHtml.substring(dashboardHtml.indexOf('<div class="max-w-6xl'), dashboardHtml.lastIndexOf('</div>') + 6)}
     </div>
 
     <div id="mermaid" class="tab-content">
