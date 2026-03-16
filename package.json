@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
-    "@vercel/beautiful-mermaid": "0.1.5",
     "fs-extra": "^11.2.0",
     "zod": "^3.22.4"
   },
