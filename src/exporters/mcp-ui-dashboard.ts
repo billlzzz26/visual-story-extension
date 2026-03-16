@@ -27,17 +27,14 @@ export function toMcpUiDashboard(graph: StoryGraph, options: { includeStats?: bo
         <!-- Header -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900 mb-1">${escape(graph.meta.title)}</h1>
+                <h1 class="text-3xl font-bold text-slate-900 mb-1">${escapeHtml(graph.meta.title)}</h1>
                 <p class="text-slate-500 flex items-center">
                     <span class="mr-2">Visual Story Analysis</span>
-import { escape } from 'lodash';
-
-// ... elsewhere in the file:
-<span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-mono">${escape(graph.meta.version)}</span>
+                    <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-mono">${escapeHtml(graph.meta.version)}</span>
                 </p>
             </div>
             <div class="flex gap-2">
-                ${graph.tags.map(t => `<span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm font-medium">#${escape(t)}</span>`).join('')}
+                ${graph.tags.map(t => `<span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm font-medium">#${escapeHtml(t)}</span>`).join('')}
             </div>
         </div>
 
