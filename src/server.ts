@@ -12,6 +12,7 @@ import { toMermaid } from './exporters/mermaid.js';
 import { toCanvasJSON } from './exporters/canvas.js';
 import { toDashboard } from './exporters/dashboard.js';
 import { toMarkdown } from './exporters/markdown.js';
+import { toMcpUiDashboard } from './exporters/mcp-ui-dashboard.js';
 import { validateGraph } from './validators.js';
 
 // --- 1. Define Deep Schemas ---
@@ -130,6 +131,11 @@ const Schemas = {
   build_relationship_graph: z.object({
     graph: StoryGraphSchema.describe('StoryGraph object'),
     includeStats: z.boolean().default(true),
+  }),
+  export_mcp_ui_dashboard: z.object({
+    graph: StoryGraphSchema.describe('StoryGraph object'),
+    includeStats: z.boolean().default(true),
+    includeRecommendations: z.boolean().default(true),
   })
 };
 
@@ -145,6 +151,7 @@ export const BL1NK_VISUAL_TOOLS = [
   { name: 'extract_characters', description: 'Extract characters from StoryGraph' },
   { name: 'extract_conflicts', description: 'Extract conflicts from StoryGraph' },
   { name: 'build_relationship_graph', description: 'Build relationship graph' },
+  { name: 'export_mcp_ui_dashboard', description: 'Generate MCP UI dashboard' },
 ];
 
 // --- 3. Execution Logic ---
@@ -206,6 +213,18 @@ export async function executeStoryTool(toolName: string, args: any) {
       case "build_relationship_graph": {
         const rels = args.graph.relationships || [];
         return { content: [{ type: 'text', text: JSON.stringify({ count: rels.length, relationships: rels }, null, 2) }] };
+      }
+
+      case "export_mcp_ui_dashboard": {
+        const html = toMcpUiDashboard(args.graph, { includeStats: args.includeStats, includeRecommendations: args.includeRecommendations });
+        return {
+          content: [{ type: 'text', text: html }],
+          _meta: {
+            ui: {
+              resourceUri: `mcp-ui://dashboard/${encodeURIComponent(args.graph.meta.title)}`
+            }
+          }
+        } as any;
       }
 
       default:
