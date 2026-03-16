@@ -224,7 +224,7 @@ export async function executeStoryTool(toolName: string, args: any) {
               resourceUri: `mcp-ui://dashboard/${encodeURIComponent(args.graph.meta.title)}`
             }
           }
-        } as any;
+        };
       }
 
       default:
