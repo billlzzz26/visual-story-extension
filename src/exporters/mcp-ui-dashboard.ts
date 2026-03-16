@@ -30,7 +30,10 @@ export function toMcpUiDashboard(graph: StoryGraph, options: { includeStats?: bo
                 <h1 class="text-3xl font-bold text-slate-900 mb-1">${escape(graph.meta.title)}</h1>
                 <p class="text-slate-500 flex items-center">
                     <span class="mr-2">Visual Story Analysis</span>
-                    <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-mono">${graph.meta.version}</span>
+import { escape } from 'lodash';
+
+// ... elsewhere in the file:
+<span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-mono">${escape(graph.meta.version)}</span>
                 </p>
             </div>
             <div class="flex gap-2">
