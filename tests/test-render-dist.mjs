@@ -125,7 +125,7 @@ ${mermaidDiagram}
       
       // Show selected tab
       document.getElementById(tabName).classList.add('active');
-      event.target.classList.add('active');
+      document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`)?.classList.add('active');
       
       // Reinitialize mermaid if showing mermaid tab
       if (tabName === 'mermaid' && window.mermaid) {
