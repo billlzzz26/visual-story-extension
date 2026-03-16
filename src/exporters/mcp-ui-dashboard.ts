@@ -118,14 +118,16 @@ import { escape } from 'lodash';
             </div>
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-4 text-indigo-600">Recommendations</h2>
-                <ul class="space-y-3">
-                    ${v.recommendations.map(r => `
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-indigo-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <span class="text-slate-700 text-sm">${escape(r)}</span>
-                        </li>
-                    `).join('')}
-                </ul>
+                ${options.includeRecommendations === false ? '' : `
+                            <ul class="space-y-3">
+                                ${v.recommendations.map(r => `
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-indigo-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        <span class="text-slate-700 text-sm">${escape(r)}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            `}
             </div>
         </div>
 
