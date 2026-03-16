@@ -3,7 +3,7 @@ import { validateGraph } from '../validators.js';
 
 export function toMcpUiDashboard(graph: StoryGraph, options: { includeStats?: boolean; includeRecommendations?: boolean } = {}): string {
     const v = validateGraph(graph);
-    const escape = (str: string) => str.replace(/[&<>"']/g, m => ({
+    const escapeHtml = (str: string) => str.replace(/[&<>"']/g, m => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     })[m] || m);
 
