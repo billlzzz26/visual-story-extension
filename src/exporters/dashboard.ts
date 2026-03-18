@@ -3,14 +3,14 @@ import { validateGraph } from '../validators.js';
 
 export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean; includeRecommendations?: boolean } = {}): string {
   const v = validateGraph(graph);
-  const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escape(graph.meta.title)} - bl1nk Story Dashboard</title>
+    <title>${escapeHtml(graph.meta.title)} - bl1nk Story Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -29,18 +29,19 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
         <header class="mb-8 bg-gradient-to-r from-indigo-600 to-blue-500 p-8 rounded-2xl text-white shadow-lg">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2">${escape(graph.meta.title)}</h1>
+                    <h1 class="text-4xl font-bold mb-2">${escapeHtml(graph.meta.title)}</h1>
                     <p class="text-indigo-100 opacity-90">Story Structure Analysis Dashboard</p>
                 </div>
                 <div class="text-right">
                     <span class="px-3 py-1 bg-white/20 rounded-full text-sm font-medium uppercase tracking-wider">
-                        ${escape(graph.meta.genre || 'General')}
+                        ${escapeHtml(graph.meta.genre || 'General')}
                     </span>
                     <p class="mt-2 text-xs opacity-75">v${graph.meta.version}</p>
                 </div>
             </div>
         </header>
 
+        ${options.includeStats !== false ? `
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="card p-6 text-center">
@@ -60,6 +61,7 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
                 <p class="text-3xl font-bold text-emerald-500 capitalize">${v.analysis.pacing}</p>
             </div>
         </div>
+        ` : ''}
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             <!-- Act Distribution -->
@@ -112,24 +114,26 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
                     <div class="space-y-3">
                         ${v.issues.map(i => `
                             <div class="p-3 rounded-lg border-l-4 ${i.severity === 'error' ? 'bg-red-50 border-red-500 text-red-700' : 'bg-orange-50 border-orange-500 text-orange-700'}">
-                                <p class="text-sm font-bold uppercase text-xs mb-1">${i.code}</p>
-                                <p class="text-sm">${escape(i.message)}</p>
+                                <p class="text-sm font-bold uppercase text-xs mb-1">${escapeHtml(i.code)}</p>
+                                <p class="text-sm">${escapeHtml(i.message)}</p>
                             </div>
                         `).join('')}
                     </div>
                 ` : '<p class="text-emerald-600 font-medium">No structural issues found! ✨</p>'}
             </div>
+            ${options.includeRecommendations !== false ? `
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-4 text-indigo-600">Recommendations</h2>
                 <ul class="space-y-3">
                     ${v.recommendations.map(r => `
                         <li class="flex items-start">
                             <svg class="w-5 h-5 text-indigo-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <span class="text-gray-700 text-sm">${escape(r)}</span>
+                            <span class="text-gray-700 text-sm">${escapeHtml(r)}</span>
                         </li>
                     `).join('')}
                 </ul>
             </div>
+            ` : ''}
         </div>
 
         <!-- Characters & Conflicts -->
@@ -140,10 +144,10 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
                     ${graph.characters.map(c => `
                         <div class="py-3 flex justify-between items-center">
                             <div>
-                                <p class="font-bold text-gray-900">${escape(c.name)}</p>
-                                <p class="text-xs text-gray-500">${escape(c.traits.slice(0, 3).join(', '))}</p>
+                                <p class="font-bold text-gray-900">${escapeHtml(c.name)}</p>
+                                <p class="text-xs text-gray-500">${escapeHtml(c.traits.slice(0, 3).join(', '))}</p>
                             </div>
-                            <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold uppercase">${escape(c.role)}</span>
+                            <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold uppercase">${escapeHtml(c.role)}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -154,10 +158,10 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
                     ${graph.conflicts.map(c => `
                         <div class="p-4 bg-gray-50 rounded-xl">
                             <div class="flex justify-between mb-2">
-                                <span class="text-xs font-bold text-indigo-600 uppercase">${escape(c.type)}</span>
+                                <span class="text-xs font-bold text-indigo-600 uppercase">${escapeHtml(c.type)}</span>
                                 <span class="text-xs text-gray-400">Act ${c.actIntroduced}</span>
                             </div>
-                            <p class="text-sm text-gray-800 font-medium">${escape(c.description)}</p>
+                            <p class="text-sm text-gray-800 font-medium">${escapeHtml(c.description)}</p>
                         </div>
                     `).join('')}
                 </div>
