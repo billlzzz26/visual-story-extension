@@ -106,26 +106,26 @@ export function toMcpUiDashboard(graph: StoryGraph, options: { includeStats?: bo
                     <div class="space-y-3">
                         ${v.issues.map(i => `
                             <div class="p-3 rounded-lg border-l-4 ${i.severity === 'error' ? 'bg-rose-50 border-rose-500 text-rose-700' : 'bg-amber-50 border-amber-500 text-amber-700'}">
-                                <p class="text-sm font-bold uppercase text-xs mb-1">${escape(i.code)}</p>
-                                <p class="text-sm">${escape(i.message)}</p>
+                                <p class="text-sm font-bold uppercase text-xs mb-1">${escapeHtml(i.code)}</p>
+                                <p class="text-sm">${escapeHtml(i.message)}</p>
                             </div>
                         `).join('')}
                     </div>
                 ` : '<p class="text-emerald-600 font-medium">No structural issues found! ✨</p>'}
             </div>
+            ${options.includeRecommendations === false ? '' : `
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-4 text-indigo-600">Recommendations</h2>
-                ${options.includeRecommendations === false ? '' : `
-                            <ul class="space-y-3">
-                                ${v.recommendations.map(r => `
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-indigo-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                        <span class="text-slate-700 text-sm">${escape(r)}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                            `}
+                <ul class="space-y-3">
+                    ${v.recommendations.map(r => `
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-indigo-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span class="text-slate-700 text-sm">${escapeHtml(r)}</span>
+                        </li>
+                    `).join('')}
+                </ul>
             </div>
+            `}
         </div>
 
         <!-- Characters & Conflicts -->
@@ -136,10 +136,10 @@ export function toMcpUiDashboard(graph: StoryGraph, options: { includeStats?: bo
                     ${graph.characters.map(c => `
                         <div class="py-3 flex justify-between items-center">
                             <div>
-                                <p class="font-bold text-slate-900">${escape(c.name)}</p>
-                                <p class="text-xs text-slate-500">${escape(c.traits.slice(0, 3).join(', '))}</p>
+                                <p class="font-bold text-slate-900">${escapeHtml(c.name)}</p>
+                                <p class="text-xs text-slate-500">${escapeHtml(c.traits.slice(0, 3).join(', '))}</p>
                             </div>
-                            <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold uppercase">${escape(c.role)}</span>
+                            <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold uppercase">${escapeHtml(c.role)}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -150,10 +150,10 @@ export function toMcpUiDashboard(graph: StoryGraph, options: { includeStats?: bo
                     ${graph.conflicts.map(c => `
                         <div class="p-4 bg-slate-50 rounded-xl">
                             <div class="flex justify-between mb-2">
-                                <span class="text-xs font-bold text-indigo-600 uppercase">${escape(c.type)}</span>
+                                <span class="text-xs font-bold text-indigo-600 uppercase">${escapeHtml(c.type)}</span>
                                 <span class="text-xs text-slate-400">Act ${c.actIntroduced}</span>
                             </div>
-                            <p class="text-sm text-slate-800 font-medium">${escape(c.description)}</p>
+                            <p class="text-sm text-slate-800 font-medium">${escapeHtml(c.description)}</p>
                         </div>
                     `).join('')}
                 </div>
