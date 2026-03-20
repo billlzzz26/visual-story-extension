@@ -23,12 +23,12 @@ export function buildInitialGraph(text: string): StoryGraph {
 
 	// Extract title
 	const titleMatch =
-		text.match(/^Title:\s*(.+?)$/im) || text.match(/^#+\s+(.+?)$/m);
+		text.match(/^Title:\s*([^\r\n]+)$/im) || text.match(/^#+\s+([^\r\n]+)$/m);
 	if (titleMatch) graph.meta.title = titleMatch[1].trim();
 
 	// Extract characters: "Character: Name, role: protagonist"
 	const charPattern =
-		/^Character:\s*([A-Za-z][A-Za-z\s]+?)(?:,\s*role:\s*(\w+))?$/gim;
+		/^Character:\s*([A-Za-z][^,\r\n]*?)(?:,\s*role:\s*(\w+))?$/gim;
 	let match = charPattern.exec(text);
 	let charIndex = 0;
 	while (match !== null) {
@@ -64,7 +64,7 @@ export function buildInitialGraph(text: string): StoryGraph {
 	}
 
 	// Extract events: "Event: Event name"
-	const eventPattern = /^Event:\s*(.+?)$/gim;
+	const eventPattern = /^Event:\s*([^\r\n]+)$/gim;
 	let eventIndex = 0;
 	match = eventPattern.exec(text);
 	while (match !== null) {
@@ -97,7 +97,7 @@ export function buildInitialGraph(text: string): StoryGraph {
 	}
 
 	// Extract conflicts: "Conflict: Description"
-	const conflictPattern = /^Conflict:\s*(.+?)$/gim;
+	const conflictPattern = /^Conflict:\s*([^\r\n]+)$/gim;
 	let conflictIndex = 0;
 	match = conflictPattern.exec(text);
 	while (match !== null) {
