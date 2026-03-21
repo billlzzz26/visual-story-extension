@@ -1,6 +1,6 @@
-import { buildInitialGraph } from '../dist/analyzer.js';
-import { toMcpUiDashboard } from '../dist/exporters/mcp-ui-dashboard.js';
-import { toMermaid } from '../dist/exporters/mermaid.js';
+import { buildInitialGraph } from './dist/analyzer.js';
+import { toMcpUiDashboard } from './dist/exporters/mcp-ui-dashboard.js';
+import { toMermaid } from './dist/exporters/mermaid.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -125,7 +125,7 @@ ${mermaidDiagram}
       
       // Show selected tab
       document.getElementById(tabName).classList.add('active');
-      document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`)?.classList.add('active');
+      event.target.classList.add('active');
       
       // Reinitialize mermaid if showing mermaid tab
       if (tabName === 'mermaid' && window.mermaid) {
