@@ -111,7 +111,14 @@ ${mermaidDiagram}
     </div>
 
     <div id="dashboard" class="tab-content active">
-      ${dashboardHtml.substring(dashboardHtml.indexOf('<div class="max-w-6xl'), dashboardHtml.lastIndexOf("</div>") + 6)}
+      ${(() => {
+        const start = dashboardHtml.indexOf('<div class="max-w-6xl');
+        const end = dashboardHtml.lastIndexOf("</div>");
+        if (start === -1 || end === -1 || end < start) {
+          throw new Error("Unable to locate dashboard content boundaries in generated HTML");
+        }
+        return dashboardHtml.substring(start, end + 6);
+      })()}
     </div>
 
     <div id="mermaid" class="tab-content">
