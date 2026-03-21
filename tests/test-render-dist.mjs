@@ -22,6 +22,11 @@ Conflict: Luke vs the Empire
 Conflict: Luke's internal struggle with the dark side
 `;
 
+/**
+ * Generate HTML outputs (MCP UI dashboard, standalone Mermaid page, and a combined tabbed page) from the embedded story text and save them to ./test-output.
+ * @returns {{dashboardPath: string, mermaidHtmlPath: string, combinedPath: string, graph: Object}} An object containing the filesystem paths of the written files and the generated story graph.
+ * @throws {Error} If an error occurs during graph construction, export, or file I/O.
+ */
 async function generateDashboard() {
 	try {
 		// Build the story graph

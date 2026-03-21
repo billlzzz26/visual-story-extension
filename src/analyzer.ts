@@ -6,6 +6,12 @@ import {
 	type StoryGraph,
 } from "./types.js";
 
+/**
+ * Builds an initial StoryGraph by extracting metadata, characters, events, conflicts, relationships, and tags from plain text.
+ *
+ * @param text - Source text to parse for story elements (recognizes patterns such as `Title:`, `Character:`, `Event:`, and `Conflict:` lines)
+ * @returns A StoryGraph populated with default metadata and arrays of characters, events, conflicts, relationships, and tags inferred from the input
+ */
 export function buildInitialGraph(text: string): StoryGraph {
 	const graph: StoryGraph = {
 		meta: {
