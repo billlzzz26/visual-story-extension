@@ -94,7 +94,7 @@ export function buildInitialGraph(text: string): StoryGraph {
 			description: label,
 			act,
 			importance,
-			sequenceInAct: 1,
+   sequenceInAct: act === 1 ? eventIndex + 1 : act === 2 ? eventIndex - 3 : eventIndex - 8,
 			characters: [],
 			conflicts: [],
 			emotionalTone: "neutral",
