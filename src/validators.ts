@@ -45,11 +45,11 @@ export function validateGraph(
 		);
 	}
 
- if (
-     !graph.characters.some(
-         (c) => (c.role || "").toLowerCase() === "protagonist",
-     )
- ) {
+	if (
+		!graph.characters.some(
+			(c) => (c.role || "").toLowerCase() === "protagonist",
+		)
+	) {
 		addIssue("error", "NO_PROTAGONIST", "Story must have a protagonist");
 	}
 
