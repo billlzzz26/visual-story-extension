@@ -152,7 +152,8 @@ export function buildInitialGraph(text: string): StoryGraph {
 	for (const event of graph.events) {
 		const lowerLabel = event.label.toLowerCase();
 		for (const char of charData) {
-			if (lowerLabel.includes(char.lowerName)) {
+   const escapedName = char.lowerName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+   if (new RegExp(`\\b${escapedName}\\b`).test(lowerLabel)) {
 				event.characters.push(char.id);
 			}
 		}
