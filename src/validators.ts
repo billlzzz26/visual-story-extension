@@ -148,7 +148,11 @@ export function validateGraph(
 					`Character "${c.name}" has no defined motivations`,
 				);
 			}
-			if (!c.arc.transformation || c.arc.transformation === "") {
+   if (
+       !c.arc ||
+       typeof c.arc.transformation !== "string" ||
+       c.arc.transformation.trim() === ""
+   ) {
 				addIssue(
 					"warning",
 					"NO_ARC",
