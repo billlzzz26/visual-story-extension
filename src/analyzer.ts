@@ -111,10 +111,10 @@ export function buildInitialGraph(text: string): StoryGraph {
 		const description = match[1].trim();
 		const lowerDesc = description.toLowerCase();
 		const type =
-			lowerDesc.includes("vs") || lowerDesc.includes("against")
-				? "external"
-				: lowerDesc.includes("self") || lowerDesc.includes("doubt")
-					? "internal"
+      lowerDesc.includes("self") || lowerDesc.includes("doubt")
+          ? "internal"
+          : lowerDesc.includes("vs") || lowerDesc.includes("against")
+              ? "external"
 					: "external";
 
 		graph.conflicts.push({
