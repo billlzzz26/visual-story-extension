@@ -1,5 +1,18 @@
 import type { StoryGraph, ValidationResult } from "./types.js";
 
+/**
+ * Validate a story graph for structural and content rules, returning detected issues, analysis, and recommendations.
+ *
+ * Performs checks for required metadata, character roles, act presence and distribution, midpoint/climax presence, conflicts, and (when `strict` is true) character motivations and arcs.
+ *
+ * @param graph - The story graph to validate
+ * @param strict - When true, enforce stricter character checks (motivations and transformation arcs)
+ * @returns A ValidationResult containing:
+ * - `isValid`: `true` if no issues with severity `"error"` were found, `false` otherwise.
+ * - `issues`: an array of detected issues (severity, code, message, optional suggestion).
+ * - `analysis`: summary metrics (act counts and balance ratio, character/conflict/event counts, midpoint/climax flags, pacing).
+ * - `recommendations`: actionable suggestions derived from the analysis.
+ */
 export function validateGraph(
 	graph: StoryGraph,
 	strict = false,
