@@ -7,17 +7,41 @@ description: >
   three-act balance, pacing health, character arc completeness, or conflict escalation.
   Also activate when the user runs `validate_story_structure` and wants an explanation
   of results, or when story export output is present and they want a critique.
+  IMPORTANT: Any export action (export_mermaid, export_canvas, export_dashboard, etc.)
+  must be preceded by `validate_story_structure`. If validation reports any issues,
+  surface them with severity levels (error / warning) and require explicit user
+  acknowledgment before continuing to export. Block exports when blocking (error-level)
+  issues exist unless the user explicitly confirms they accept the risk.
   This skill provides a four-phase audit (Structure → Characters → Conflicts → Pacing)
   with a scored health report and prioritized action list — always activate it, even for
   seemingly simple structure questions.
 ---
 
-# Structural Story Auditor
+## Pre-Export Validation Gate
 
-Performs a four-phase deep audit of a StoryGraph. Output format is always a scored
-health report with explicit findings, not a generic summary.
+**Before any export tool is called**, this skill must:
+
+1. Run `validate_story_structure` on the current graph
+2. Report all issues grouped by severity:
+   - `error` (blocking): exports are refused until resolved or user explicitly accepts risk
+   - `warning` (non-blocking): exports proceed only after user acknowledges each warning
+3. Present a summary:
+
+```text
+⚠️ Validation required before export
+Errors (blocking): [N]   Warnings: [N]
+
+[error]   MISSING_CLIMAX — Story structure is incomplete: Missing a Climax
+[warning] NO_MIDPOINT — Story should have a midpoint event
+
+Resolve blocking errors before exporting, or type ACCEPT RISK to override.
+```
+
+If the user types `ACCEPT RISK`, proceed with the export and prepend a notice to the output that the exported content has unresolved validation errors.
 
 ---
+
+
 
 ## Phase 1 — Three-Act Structure
 
@@ -74,7 +98,7 @@ For each conflict:
 
 Always output in this exact structure:
 
-```
+```text
 ## Story Audit: [Title]
 
 **Overall Health: [score]/100**
