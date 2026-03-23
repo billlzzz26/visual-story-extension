@@ -1,97 +1,105 @@
 ---
-name: arc-optimization
-description: Optimize story pacing, emotional arcs, and narrative flow
-triggers:
-  - "optimize story"
-  - "improve pacing"
-  - "emotional arc"
+name: structural-audit
+description: >
+  Deep structural analysis of story graphs for Visual Story Planner projects.
+  Use this skill whenever the user says "audit", "check structure", "analyze story structure",
+  "is my story balanced", "review my plot", "structural report", or asks for feedback on
+  three-act balance, pacing health, character arc completeness, or conflict escalation.
+  Also activate when the user runs `validate_story_structure` and wants an explanation
+  of results, or when story export output is present and they want a critique.
+  This skill provides a four-phase audit (Structure → Characters → Conflicts → Pacing)
+  with a scored health report and prioritized action list — always activate it, even for
+  seemingly simple structure questions.
 ---
 
-# Arc Optimization Skill
+# Structural Story Auditor
 
-## Overview
-Analyzes and optimizes story pacing, emotional arcs, tension distribution,
-and overall narrative flow for maximum reader engagement.
+Performs a four-phase deep audit of a StoryGraph. Output format is always a scored
+health report with explicit findings, not a generic summary.
 
-## Optimization Areas
+---
 
-### 1. Pacing Analysis
-- **Event Distribution**: Events per act
-- **Scene Length**: Average scene duration
-- **Transition Smoothness**: Scene-to-scene flow
-- **Rhythm**: Fast/slow pacing patterns
-- **Climax Positioning**: Optimal climax placement
+## Phase 1 — Three-Act Structure
 
-### 2. Emotional Arc Tracking
-- **Emotional Baseline**: Starting emotional state
-- **Emotional Peaks**: High-emotion moments
-- **Emotional Valleys**: Low-emotion moments
-- **Emotional Progression**: Overall arc trajectory
-- **Emotional Satisfaction**: Resolution impact
+Check each act against the 25%-50%-25% target:
 
-### 3. Tension Distribution
-- **Tension Baseline**: Starting tension level
-- **Tension Build**: Gradual increase
-- **Tension Peaks**: Maximum tension moments
-- **Tension Release**: Relief moments
-- **Tension Curve**: Overall tension shape
+| Act | Target % | Warning Threshold | Events Desired |
+|-----|----------|-------------------|----------------|
+| Act 1 | 25% | < 15% or > 35% | 3–5 |
+| Act 2 | 50% | < 40% or > 65% | 5–8 |
+| Act 3 | 25% | < 15% or > 35% | 3–5 |
 
-### 4. Narrative Flow
-- **Scene Transitions**: Smooth vs. abrupt
-- **Information Pacing**: Exposition distribution
-- **Action/Dialogue Balance**: Scene composition
-- **Subplot Integration**: Subplot timing
-- **Climax Build**: Climax approach
+Check for presence and quality of:
+- **Inciting incident** (Act 1 — importance: `inciting`)
+- **Midpoint** (Act 2 — importance: `midpoint`)
+- **Climax** (Act 3 — importance: `climax`) ← error if missing
+- **Resolution** (Act 3 — importance: `resolution`)
 
-### 5. Optimization Recommendations
-- Restructuring suggestions
-- Timing adjustments
-- Scene additions/removals
-- Pacing improvements
-- Emotional impact enhancement
+Status: `good` | `needs_work` | `critical`
+
+---
+
+## Phase 2 — Character Arcs
+
+For each character with role `protagonist` or `antagonist`:
+- Arc defined? (`arc.start`, `arc.midpoint`, `arc.end` non-empty)
+- Transformation meaningful? (`arc.transformation` non-empty)
+- Motivations defined? (`motivations` array non-empty)
+- Appears in events? (`actAppearances` covers acts they should be in)
+
+Flag any character missing 2+ of these as `needs_work`.
+
+---
+
+## Phase 3 — Conflict Escalation
+
+For each conflict:
+- Has escalation stages? (`escalations.length >= 2`)
+- Intensity rises? (each stage > previous by ≥ 1)
+- Resolution defined? (`resolution` non-empty)
+- Related characters are valid IDs?
+
+---
+
+## Phase 4 — Pacing
+
+- Event density per act (events / total events)
+- Climax position: ideally around 75–85% through the full event sequence
+- Emotional tone diversity across events
+- Pacing verdict: `slow` (< 5 events) | `balanced` (5–15) | `fast` (> 15)
+
+---
 
 ## Output Format
 
-```json
-{
-  "arc_optimization": {
-    "pacing_score": 0.82,
-    "emotional_arc_score": 0.88,
-    "tension_distribution_score": 0.85,
-    "narrative_flow_score": 0.80,
-    "overall_optimization_score": 0.84,
-    "pacing_analysis": {
-      "act_1_events": 4,
-      "act_2_events": 7,
-      "act_3_events": 4,
-      "balance": 0.75,
-      "recommendations": ["Add 1-2 events to Act 3 for better climax build"]
-    },
-    "emotional_arc": {
-      "baseline": 5,
-      "peaks": [8, 9, 10],
-      "valleys": [3, 4],
-      "satisfaction": 0.88
-    },
-    "tension_distribution": {
-      "curve_shape": "exponential",
-      "climax_intensity": 9.5,
-      "release_quality": 0.85
-    },
-    "recommendations": []
-  }
-}
+Always output in this exact structure:
+
+```
+## Story Audit: [Title]
+
+**Overall Health: [score]/100**
+
+### ✅ Act Structure — [status]
+[findings + act counts + %]
+
+### ✅ Characters — [status]
+[per-character findings]
+
+### ✅ Conflicts — [status]
+[per-conflict findings]
+
+### ✅ Pacing — [status]
+[pacing verdict + climax position]
+
+---
+### 🎯 Priority Actions (fix in this order)
+1. [Critical] ...
+2. [Warning] ...
+3. [Suggestion] ...
 ```
 
-## Optimization Checklist
-
-- [ ] Act distribution is balanced (ideally 25%-50%-25%)
-- [ ] Climax is positioned in Act 3 (around 75% mark)
-- [ ] Midpoint creates clear turning point
-- [ ] Emotional arc has clear progression
-- [ ] Tension builds consistently
-- [ ] Pacing matches genre expectations
-- [ ] Scene transitions are smooth
-- [ ] Subplots integrate naturally
-- [ ] Resolution provides satisfaction
-- [ ] Overall flow maintains engagement
+Health score formula:
+- Structure: 40 pts (climax present: 20, midpoint: 10, act balance: 10)
+- Characters: 25 pts (protagonist arc: 15, others: 10)
+- Conflicts: 20 pts (escalation: 10, resolution: 10)
+- Pacing: 15 pts (balance: 10, climax position: 5)
