@@ -40,12 +40,12 @@ Before writing dialogue, define each character's voice profile:
 ### 1. Subtext Over Directness
 
 ❌ On-the-nose:
-```
+```text
 "ฉันโกรธคุณนะ เพราะคุณโกหกฉัน"
 ```
 
 ✅ Subtext:
-```
+```text
 "การประชุมเมื่อคืนเป็นยังไงบ้าง?"
 "ก็ดี"
 "ค่ะ ฉันเชื่ออย่างนั้น"
@@ -60,7 +60,7 @@ Subtext layers:
 ### 2. Interruptions & Overlap
 
 Use em-dash (—) for interruptions:
-```
+```text
 "ฟังนะ ฉันรู้ว่าคุณ—"
 "คุณไม่รู้อะไรเลยเกี่ยวกับฉัน"
 ```
@@ -73,7 +73,7 @@ When to interrupt:
 ### 3. Action Beats (Not Just Talking Heads)
 
 Every 3–4 lines of dialogue, add a physical beat:
-```
+```text
 "มันไม่ใช่สิ่งที่ฉันต้องการ" หล่อนดันแก้วออก
 เขาเดินไปมาในห้อง "งั้นคุณต้องการอะไร?"
 "ฉัน—" มือของหล่อนกำขอบโต๊ะแน่น "ไม่รู้"
@@ -81,7 +81,7 @@ Every 3–4 lines of dialogue, add a physical beat:
 
 ### 4. Silence as Dialogue
 
-```
+```text
 "คุณรักฉันไหม?"
 เขาก้มลงมองรองเท้า
 ```
