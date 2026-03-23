@@ -23,11 +23,19 @@ consistency across the story.
 ### 1. Arc Completeness Score (per character)
 
 Check these fields and score:
-- `arc.start` non-empty: 20 pts
-- `arc.midpoint` non-empty: 20 pts
-- `arc.end` non-empty: 20 pts
-- `arc.transformation` meaningful (> 10 chars, not a repeat of start/end): 20 pts
-- `arc.emotionalJourney` has ≥ 3 entries: 20 pts
+
+**Core arc (60 pts):**
+- `arc.start` non-empty: 12 pts
+- `arc.midpoint` non-empty: 12 pts
+- `arc.end` non-empty: 12 pts
+- `arc.transformation` meaningful (> 10 chars, not a repeat of start/end): 12 pts
+- `arc.emotionalJourney` has ≥ 3 entries: 12 pts
+
+**Character depth (40 pts):**
+- `motivations` non-empty (≥ 1 entry): 10 pts
+- `fears` meaningful (≥ 1 entry, each > 10 chars, not duplicate of secrets): 10 pts
+- `secretsOrLies` meaningful (≥ 1 entry, each > 10 chars): 10 pts
+- `relationships` tracks evolution (≥ 3 entries showing change across acts): 10 pts
 
 **Arc Score** = sum / 100
 
@@ -35,6 +43,8 @@ Interpretation:
 - 80–100: Strong, well-defined arc
 - 50–79: Needs development
 - 0–49: Character is underdeveloped — flag as critical
+
+A character cannot reach "Strong" status without both core arc and depth dimensions scoring ≥ 60% each.
 
 ### 2. Motivation Clarity
 
@@ -55,7 +65,7 @@ Walk through events where the character appears (`event.characters` includes the
 ### 4. Relationship Map
 
 For each relationship in `graph.relationships` involving this character:
-```
+```text
 [Character A] ──[type]──> [Character B]  strength: [N]/10
 ```
 
@@ -63,6 +73,7 @@ Assess:
 - Relationships that lack conflict: suggest adding tension
 - Relationships that evolve: flag as strength
 - Isolated characters (no relationships): flag as concern
+- Relationships array has < 3 entries: flag — contributes 0 pts to depth score
 
 ### 5. Per-Character Writing Suggestions
 
@@ -75,18 +86,21 @@ Give 2–3 concrete suggestions per underdeveloped character:
 
 ## Output Format
 
-```
+```text
 ## Character Analysis: [Title]
 
 ### [Character Name] — [role]
 **Arc Score: [X]/100** ([status])
 **Motivation: [Clear/Vague/Missing]**
 
-Arc:
+Arc (core: [X]/60, depth: [X]/40):
   Start → [value]
   Midpoint → [value]
   End → [value]
   Transformation: [value]
+  Fears: [value or MISSING]
+  Secrets: [value or MISSING]
+  Relationships tracked: [N] entries ([≥3 ✅ / <3 ⚠️])
 
 Consistency: [✅ consistent / ⚠️ gaps in Act N / ❌ major inconsistency]
 
