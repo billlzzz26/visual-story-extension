@@ -46,7 +46,7 @@ Aim for: ≥ 1 internal + ≥ 1 external per protagonist. All-external stories l
 - Intensity curve: check each `intensity` value rises (3 → 6 → 9 ideal)
 - Peak before climax? Escalation should peak at or just before the climax event
 
-Escalation health score = (stages_count × intensity_slope_avg) / 10, capped at 1.0
+Escalation health score = clamp((stages_count × intensity_slope_avg) / 10, 0.0, 1.0)
 
 ### 3. Interconnection Map
 Show how conflicts relate to each other:
