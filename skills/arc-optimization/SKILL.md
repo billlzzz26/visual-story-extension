@@ -1,105 +1,115 @@
 ---
-name: structural-audit
+name: arc-optimization
 description: >
-  Deep structural analysis of story graphs for Visual Story Planner projects.
-  Use this skill whenever the user says "audit", "check structure", "analyze story structure",
-  "is my story balanced", "review my plot", "structural report", or asks for feedback on
-  three-act balance, pacing health, character arc completeness, or conflict escalation.
-  Also activate when the user runs `validate_story_structure` and wants an explanation
-  of results, or when story export output is present and they want a critique.
-  This skill provides a four-phase audit (Structure → Characters → Conflicts → Pacing)
-  with a scored health report and prioritized action list — always activate it, even for
-  seemingly simple structure questions.
+  Optimize story pacing, emotional arcs, tension curves, and narrative flow for
+  Visual Story Planner StoryGraphs. Always activate when the user says: "pacing",
+  "too fast", "too slow", "emotional arc", "tension build", "story feels flat",
+  "optimize story", "improve flow", "climax doesn't land", "restructure events",
+  "my story drags", or "how do I build tension". Also activate when a structural
+  audit shows ACT_IMBALANCE warnings — arc optimization is the fix. Produces a
+  pacing score, tension curve visualization (ASCII), emotional arc trajectory,
+  and an ordered list of concrete restructuring moves with before/after event counts.
 ---
 
-# Structural Story Auditor
+# Arc & Pacing Optimizer
 
-Performs a four-phase deep audit of a StoryGraph. Output format is always a scored
-health report with explicit findings, not a generic summary.
-
----
-
-## Phase 1 — Three-Act Structure
-
-Check each act against the 25%-50%-25% target:
-
-| Act | Target % | Warning Threshold | Events Desired |
-|-----|----------|-------------------|----------------|
-| Act 1 | 25% | < 15% or > 35% | 3–5 |
-| Act 2 | 50% | < 40% or > 65% | 5–8 |
-| Act 3 | 25% | < 15% or > 35% | 3–5 |
-
-Check for presence and quality of:
-- **Inciting incident** (Act 1 — importance: `inciting`)
-- **Midpoint** (Act 2 — importance: `midpoint`)
-- **Climax** (Act 3 — importance: `climax`) ← error if missing
-- **Resolution** (Act 3 — importance: `resolution`)
-
-Status: `good` | `needs_work` | `critical`
+Analyzes and optimizes story rhythm, emotional progression, and tension distribution.
 
 ---
 
-## Phase 2 — Character Arcs
+## Optimization Areas
 
-For each character with role `protagonist` or `antagonist`:
-- Arc defined? (`arc.start`, `arc.midpoint`, `arc.end` non-empty)
-- Transformation meaningful? (`arc.transformation` non-empty)
-- Motivations defined? (`motivations` array non-empty)
-- Appears in events? (`actAppearances` covers acts they should be in)
+### 1. Event Density Analysis
 
-Flag any character missing 2+ of these as `needs_work`.
+Calculate events per act and flag imbalance:
+```
+Act 1: [N] events = [X]% (target: ~25%)
+Act 2: [N] events = [X]% (target: ~50%)
+Act 3: [N] events = [X]% (target: ~25%)
+```
+
+Suggest additions/removals to reach targets.
+
+### 2. Tension Curve
+
+Map each event's implied tension level (1–10) based on importance:
+- `normal`/`rising` → baseline (3–5)
+- `inciting` → spike (6)
+- `midpoint` → peak (7)
+- `climax` → maximum (9–10)
+- `resolution` → release (2–4)
+
+Draw ASCII tension curve:
+```
+10 │         *
+ 8 │       *   
+ 6 │   *         
+ 4 │ *       * *
+ 2 │               *
+   └────────────────
+   A1  A1  A2  A3 A3
+```
+
+Ideal shape: gradual rise → midpoint peak → brief dip → climax peak → resolution drop.
+
+### 3. Emotional Arc Trajectory
+
+Assess overall emotional journey:
+- **Flat**: no variation in emotional tone → add contrast events
+- **Spike-only**: all tension with no relief → add breathing room in Act 2
+- **Front-heavy**: climax too early → move or strengthen Act 3 events
+- **Satisfying**: gradual rise with peaks and valleys
+
+### 4. Climax Positioning
+
+Ideal climax position: 75–85% through the full event sequence.
+
+```
+Climax at event [N] of [Total] = [X]%
+Status: [too early / ideal / too late]
+```
+
+### 5. Subplot Integration
+
+Check if secondary conflicts have events distributed across all three acts.
+Flag any subplot that only appears in one act.
 
 ---
 
-## Phase 3 — Conflict Escalation
+## Restructuring Moves
 
-For each conflict:
-- Has escalation stages? (`escalations.length >= 2`)
-- Intensity rises? (each stage > previous by ≥ 1)
-- Resolution defined? (`resolution` non-empty)
-- Related characters are valid IDs?
+For each issue, suggest a concrete move:
 
----
-
-## Phase 4 — Pacing
-
-- Event density per act (events / total events)
-- Climax position: ideally around 75–85% through the full event sequence
-- Emotional tone diversity across events
-- Pacing verdict: `slow` (< 5 events) | `balanced` (5–15) | `fast` (> 15)
+| Move Type | Description |
+|-----------|-------------|
+| **ADD** | Add event in [Act N] with importance [X] |
+| **MOVE** | Move event "[Label]" from Act [N] to Act [M] |
+| **PROMOTE** | Change importance of "[Label]" from `rising` to `midpoint` |
+| **SPLIT** | Split "[Label]" into two events for better pacing |
+| **MERGE** | Merge [A] and [B] — they're too close in impact |
 
 ---
 
 ## Output Format
 
-Always output in this exact structure:
-
 ```
-## Story Audit: [Title]
+## Arc Optimization: [Title]
 
-**Overall Health: [score]/100**
+**Pacing Score: [X]/100**
 
-### ✅ Act Structure — [status]
-[findings + act counts + %]
+### Event Density
+[table of act distribution]
 
-### ✅ Characters — [status]
-[per-character findings]
+### Tension Curve
+[ASCII diagram]
 
-### ✅ Conflicts — [status]
-[per-conflict findings]
+### Emotional Arc: [flat/rising/satisfying/etc]
+[brief assessment]
 
-### ✅ Pacing — [status]
-[pacing verdict + climax position]
+### Climax Position: [X]% — [status]
 
----
-### 🎯 Priority Actions (fix in this order)
-1. [Critical] ...
-2. [Warning] ...
-3. [Suggestion] ...
+### 🎯 Restructuring Plan (ordered)
+1. [MOVE] "Shadow King attacks" from Act 3 → Act 2, event 6 — raises midpoint tension
+2. [ADD]  New "brief victory" event in Act 2 — creates tension contrast
+3. [PROMOTE] "Learning the truth" importance: rising → midpoint
 ```
-
-Health score formula:
-- Structure: 40 pts (climax present: 20, midpoint: 10, act balance: 10)
-- Characters: 25 pts (protagonist arc: 15, others: 10)
-- Conflicts: 20 pts (escalation: 10, resolution: 10)
-- Pacing: 15 pts (balance: 10, climax position: 5)
