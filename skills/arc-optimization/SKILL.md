@@ -22,7 +22,7 @@ Analyzes and optimizes story rhythm, emotional progression, and tension distribu
 ### 1. Event Density Analysis
 
 Calculate events per act and flag imbalance:
-```
+```text
 Act 1: [N] events = [X]% (target: ~25%)
 Act 2: [N] events = [X]% (target: ~50%)
 Act 3: [N] events = [X]% (target: ~25%)
@@ -40,7 +40,7 @@ Map each event's implied tension level (1–10) based on importance:
 - `resolution` → release (2–4)
 
 Draw ASCII tension curve:
-```
+```text
 10 │         *
  8 │       *   
  6 │   *         
@@ -64,7 +64,7 @@ Assess overall emotional journey:
 
 Ideal climax position: 75–85% through the full event sequence.
 
-```
+```text
 Climax at event [N] of [Total] = [X]%
 Status: [too early / ideal / too late]
 ```
@@ -92,7 +92,7 @@ For each issue, suggest a concrete move:
 
 ## Output Format
 
-```
+```text
 ## Arc Optimization: [Title]
 
 **Pacing Score: [X]/100**
@@ -110,6 +110,9 @@ For each issue, suggest a concrete move:
 
 ### 🎯 Restructuring Plan (ordered)
 1. [MOVE] "Shadow King attacks" from Act 3 → Act 2, event 6 — raises midpoint tension
+   before: Act2=5 events, Act3=4 events | after: Act2=6 events, Act3=3 events | delta: Act2 +1, Act3 -1
 2. [ADD]  New "brief victory" event in Act 2 — creates tension contrast
+   before: Act2=5 events (38%) | after: Act2=6 events (43%) | delta: +1 event, +5% Act2 share
 3. [PROMOTE] "Learning the truth" importance: rising → midpoint
+   before: 0 midpoint events | after: 1 midpoint event | delta: midpoint flag now ✅
 ```
