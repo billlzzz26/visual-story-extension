@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
+import { fileURLToPath, URL } from 'node:url'
 
 const host = process.env.TAURI_DEV_HOST
 
@@ -10,7 +10,7 @@ export default defineConfig(async () => ({
 
   resolve: {
     alias: {
-      '@': path.resolve(new URL('./src', import.meta.url).pathname),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
 
