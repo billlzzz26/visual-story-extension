@@ -1,4 +1,4 @@
-// Simple types for Visual Story Planner
+// Simple types for bl1nk-visual-mcp
 
 export interface StoryGraph {
   meta: {
