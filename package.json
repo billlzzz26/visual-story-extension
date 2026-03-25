@@ -16,6 +16,7 @@
     "lint:fix": "markdownlint-cli2 --fix \"**/*.md\""
   },
   "dependencies": {
+    "@google/genai": "^1.17.0",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "fs-extra": "^11.2.0",
     "zod": "^3.22.4"
