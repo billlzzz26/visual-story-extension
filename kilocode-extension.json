@@ -1,0 +1,58 @@
+{
+  "name": "bl1nk-visual-mcp",
+  "version": "3.0.0",
+  "contextFileName": "KILO.md",
+  "settings": [
+    {
+      "name": "Default Mode",
+      "description": "Default render mode (canvas|mermaid|dashboard)",
+      "envVar": "BL1NK_DEFAULT_MODE",
+      "sensitive": false
+    }
+  ],
+  "mcpServers": {
+    "bl1nkVisualServer": {
+      "command": "node",
+      "args": ["${extensionPath}${/}dist${/}server.js"],
+      "cwd": "${extensionPath}"
+    }
+  },
+  "tools": [
+    {
+      "name": "analyze_story",
+      "description": "Analyze story structure and extract 3-act structure"
+    },
+    {
+      "name": "validate_story_structure",
+      "description": "Validate story structure against rules like climax and act distribution"
+    },
+    {
+      "name": "extract_characters",
+      "description": "Extract character roles, traits, and arcs"
+    },
+    {
+      "name": "extract_conflicts",
+      "description": "Extract conflicts and their escalation levels"
+    },
+    {
+      "name": "export_mermaid",
+      "description": "Export story graph as Mermaid diagram"
+    },
+    {
+      "name": "export_canvas",
+      "description": "Export story graph as JSON for interactive canvas"
+    },
+    {
+      "name": "export_dashboard",
+      "description": "Export story statistics as HTML dashboard"
+    },
+    {
+      "name": "export_mcp_ui_dashboard",
+      "description": "Export MCP UI dashboard HTML for interactive story analysis"
+    },
+    {
+      "name": "render_sample_story",
+      "description": "Render a sample story for demonstration"
+    }
+  ]
+}
