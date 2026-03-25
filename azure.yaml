@@ -1,0 +1,9 @@
+name: visual-story-extension
+metadata:
+  template: todo-nodejs-mongo-aca@0.0.3 # Optional template name
+services:
+  server:
+    project: .
+    language: js
+    host: containerapp
+    port: 3000

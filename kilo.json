@@ -1,0 +1,23 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "provider": {
+    "anthropic": {
+      "options": {
+        "apiKey": "an_sk_3f244f4c8add8a32f7ed58ce2863558ed6f8534ea21eb1f4205f907e6c10cb52"
+      }
+    }
+  },
+  "model": "anthropic/claude-sonnet-4-20250514",
+  "mcp": {
+    "stitch": {
+      "type": "remote",
+      "url": "https://stitch.googleapis.com/mcp",
+      "enabled": true,
+      "headers": {
+        "Accept": "application/json",
+        "X-Goog-Api-Key": "AQ.Ab8RN6Kit54MgtAUfR_G2MrFs6n9jY2CebY4XRNQjAPDzpy4wg"
+      },
+      "timeout": 300000
+    }
+  }
+}
