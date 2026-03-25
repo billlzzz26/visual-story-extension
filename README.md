@@ -1,26 +1,36 @@
+---
+title: Visual Story Planner v3 (VSP3)
+description: Production-ready Gemini CLI extension for structured story analysis, planning, and optimization
+status: active
+last_updated: 2026-03-26
+owner: dev-team
+---
+
 # Visual Story Planner v3 (VSP3)
 
-## 🎯 Overview
+## Overview
 
 Visual Story Planner v3 is a **production-ready Gemini CLI extension** for structured story analysis, planning, and optimization. It uses a **canvas-first approach** with Mermaid export capabilities, built on the **Model Context Protocol (MCP)** framework.
 
 ### Key Features
 
-✅ **Structured Story Analysis** - Convert narrative text into structured StoryGraph JSON  
-✅ **Three-Act Structure Validation** - Ensure proper story structure  
-✅ **Character Arc Tracking** - Analyze character development and consistency  
-✅ **Conflict Management** - Detect, map, and optimize story conflicts  
-✅ **Pacing Analysis** - Optimize tension distribution and narrative flow  
-✅ **Multiple Export Formats** - Mermaid, Canvas JSON, HTML Dashboard, Markdown, JSON  
-✅ **Comprehensive Validation** - 50+ validation rules with actionable suggestions  
-✅ **Skill System** - 4 specialized analysis skills for deep insights  
-✅ **9 MCP Tools** - Powerful tools for story manipulation and analysis  
+- **Structured Story Analysis** - Convert narrative text into structured StoryGraph JSON
+- **Three-Act Structure Validation** - Ensure proper story structure
+- **Character Arc Tracking** - Analyze character development and consistency
+- **Conflict Management** - Detect, map, and optimize story conflicts
+- **Pacing Analysis** - Optimize tension distribution and narrative flow
+- **Multiple Export Formats** - Mermaid, Canvas JSON, HTML Dashboard, Markdown, JSON
+- **Comprehensive Validation** - 50+ validation rules with actionable suggestions
+- **Skill System** - 4 specialized analysis skills for deep insights
+- **9 MCP Tools** - Powerful tools for story manipulation and analysis
+- **Tauri Desktop App** - Native desktop application with React + Tailwind
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
+
 - Node.js 18+
 - Gemini CLI installed
 - TypeScript knowledge (optional)
@@ -52,9 +62,25 @@ gemini extensions link .
 gemini story analyze "Once upon a time..."
 ```
 
+### Tauri Desktop App
+
+```bash
+# Navigate to Tauri app directory
+cd tauri-app
+
+# Install dependencies
+npm install
+
+# Run in development
+npm run dev
+
+# Build for production
+npm run tauri:build
+```
+
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Example 1: Analyze a Story
 
@@ -96,7 +122,7 @@ gemini story audit --depth deep --focus-areas all
 
 ---
 
-## 📋 Complete File Structure
+## Complete File Structure
 
 ```
 story-planner/
@@ -131,6 +157,15 @@ story-planner/
 │   └── arc-optimization/
 │       └── SKILL.md                # Arc optimization skill
 │
+├── tauri-app/                      # Tauri desktop application
+│   ├── src/
+│   │   ├── App.tsx                # Main React app
+│   │   ├── components/            # UI components
+│   │   ├── lib/                   # Mock data & utilities
+│   │   └── types/                 # TypeScript types
+│   ├── package.json               # Dependencies
+│   └── playwright.config.ts       # E2E tests
+│
 ├── dist/                           # Compiled output (generated)
 ├── GEMINI.md                       # System context (400+ lines)
 ├── gemini-extension.json           # Extension configuration
@@ -141,7 +176,41 @@ story-planner/
 
 ---
 
-## 🔧 Configuration
+## Tauri App Overview
+
+The `tauri-app/` directory contains a Tauri 2.0 desktop application:
+
+### Tech Stack
+
+- **Frontend**: React 18 + Tailwind CSS 3
+- **Desktop**: Tauri 2.0
+- **Testing**: Vitest + Playwright
+- **Language**: TypeScript 5.x
+
+### Features
+
+- **4 Views**: Editor, Graph, Timeline, Insights
+- **Mock Data**: Hero's Journey (Star Wars) sample
+- **Components**: StatCard, Charts, Timeline, Character/Conflict Cards, Validation Panel
+- **Responsive Design**: Works on desktop and tablet
+
+### Running Tests
+
+```bash
+# Unit tests
+cd tauri-app
+npm run test
+
+# E2E tests with Playwright
+npx playwright test
+
+# Open Playwright report
+npx playwright show-report
+```
+
+---
+
+## Configuration
 
 ### Environment Variables
 
@@ -172,7 +241,7 @@ VSP_AUTO_LAYOUT=true                 # Options: true, false
 
 ---
 
-## 📚 Commands Reference
+## Commands Reference
 
 ### 1. `gemini story analyze`
 
@@ -180,17 +249,6 @@ Parse story text into structured StoryGraph
 
 ```bash
 gemini story analyze <text> [--depth basic|detailed|deep] [--format json|markdown]
-```
-
-**Parameters:**
-- `text` (required): Story text to analyze
-- `--depth` (optional): Analysis depth (default: detailed)
-- `--format` (optional): Output format (default: json)
-- `--include-metadata` (optional): Include metadata (default: true)
-
-**Example:**
-```bash
-gemini story analyze "A hero's journey..." --depth deep --format json
 ```
 
 ### 2. `gemini story export`
@@ -201,32 +259,12 @@ Export story graph in multiple formats
 gemini story export [--format mermaid|canvas|dashboard|markdown|json]
 ```
 
-**Parameters:**
-- `--format` (optional): Export format (default: mermaid)
-- `--include-metadata` (optional): Include metadata (default: true)
-- `--include-stats` (optional): Include statistics (default: true)
-- `--output-file` (optional): Output file path
-
-**Example:**
-```bash
-gemini story export --format canvas --include-stats true
-```
-
 ### 3. `gemini story validate`
 
 Validate story structure and integrity
 
 ```bash
 gemini story validate [--strict true|false] [--include-recommendations true|false]
-```
-
-**Parameters:**
-- `--strict` (optional): Enable strict rules (default: false)
-- `--include-recommendations` (optional): Include suggestions (default: true)
-
-**Example:**
-```bash
-gemini story validate --strict true
 ```
 
 ### 4. `gemini story audit`
@@ -237,15 +275,6 @@ Perform comprehensive structural audit
 gemini story audit [--depth basic|detailed|deep] [--focus-areas all|characters|conflicts|pacing|structure]
 ```
 
-**Parameters:**
-- `--depth` (optional): Audit depth (default: detailed)
-- `--focus-areas` (optional): Focus areas (default: all)
-
-**Example:**
-```bash
-gemini story audit --depth deep --focus-areas characters
-```
-
 ### 5. `gemini story refine`
 
 Get refinement suggestions
@@ -254,18 +283,9 @@ Get refinement suggestions
 gemini story refine [--element characters|conflicts|pacing|dialogue|all] [--focus-character NAME]
 ```
 
-**Parameters:**
-- `--element` (optional): Element to refine (default: all)
-- `--focus-character` (optional): Specific character name
-
-**Example:**
-```bash
-gemini story refine --element characters --focus-character "John"
-```
-
 ---
 
-## 🛠️ Tools Reference
+## Tools Reference
 
 VSP3 provides 9 powerful MCP tools:
 
@@ -283,35 +303,40 @@ VSP3 provides 9 powerful MCP tools:
 
 ---
 
-## 💡 Skills Reference
+## Skills Reference
 
 VSP3 includes 4 specialized analysis skills:
 
 ### 1. Structural Audit Skill
+
 - **Triggers:** "audit story", "check structure"
 - **Analyzes:** Three-act structure, character arcs, conflicts, pacing
 - **Output:** Detailed audit report with findings
 
 ### 2. Character Analysis Skill
+
 - **Triggers:** "analyze characters", "character development"
 - **Analyzes:** Character arcs, motivations, relationships, consistency
 - **Output:** Character analysis report with scores
 
 ### 3. Conflict Detection Skill
+
 - **Triggers:** "analyze conflicts", "conflict optimization"
 - **Analyzes:** Conflict types, escalation, impact, optimization
 - **Output:** Conflict analysis report with suggestions
 
 ### 4. Arc Optimization Skill
+
 - **Triggers:** "optimize story", "improve pacing"
 - **Analyzes:** Pacing, emotional arc, tension, narrative flow
 - **Output:** Arc optimization report with improvements
 
 ---
 
-## ✅ Validation Rules
+## Validation Rules
 
 ### Error Level (50+ rules)
+
 - Missing required fields (title, characters, events)
 - Invalid references (character IDs, conflict IDs)
 - Missing acts (Act 1, 2, or 3)
@@ -320,6 +345,7 @@ VSP3 includes 4 specialized analysis skills:
 - Inconsistent data
 
 ### Warning Level
+
 - Missing climax or midpoint
 - No conflicts
 - Incomplete character arcs
@@ -328,13 +354,14 @@ VSP3 includes 4 specialized analysis skills:
 - No conflict resolution
 
 ### Info Level
+
 - Optimization suggestions
 - Best practice recommendations
 - Enhancement ideas
 
 ---
 
-## 📊 Output Formats
+## Output Formats
 
 ### Mermaid Format
 ```
@@ -363,59 +390,35 @@ graph TD
 </html>
 ```
 
-### Markdown Format
-```markdown
-# Story Title
-
-## Characters
-- Character 1
-- Character 2
-
-## Events
-- Event 1
-- Event 2
-```
-
 ---
 
-## 🎯 Usage Workflows
+## Usage Workflows
 
 ### Workflow 1: Quick Analysis (5 minutes)
-```
 1. gemini story analyze "Your story"
 2. Review StoryGraph output
 3. Check validation results
-```
 
 ### Workflow 2: Deep Audit (15 minutes)
-```
 1. gemini story analyze "Your story" --depth deep
 2. gemini story audit --depth deep
 3. Review all findings
 4. Apply recommendations
-```
 
 ### Workflow 3: Export & Visualize (10 minutes)
-```
 1. gemini story analyze "Your story"
 2. gemini story export --format mermaid
 3. gemini story export --format canvas
 4. gemini story export --format dashboard
-```
 
-### Workflow 4: Refinement (20 minutes)
-```
-1. gemini story analyze "Your story"
-2. gemini story refine --element characters
-3. gemini story refine --element conflicts
-4. gemini story refine --element pacing
-5. Apply suggestions
-6. Re-analyze
-```
+### Workflow 4: Desktop App (Interactive)
+1. cd tauri-app && npm run dev
+2. Navigate between Editor/Graph/Timeline/Insights views
+3. View Hero's Journey sample data
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -430,7 +433,7 @@ graph TD
 
 ---
 
-## 📈 Best Practices
+## Best Practices
 
 1. **Always Validate First** - Run validation before export
 2. **Use Appropriate Depth** - basic for quick checks, deep for audit
@@ -443,40 +446,19 @@ graph TD
 
 ---
 
-## 🔗 Integration
+## Documentation
 
-### With Gemini CLI
-- Commands integrate seamlessly
-- Skills activate automatically
-- Context file guides behavior
-- Settings configure defaults
-
-### With External Tools
-- Mermaid export for diagram tools
-- Canvas JSON for web applications
-- Markdown for documentation
-- JSON for API integration
-
-### With Version Control
-- Store StoryGraph JSON in git
-- Track changes over time
-- Collaborate on stories
-- Maintain history
-
----
-
-## 📚 Documentation
-
-- **Setup Guide:** See COMPLETE SETUP section above
-- **Command Reference:** See COMMANDS section above
-- **Tools Reference:** See TOOLS section above
-- **Skills Reference:** See SKILLS section above
+- **Setup Guide:** See Installation section
+- **Command Reference:** See Commands section
+- **Tools Reference:** See Tools section
+- **Skills Reference:** See Skills section
 - **Type Definitions:** See types.ts
 - **System Context:** See GEMINI.md
+- **Tauri App:** See tauri-app/ directory
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 To contribute improvements:
 
@@ -488,13 +470,13 @@ To contribute improvements:
 
 ---
 
-## 📄 License
+## License
 
 MIT License - Feel free to use and modify
 
 ---
 
-## 🎓 Learning Resources
+## Learning Resources
 
 - **Three-Act Structure:** https://en.wikipedia.org/wiki/Three-act_structure
 - **Character Arcs:** https://en.wikipedia.org/wiki/Character_arc
@@ -504,9 +486,10 @@ MIT License - Feel free to use and modify
 
 ---
 
-## 📞 Support
+## Support
 
 For issues, questions, or suggestions:
+
 - Check troubleshooting section
 - Review documentation
 - Check GEMINI.md for system context
@@ -514,7 +497,7 @@ For issues, questions, or suggestions:
 
 ---
 
-**Version:** 3.0.0  
-**Status:** Production Ready  
-**Last Updated:** 2024-02-19  
+**Version:** 3.0.0
+**Status:** Production Ready
+**Last Updated:** 2026-03-26
 **Maintained By:** Story Planner Team

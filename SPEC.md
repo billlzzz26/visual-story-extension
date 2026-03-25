@@ -1,3 +1,11 @@
+---
+title: SPEC - Visual Story Planner MCP UI
+description: Specification for the display layer of bl1nk-visual-mcp
+status: active
+last_updated: 2026-03-26
+owner: dev-team
+---
+
 # SPEC.md — Visual Story Planner MCP UI
 
 ## 1. Purpose
@@ -24,7 +32,7 @@ vsp-ui (Next.js App)                          ← repo นี้
   └── Renderer      ← json-render tree → React components
        │
        ▼
-  mcp-ui://dashboard/<title>                  ← served ใน MCP client iframe
+   mcp-ui://dashboard/<title>                  ← served ใน MCP client iframe
 ```
 
 ---
@@ -36,7 +44,7 @@ vsp-ui (Next.js App)                          ← repo นี้
 | Framework | Next.js App Router | 16.x |
 | Language | TypeScript | 5.x |
 | Styling | Tailwind CSS | v4 |
-| Render engine | `@json-render/core` + `@json-render/react` | workspace:\* |
+| Render engine | `@json-render/core` + `@json-render/react` | workspace:* |
 | Charts | Recharts | ^2.15 |
 | Diagrams | Mermaid.js | ^11.x |
 | UI Primitives | radix-ui | ^1.4 |
@@ -261,3 +269,14 @@ examples/vsp-ui/
 - [ ] Responsive layout (mobile → desktop)
 - [ ] ไม่มี TypeScript error
 - [ ] ไม่มี layout shift หรือ hydration error
+
+---
+
+## Implementation Notes (Tauri App)
+
+The `tauri-app/` directory contains a Tauri-based implementation with:
+- React 18 + Tailwind 3 for the frontend
+- Tauri 2.0 for the desktop wrapper
+- 4 main views: Editor, Graph, Timeline, Insights
+- Mock data based on Hero's Journey (Star Wars)
+- All components use "use client" directive

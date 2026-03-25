@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import App from '../App'
 
@@ -18,6 +18,13 @@ describe('App', () => {
 
   it('shows editor view by default', () => {
     render(<App />)
-    expect(screen.getByText(/editor\s+view/i)).toBeInTheDocument()
+    expect(screen.getByText('Characters')).toBeInTheDocument()
+  })
+
+  it('has clickable Insights navigation', () => {
+    render(<App />)
+    const insightsButton = screen.getByText('Insights')
+    fireEvent.click(insightsButton)
+    expect(screen.getByRole('heading', { name: 'insights' })).toBeInTheDocument()
   })
 })
