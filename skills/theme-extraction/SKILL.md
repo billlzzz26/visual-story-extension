@@ -9,6 +9,7 @@ description: >
   Also activate when user exports or validates story and wants to understand 
   the thematic depth. This skill identifies explicit and implicit themes, tracks
   motif recurrence, and provides thematic arc analysis — not just a list of tags.
+version: 1.0.0
 ---
 
 # Theme Extraction & Analysis
