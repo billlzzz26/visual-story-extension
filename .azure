@@ -1,0 +1,57 @@
+# Azure Plan
+
+## Status: Draft
+
+## Decisions
+
+### Mode: MODIFY
+- Existing codebase will be enhanced with Azure deployment capabilities
+- No changes to existing application logic
+
+### Requirements
+- Classification: MCP Server (Model Context Protocol)
+- Scale: Prototype/Small (under 100 concurrent users)
+- Budget: $$ (cost-conscious, use Free/Pay-as-You-Go tier)
+- Krit Characteristics: Serverless container deployment
+
+### Tech Stack
+- Base: Node.js 20 LTS
+- Framework: Express.js (via @modelcontextprotocol/sdk)
+- Deployment: Container-based (Azure Container Apps)
+
+### Recipe: AZD (Azure Developer CLI)
+- Infrastructure: Bicep templates
+- Deployment: azd up command
+- Justification: Standard MSFT recommendation, supports all ecosystems
+
+### Architecture
+- Service: Azure Container Apps
+- Reasoning: Containerized Node.js server, pay-for-what-you-use scaling
+- Networking: Public endpoint with API routing
+
+### Infrastructure Resources
+- Microsoft.App/containerApps
+- Microsoft.App/managedEnvironments
+- Microsoft.Network/frontDoors (if CDN needed)
+- Microsoft.Storage/storageAccounts (for logs)
+
+### Security
+- Authentication: Entra ID (if needed)
+- Networking: Private endpoints where possible
+- Secrets: Azure Key Vault integration
+
+## Implementation Steps
+1. ✅ Analyze codebase and dependencies
+2. ⏳ Generate AZD configuration files (azure.yaml)
+3. ⏳ Create infrastructure Bicep templates
+4. ⏳ Add Docker containerization (Dockerfile)
+5. ⏳ Configure application for Azure environment
+6. ⏳ Add health checks and monitoring
+7. ⏳ Security hardening (RBAC, secrets management)
+8. ⏳ Testing and validation
+
+## Next Steps
+- Review and approve this plan
+- Execute implementation steps
+- Run azd up for deployment</content>
+<parameter name="filePath">.azure/plan.md
