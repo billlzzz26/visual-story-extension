@@ -10,7 +10,7 @@ export default defineConfig(async () => ({
 
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(new URL('./src', import.meta.url).pathname),
     },
   },
 
