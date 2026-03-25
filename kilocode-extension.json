@@ -51,6 +51,17 @@
       "description": "Export MCP UI dashboard HTML for interactive story analysis"
     },
     {
+      "name": "export_markdown",
+      "description": "Convert story graph to Markdown format"
+    },
+    {
+      "name": "build_relationship_graph",
+      "description": "Build and analyze character relationship graph"
+    },
+    {
+      "name": "render_sample_story",
+      "description": "Render a sample story for demonstration"
+    }
       "name": "render_sample_story",
       "description": "Render a sample story for demonstration"
     }
