@@ -156,7 +156,22 @@ export const BL1NK_VISUAL_TOOLS = [
 
 // --- 3. Execution Logic ---
 
+function formatErrorResult(toolName: string, error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return {
+    content: [{ type: 'text' as const, text: `Error executing ${toolName}: ${message}` }],
+    isError: true
+  };
+}
+
 export async function executeStoryTool(toolName: string, args: any) {
+  if (!args || typeof args !== 'object') {
+    return {
+      content: [{ type: 'text', text: 'Error: Invalid arguments provided' }],
+      isError: true
+    };
+  }
+
   try {
     switch (toolName) {
       case "analyze_story": {
@@ -233,11 +248,8 @@ export async function executeStoryTool(toolName: string, args: any) {
           isError: true
         };
     }
-  } catch (error: any) {
-    return {
-      content: [{ type: 'text', text: `Error executing ${toolName}: ${error.message}` }],
-      isError: true
-    };
+  } catch (error: unknown) {
+    return formatErrorResult(toolName, error);
   }
 }
 
@@ -258,9 +270,15 @@ BL1NK_VISUAL_TOOLS.forEach((tool) => {
 });
 
 async function startServer() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error('bl1nk-visual-mcp Server started');
+  try {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error('bl1nk-visual-mcp Server started');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Failed to start bl1nk-visual-mcp: ${message}`);
+    process.exit(1);
+  }
 }
 
 if (process.env.NODE_ENV !== 'test') {
