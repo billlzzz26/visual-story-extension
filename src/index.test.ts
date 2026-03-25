@@ -3,7 +3,7 @@ import { buildInitialGraph } from './analyzer.js';
 import { validateGraph } from './validators.js';
 import { toMermaid } from './exporters/mermaid.js';
 
-describe('Visual Story Planner', () => {
+describe('bl1nk-visual-mcp', () => {
   const storyText = `
 Title: The Dragon's Heir
 

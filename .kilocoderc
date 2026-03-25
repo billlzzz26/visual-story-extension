@@ -1,0 +1,49 @@
+# KiloCode Configuration
+
+## Project Settings
+
+### Indexing
+- `indexStrategy`: workspace-files
+- `excludePatterns`:
+  - node_modules/
+  - dist/
+  - .git/
+  - "*.lock"
+  - pnpm-lock.yaml
+
+### Auto Commands
+- prebuild: npm install
+- pretest: npm run build
+
+### Context
+- maxTokens: 100000
+- includePatterns: ["src/**/*.ts", "*.md", "commands/**/*.toml", "skills/**/*.md"]
+
+### Modes
+Project modes are defined in `.kilocodemodes` file.
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| npm run build | Build the MCP server |
+| npm run start | Start the server |
+| npm run dev | Development mode with watch |
+| npm run test | Run tests |
+| npm run test:watch | Watch mode for tests |
+| npm run lint | Lint markdown files |
+| npm run format | Format code |
+| npm run check | Check and fix issues |
+
+## Quick Start
+
+```bash
+# Install dependencies (auto runs build)
+npm install
+
+# Run tests
+npm test
+
+# Start development
+npm run dev
+```
