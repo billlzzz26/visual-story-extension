@@ -94,7 +94,8 @@ export function buildInitialGraph(text: string): StoryGraph {
 			description: label,
 			act,
 			importance,
-			sequenceInAct: act === 1 ? eventIndex : act === 2 ? eventIndex - 4 : eventIndex - 9,
+			sequenceInAct:
+				act === 1 ? eventIndex : act === 2 ? eventIndex - 4 : eventIndex - 9,
 			characters: [],
 			conflicts: [],
 			emotionalTone: "neutral",
@@ -111,10 +112,10 @@ export function buildInitialGraph(text: string): StoryGraph {
 		const description = match[1].trim();
 		const lowerDesc = description.toLowerCase();
 		const type =
-      lowerDesc.includes("self") || lowerDesc.includes("doubt")
-          ? "internal"
-          : lowerDesc.includes("vs") || lowerDesc.includes("against")
-              ? "external"
+			lowerDesc.includes("self") || lowerDesc.includes("doubt")
+				? "internal"
+				: lowerDesc.includes("vs") || lowerDesc.includes("against")
+					? "external"
 					: "external";
 
 		graph.conflicts.push({
@@ -144,16 +145,20 @@ export function buildInitialGraph(text: string): StoryGraph {
 		}
 	}
 
-	// Assign characters to events (optimized: pre-calculate lowercase values)
-	const charData = graph.characters.map((c) => ({
-		id: c.id,
-		lowerName: c.name.toLowerCase(),
-	}));
+	// Assign characters to events (optimized: pre-calculate regex patterns)
+	const charData = graph.characters.map((c) => {
+		const escapedName = c.name
+			.toLowerCase()
+			.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		return {
+			id: c.id,
+			pattern: new RegExp(`\\b${escapedName}\\b`, "i"),
+		};
+	});
+
 	for (const event of graph.events) {
-		const lowerLabel = event.label.toLowerCase();
 		for (const char of charData) {
-   const escapedName = char.lowerName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-   if (new RegExp(`\\b${escapedName}\\b`).test(lowerLabel)) {
+			if (char.pattern.test(event.label)) {
 				event.characters.push(char.id);
 			}
 		}
