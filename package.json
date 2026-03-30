@@ -7,7 +7,7 @@
     "preinstall": "echo 'Installing dependencies...'",
     "postinstall": "npm run build",
     "prebuild": "echo 'Building...'",
-    "build": "npx esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --packages=bundle",
+    "build": "npx esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --packages=bundle && npx esbuild src/analyzer.ts src/validators.ts src/exporters/*.ts --outdir=dist --platform=node --format=esm --packages=bundle",
     "build:tsc": "tsc",
     "prestart": "npm run build",
     "start": "node dist/server.js",
