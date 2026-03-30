@@ -264,7 +264,7 @@ BL1NK_VISUAL_TOOLS.forEach((tool) => {
   server.tool(
     tool.name,
     tool.description,
-    (Schemas as any)[tool.name],
+    (Schemas as any)[tool.name].shape,
     async (args) => executeStoryTool(tool.name, args)
   );
 });
