@@ -1,0 +1,22 @@
+{
+  "name": "@bl1nk/github-sync",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --packages=bundle",
+    "start": "node dist/index.js",
+    "dev": "npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --packages=bundle --watch"
+  },
+  "dependencies": {
+    "@octokit/webhooks": "^13.0.0",
+    "@notionhq/client": "^2.2.15",
+    "gray-matter": "^4.0.3",
+    "csv-parse": "^5.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "esbuild": "^0.27.3",
+    "typescript": "^5.3.3"
+  }
+}

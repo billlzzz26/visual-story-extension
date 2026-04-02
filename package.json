@@ -1,39 +1,12 @@
 {
-  "name": "bl1nk-visual-mcp",
-  "version": "3.0.0",
+  "name": "bl1nk-visual-mcp-monorepo",
+  "version": "1.0.0",
+  "private": true,
   "type": "module",
-  "main": "dist/server.js",
   "scripts": {
-    "preinstall": "echo 'Installing dependencies...'",
-    "postinstall": "npm run build",
-    "prebuild": "echo 'Building...'",
-    "build": "npx esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --packages=bundle",
-    "build:tsc": "tsc",
-    "prestart": "npm run build",
-    "start": "node dist/server.js",
-    "predev": "npm run build",
-    "dev": "npx esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --packages=bundle --watch",
-    "pretest": "npm run build",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "markdownlint-cli2 \"**/*.md\"",
-    "format": "biome format --write .",
-    "check": "biome check --apply .",
-    "lint:fix": "markdownlint-cli2 --fix \"**/*.md\""
-  },
-  "dependencies": {
-    "@google/genai": "^1.41.0",
-    "@modelcontextprotocol/sdk": "^1.27.1",
-    "fs-extra": "^11.3.4",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.11.0",
-    "esbuild": "^0.27.3",
-    "markdownlint-cli2": "^0.21.0",
-    "typescript": "^5.3.3",
-    "vitest": "^4.0.18"
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format"
   }
 }

@@ -4,7 +4,7 @@ import { validateGraph } from '../src/validators.js';
 import { toMermaid } from '../src/exporters/mermaid.js';
 import { toCanvasJSON } from '../src/exporters/canvas.js';
 import { toDashboard } from '../src/exporters/dashboard.js';
-import { executeStoryTool } from '../src/server.js';
+import { executeStoryTool } from '../src/index.js';
 import type { StoryGraph } from '../src/types.js';
 
 describe('bl1nk-visual-mcp Core Logic', () => {
@@ -696,7 +696,7 @@ Event: Event 2
       });
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain('Error executing');
+      expect(result.content[0].text).toContain('export_mermaid error:');
     });
   });
 

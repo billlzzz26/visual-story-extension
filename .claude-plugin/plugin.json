@@ -1,0 +1,10 @@
+{
+  "name": "bl1nk-visual-mcp",
+  "description": "Story structure analysis and visualization. Analyze story text, validate 3-act structure, extract characters/conflicts, export to Mermaid/Canvas/Markdown, search references. Activates for analyze story, story graph, story structure, validate story, export mermaid, export canvas, character extraction, story research, narrative structure.",
+  "version": "3.0.0",
+  "author": {
+    "name": "bl1nk"
+  },
+  "main": "dist/plugin.js",
+  "keywords": ["story", "narrative", "visualization", "mermaid", "canvas", "mcp", "structure", "characters", "conflicts"]
+}

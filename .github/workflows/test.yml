@@ -15,75 +15,120 @@ jobs:
   test:
     name: Test & Lint
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
-        node-version: [18, 20, 22]
-    
+        node-version: [22, 24]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
-      - name: Run build
+
+      - name: Build
         run: npm run build
-      
+
       - name: Run tests
         run: npm test
 
   build-check:
     name: Build Check
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Verify output files
         run: |
           test -f dist/server.js
-          test -f dist/analyzer.js
-          test -f dist/validators.js
+          test -f dist/plugin.js
+
+  plugin:
+    name: Plugin Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Kilo
+        uses: ./.github/actions/setup-kilo
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build plugin
+        run: npm run build:plugin
+
+      - name: Verify plugin exports
+        run: |
+          node -e "
+            const pkg = await import('./dist/plugin.js');
+            console.log('default export:', typeof pkg.default);
+            console.log('OK');
+          "
+
+      - name: Verify plugin.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const pj = JSON.parse(fs.readFileSync('.claude-plugin/plugin.json', 'utf8'));
+            console.log('Plugin:', pj.name, pj.version);
+            console.log('Main:', pj.main);
+            if (!pj.main) { console.error('Missing main field'); process.exit(1); }
+            if (!pj.name) { console.error('Missing name field'); process.exit(1); }
+            console.log('OK');
+          "
+
+      - name: Type check
+        run: npx tsc --noEmit
 
   validate-exporters:
     name: Validate Exporters
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Run validation script
-        run: node scripts/validate-exporters.mjs
+        run: npx tsx scripts/validate-exporters.mjs
