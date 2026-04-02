@@ -1,4 +1,5 @@
 ---
+name: github-actions-auditor
 description: Audits GitHub Actions workflows and logs to check for errors, optimize CI/CD pipelines, and ensure workflows align with project development. Use when reviewing workflow files, investigating test failures, analyzing run logs, or improving GitHub Actions performance.
 mode: subagent
 ---
