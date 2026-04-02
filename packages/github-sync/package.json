@@ -1,6 +1,6 @@
 {
   "name": "@bl1nk/github-sync",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "dev": "npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --packages=bundle --watch"
   },
   "dependencies": {
+    "@bl1nk/visual-mcp": "workspace:*",
     "@octokit/webhooks": "^13.0.0",
     "@notionhq/client": "^2.2.15",
     "gray-matter": "^4.0.3",

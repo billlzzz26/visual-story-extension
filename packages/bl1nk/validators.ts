@@ -188,7 +188,7 @@ export function validateGraph(
 				balance:
 					eventCount > 0
 						? Math.min(act1Count, act2Count, act3Count) /
-                                (Math.max(act1Count, act2Count, act3Count) || 1)
+							(Math.max(act1Count, act2Count, act3Count) || 1)
 						: 0,
 			},
 			characterCount: graph.characters.length,

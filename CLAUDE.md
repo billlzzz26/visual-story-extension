@@ -3,41 +3,42 @@
 ## Project Overview
 
 MCP server + Kilo Code plugin for structured story analysis and visualization.
-Converts natural-language story text → StoryGraph JSON with 9 MCP tools + multiple exporters.
+Converts natural-language story text → StoryGraph JSON with 16 MCP tools (11 granular + 4 legacy + 1 standalone) + multiple exporters.
 
 ## Quick Commands
 
 ```bash
-npm run build          # esbuild → dist/server.js + dist/plugin.js
+npm run build          # esbuild → dist/index.js
 npm run build:tsc      # Type-check only (no emit)
 npm run dev            # Watch-mode rebuild
 npm run start          # Run bundled server
 npm test               # Run all vitest tests
 npm run test -- -t "test name"  # Single test
 npm run check          # Biome lint + format (auto-fix)
-npm run validate       # Run exporter validation (47 assertions)
 ```
 
 ## Architecture
 
 ```
-src/
-  server.ts           # MCP server, tool registration, Zod schemas
-  plugin.ts           # Kilo Code plugin (client.app.log structured logging)
-  types.ts            # TypeScript interfaces (StoryGraph, Character, etc.)
-  analyzer.ts         # Story text → StoryGraph builder
-  validators.ts       # Structural validation logic
-  exa-search.ts       # External search integration (Exa AI)
-  exporters/          # Output formatters
-    mermaid.ts        # Mermaid diagram export
-    canvas.ts         # Canvas JSON export
-    dashboard.ts      # HTML dashboard export
-    markdown.ts       # Markdown document export
-    json.ts           # Raw JSON export
+packages/bl1nk/
+  src/index.ts          # MCP server entry, tool registration, Zod schemas
+  tools/
+    index.ts            # Tool definitions (GRANULAR_TOOLS + BL1NK_VISUAL_TOOLS)
+    execute.ts          # Tool executors (executeGranularTool + executeStoryTool)
+    search-entries.ts   # Standalone search tool
+    generate-artifacts.ts
+  exporters/            # Output formatters
+    mermaid.ts          # Mermaid diagram export
+    canvas.ts           # Canvas JSON export
+    dashboard.ts        # HTML dashboard export
+    markdown.ts         # Markdown document export
     mcp-ui-dashboard.ts # MCP UI dashboard export
-tests/                # Integration tests
-scripts/
-  validate-exporters.mjs  # Exporter validation (47 assertions)
+  analyzer.ts           # Story text → StoryGraph builder
+  validators.ts         # Structural validation logic
+  exa-search.ts         # External search integration (Exa AI)
+  types.ts              # TypeScript interfaces (StoryGraph, Character, etc.)
+packages/tauri-app/     # Desktop app (React + Vite + Tauri)
+packages/github-sync/   # GitHub webhook → Notion sync
 ```
 
 ## Code Style
@@ -59,25 +60,43 @@ scripts/
 
 ## MCP Server API
 
-9 tools registered via `server.tool()` — pass `.shape` from Zod schemas, not full `z.object()`:
+16 tools registered via `server.tool()`:
+
+### Granular Tools (11 — source of truth)
 
 | Tool | Purpose |
 |------|---------|
 | `analyze_story` | Parse story text → StoryGraph |
-| `validate_story_structure` | Validate structure (50+ rules) |
-| `extract_characters` | Extract character info |
-| `extract_conflicts` | Extract conflict info |
-| `build_relationship_graph` | Build relationship graph |
 | `export_mermaid` | Generate Mermaid diagram |
 | `export_canvas` | Generate Canvas JSON |
 | `export_dashboard` | Generate HTML dashboard |
 | `export_markdown` | Generate Markdown document |
+| `export_mcp_ui_dashboard` | Generate MCP-UI dashboard |
+| `validate_story_structure` | Validate structure (50+ rules) |
+| `extract_characters` | Extract character info |
+| `extract_conflicts` | Extract conflict info |
+| `build_relationship_graph` | Build relationship graph |
+| `exa_search_story` | External story research |
+
+### Legacy Tools (4 — backward compat)
+
+| Tool | Purpose |
+|------|---------|
+| `search_entries` | Entity extraction with templates |
+| `validate_story` | Quick validation from text |
+| `generate_artifacts` | All formats at once |
+| `sync_github` | Push to GitHub (not implemented) |
+
+### Standalone Tool (1)
+
+| Tool | Purpose |
+|------|---------|
+| `search_entries` (standalone) | Full entity extraction with Handlebars templates |
 
 ## Kilo Code Plugin
 
 - Entry: `src/plugin.ts` → built to `dist/plugin.js`
 - Uses `client.app.log()` from `@kilocode/sdk` for structured logging
-- 8 tools exported via `tool()` helper from `@kilocode/plugin`
 - Plugin config: `.claude-plugin/plugin.json`
 
 ## Key Patterns
@@ -86,3 +105,14 @@ scripts/
 - `client.app.log({ body: { service, level, message, extra } })` — structured logging
 - Catch errors as `unknown`, narrow with `instanceof Error`
 - All exporter functions return `string`
+
+## Tool Registration Flow
+
+1. Server creates `McpServer` instance
+2. Loops `GRANULAR_TOOLS` (11) → looks up schema in `Schemas` → registers with `executeGranularTool`
+3. Loops `BL1NK_VISUAL_TOOLS` (4) → registers with empty schema → `executeStoryTool`
+4. Registers `searchEntriesTool` (standalone) with its own `inputSchema`
+5. Connects to `StdioServerTransport`
+
+See [`docs/TOOL_MAPPING.md`](docs/TOOL_MAPPING.md) for complete tool mapping.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for system architecture.

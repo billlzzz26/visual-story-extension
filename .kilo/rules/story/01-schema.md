@@ -76,21 +76,25 @@ interface Relationship {
 ## Export Formats
 
 ### Mermaid
+
 - Use subgraphs for Act_1, Act_2, Act_3
 - Apply styling for different importance levels
 - Include metadata comment at top
 
 ### Canvas JSON
+
 - Nodes array with position data
 - Edges array for relationships
 - Viewport object for initial view
 
 ### Dashboard HTML
+
 - Include Chart.js for act distribution
 - Display validation issues
 - Show character and conflict lists
 
 ### Markdown
+
 - Wrap in artifact format
 - Include all sections: metadata, analysis, characters, conflicts, events
 

@@ -2,7 +2,7 @@
  * @license
  * Copyright 2026 bl1nk-visual-mcp
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * Notebook Types
  */
 
@@ -10,20 +10,20 @@
 // Document Types
 // ============================================================================
 
-export type DocumentType = 'markdown' | 'html' | 'json' | 'csv' | 'mermaid';
+export type DocumentType = "markdown" | "html" | "json" | "csv" | "mermaid";
 
-export type DocumentSourceType = 'ai' | 'file' | 'web';
+export type DocumentSourceType = "ai" | "file" | "web";
 
 export interface NotebookDocument {
-  id: string;
-  title: string;
-  content: string;
-  type: DocumentType;
-  sourceType: DocumentSourceType;
-  createdAt: string;
-  updatedAt: string;
-  wordCount: number;
-  description?: string;
+	id: string;
+	title: string;
+	content: string;
+	type: DocumentType;
+	sourceType: DocumentSourceType;
+	createdAt: string;
+	updatedAt: string;
+	wordCount: number;
+	description?: string;
 }
 
 // ============================================================================
@@ -31,29 +31,29 @@ export interface NotebookDocument {
 // ============================================================================
 
 export interface CreateDocumentArgs {
-  title: string;
-  content: string;
-  type?: DocumentType;
-  description?: string;
+	title: string;
+	content: string;
+	type?: DocumentType;
+	description?: string;
 }
 
 export interface UpdateDocumentArgs {
-  id: string;
-  title?: string;
-  content?: string;
-  append?: boolean;
+	id: string;
+	title?: string;
+	content?: string;
+	append?: boolean;
 }
 
 export interface GetDocumentArgs {
-  id: string;
+	id: string;
 }
 
 export interface DeleteDocumentArgs {
-  id: string;
+	id: string;
 }
 
 export interface GenerateArtifactsArgs {
-  graph: any; // StoryGraph object
+	graph: any; // StoryGraph object
 }
 
 // ============================================================================
@@ -61,23 +61,23 @@ export interface GenerateArtifactsArgs {
 // ============================================================================
 
 export interface CreateDocumentState {
-  document: NotebookDocument;
+	document: NotebookDocument;
 }
 
 export interface UpdateDocumentState {
-  document: NotebookDocument;
+	document: NotebookDocument;
 }
 
 export interface GetDocumentState {
-  document: NotebookDocument;
+	document: NotebookDocument;
 }
 
 export interface DeleteDocumentState {
-  deletedId: string;
+	deletedId: string;
 }
 
 export interface GenerateArtifactsState {
-  documents: NotebookDocument[];
+	documents: NotebookDocument[];
 }
 
 // ============================================================================
@@ -85,11 +85,11 @@ export interface GenerateArtifactsState {
 // ============================================================================
 
 export enum NotebookApiName {
-  CREATE_DOCUMENT = 'notebook_create_document',
-  UPDATE_DOCUMENT = 'notebook_update_document',
-  GET_DOCUMENT = 'notebook_get_document',
-  DELETE_DOCUMENT = 'notebook_delete_document',
-  GENERATE_ARTIFACTS = 'notebook_generate_artifacts',
+	CREATE_DOCUMENT = "notebook_create_document",
+	UPDATE_DOCUMENT = "notebook_update_document",
+	GET_DOCUMENT = "notebook_get_document",
+	DELETE_DOCUMENT = "notebook_delete_document",
+	GENERATE_ARTIFACTS = "notebook_generate_artifacts",
 }
 
 // ============================================================================
@@ -97,7 +97,7 @@ export enum NotebookApiName {
 // ============================================================================
 
 export const NotebookIdentifier = {
-  name: 'bl1nk-notebook',
-  version: '1.0.0',
-  description: 'Interactive document management for bl1nk-visual-mcp',
+	name: "bl1nk-notebook",
+	version: "1.0.0",
+	description: "Interactive document management for bl1nk-visual-mcp",
 } as const;

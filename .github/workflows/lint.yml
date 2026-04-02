@@ -12,14 +12,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
-      - name: Biome lint + format
-        run: npx @biomejs/biome check --write .
+      - name: Biome lint + format (bl1nk)
+        working-directory: packages/bl1nk
+        run: pnpm run check
 
-      - name: TypeScript type-check
-        run: npm run build:tsc
+      - name: TypeScript type-check (bl1nk)
+        working-directory: packages/bl1nk
+        run: pnpm run build:tsc
+
+      - name: Markdown lint
+        run: pnpm run lint
