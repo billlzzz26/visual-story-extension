@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run *)",
       "Bash(findstr *)",
-      "Bash(mkdir *)"
+      "Bash(mkdir *)",
+      "Bash(git pull *)",
+      "Bash(git push *)"
     ]
   },
   "$version": 3
