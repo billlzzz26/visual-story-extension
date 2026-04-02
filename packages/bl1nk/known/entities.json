@@ -1,202 +1,246 @@
 {
-  "character": {
-    "metadata": {
-      "type": "object",
-      "required": ["type", "id", "canonicalName", "mentions"],
-      "properties": {
-        "type": { "type": "string", "const": "character" },
-        "id": { "type": "string", "pattern": "^char_[a-z0-9_]+$" },
-        "canonicalName": { "type": "string" },
-        "aliases": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["name", "usedBy", "context"],
-            "properties": {
-              "name": { "type": "string" },
-              "usedBy": { "type": "array", "items": { "type": "string" } },
-              "context": { "type": "string", "enum": ["family", "formal", "informal", "enemy", "friend", "narration", "internal"] }
-            }
-          }
-        },
-        "mentions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["chapter", "name", "context"],
-            "properties": {
-              "chapter": { "type": "string" },
-              "name": { "type": "string" },
-              "context": { "type": "string" },
-              "speaker": { "type": "string" },
-              "surroundingText": { "type": "string" }
-            }
-          }
-        },
-        "relationships": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["target", "type"],
-            "properties": {
-              "target": { "type": "string" },
-              "type": { "type": "string", "enum": ["family", "friend", "enemy", "romantic", "professional", "unknown"] },
-              "description": { "type": "string" }
-            }
-          }
-        },
-        "tags": { "type": "array", "items": { "type": "string" } },
-        "status": { "type": "string", "enum": ["alive", "dead", "unknown", "missing"], "default": "unknown" }
-      }
-    },
-    "content": {
-      "type": "object",
-      "required": ["summary", "essence"],
-      "properties": {
-        "summary": { "type": "string" },
-        "personality": { "type": "array", "items": { "type": "string" } },
-        "motivation": { "type": "string" },
-        "arc": {
-          "type": "object",
-          "properties": {
-            "start": { "type": "string" },
-            "midpoint": { "type": "string" },
-            "end": { "type": "string" },
-            "transformation": { "type": "string" }
-          }
-        },
-        "keyQuotes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "quote": { "type": "string" },
-              "chapter": { "type": "string" },
-              "context": { "type": "string" }
-            }
-          }
-        },
-        "essence": { "type": "string" }
-      }
-    }
-  },
-  "scene": {
-    "metadata": {
-      "type": "object",
-      "required": ["type", "id", "canonicalName", "act", "characters"],
-      "properties": {
-        "type": { "type": "string", "const": "scene" },
-        "id": { "type": "string", "pattern": "^scene_[a-z0-9_]+$" },
-        "canonicalName": { "type": "string" },
-        "act": { "type": "integer", "minimum": 1, "maximum": 3 },
-        "importance": { "type": "string", "enum": ["inciting", "rising", "midpoint", "climax", "resolution", "normal"] },
-        "characters": { "type": "array", "items": { "type": "string" } },
-        "location": { "type": "string" },
-        "timeline": {
-          "type": "object",
-          "properties": {
-            "order": { "type": "integer" },
-            "timestamp": { "type": "string" }
-          }
-        }
-      }
-    },
-    "content": {
-      "type": "object",
-      "required": ["summary", "essence"],
-      "properties": {
-        "summary": { "type": "string" },
-        "events": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "description": { "type": "string" },
-              "impact": { "type": "string" }
-            }
-          }
-        },
-        "emotionalTone": { "type": "string" },
-        "conflicts": { "type": "array", "items": { "type": "string" } },
-        "turningPoint": { "type": "string" },
-        "essence": { "type": "string" }
-      }
-    }
-  },
-  "location": {
-    "metadata": {
-      "type": "object",
-      "required": ["type", "id", "canonicalName"],
-      "properties": {
-        "type": { "type": "string", "const": "location" },
-        "id": { "type": "string", "pattern": "^loc_[a-z0-9_]+$" },
-        "canonicalName": { "type": "string" },
-        "aliases": { "type": "array", "items": { "type": "string" } },
-        "scenes": { "type": "array", "items": { "type": "string" } },
-        "connections": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "target": { "type": "string" },
-              "type": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    "content": {
-      "type": "object",
-      "required": ["description", "essence"],
-      "properties": {
-        "description": { "type": "string" },
-        "atmosphere": { "type": "string" },
-        "significance": { "type": "string" },
-        "sensoryDetails": {
-          "type": "object",
-          "properties": {
-            "visual": { "type": "string" },
-            "sound": { "type": "string" },
-            "smell": { "type": "string" }
-          }
-        },
-        "essence": { "type": "string" }
-      }
-    }
-  },
-  "conflict": {
-    "metadata": {
-      "type": "object",
-      "required": ["type", "id", "canonicalName", "parties"],
-      "properties": {
-        "type": { "type": "string", "const": "conflict" },
-        "id": { "type": "string", "pattern": "^conflict_[a-z0-9_]+$" },
-        "canonicalName": { "type": "string" },
-        "conflictType": { "type": "string", "enum": ["internal", "external", "interpersonal", "societal", "environmental"] },
-        "parties": { "type": "array", "items": { "type": "string" } },
-        "escalations": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "stage": { "type": "integer" },
-              "description": { "type": "string" },
-              "chapter": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    "content": {
-      "type": "object",
-      "required": ["rootCause", "essence"],
-      "properties": {
-        "rootCause": { "type": "string" },
-        "manifestation": { "type": "string" },
-        "resolution": { "type": "string" },
-        "impact": { "type": "string" },
-        "essence": { "type": "string" }
-      }
-    }
-  }
+	"character": {
+		"metadata": {
+			"type": "object",
+			"required": ["type", "id", "canonicalName", "mentions"],
+			"properties": {
+				"type": { "type": "string", "const": "character" },
+				"id": { "type": "string", "pattern": "^char_[a-z0-9_]+$" },
+				"canonicalName": { "type": "string" },
+				"aliases": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": ["name", "usedBy", "context"],
+						"properties": {
+							"name": { "type": "string" },
+							"usedBy": { "type": "array", "items": { "type": "string" } },
+							"context": {
+								"type": "string",
+								"enum": [
+									"family",
+									"formal",
+									"informal",
+									"enemy",
+									"friend",
+									"narration",
+									"internal"
+								]
+							}
+						}
+					}
+				},
+				"mentions": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": ["chapter", "name", "context"],
+						"properties": {
+							"chapter": { "type": "string" },
+							"name": { "type": "string" },
+							"context": { "type": "string" },
+							"speaker": { "type": "string" },
+							"surroundingText": { "type": "string" }
+						}
+					}
+				},
+				"relationships": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": ["target", "type"],
+						"properties": {
+							"target": { "type": "string" },
+							"type": {
+								"type": "string",
+								"enum": [
+									"family",
+									"friend",
+									"enemy",
+									"romantic",
+									"professional",
+									"unknown"
+								]
+							},
+							"description": { "type": "string" }
+						}
+					}
+				},
+				"tags": { "type": "array", "items": { "type": "string" } },
+				"status": {
+					"type": "string",
+					"enum": ["alive", "dead", "unknown", "missing"],
+					"default": "unknown"
+				}
+			}
+		},
+		"content": {
+			"type": "object",
+			"required": ["summary", "essence"],
+			"properties": {
+				"summary": { "type": "string" },
+				"personality": { "type": "array", "items": { "type": "string" } },
+				"motivation": { "type": "string" },
+				"arc": {
+					"type": "object",
+					"properties": {
+						"start": { "type": "string" },
+						"midpoint": { "type": "string" },
+						"end": { "type": "string" },
+						"transformation": { "type": "string" }
+					}
+				},
+				"keyQuotes": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"quote": { "type": "string" },
+							"chapter": { "type": "string" },
+							"context": { "type": "string" }
+						}
+					}
+				},
+				"essence": { "type": "string" }
+			}
+		}
+	},
+	"scene": {
+		"metadata": {
+			"type": "object",
+			"required": ["type", "id", "canonicalName", "act", "characters"],
+			"properties": {
+				"type": { "type": "string", "const": "scene" },
+				"id": { "type": "string", "pattern": "^scene_[a-z0-9_]+$" },
+				"canonicalName": { "type": "string" },
+				"act": { "type": "integer", "minimum": 1, "maximum": 3 },
+				"importance": {
+					"type": "string",
+					"enum": [
+						"inciting",
+						"rising",
+						"midpoint",
+						"climax",
+						"resolution",
+						"normal"
+					]
+				},
+				"characters": { "type": "array", "items": { "type": "string" } },
+				"location": { "type": "string" },
+				"timeline": {
+					"type": "object",
+					"properties": {
+						"order": { "type": "integer" },
+						"timestamp": { "type": "string" }
+					}
+				}
+			}
+		},
+		"content": {
+			"type": "object",
+			"required": ["summary", "essence"],
+			"properties": {
+				"summary": { "type": "string" },
+				"events": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"description": { "type": "string" },
+							"impact": { "type": "string" }
+						}
+					}
+				},
+				"emotionalTone": { "type": "string" },
+				"conflicts": { "type": "array", "items": { "type": "string" } },
+				"turningPoint": { "type": "string" },
+				"essence": { "type": "string" }
+			}
+		}
+	},
+	"location": {
+		"metadata": {
+			"type": "object",
+			"required": ["type", "id", "canonicalName"],
+			"properties": {
+				"type": { "type": "string", "const": "location" },
+				"id": { "type": "string", "pattern": "^loc_[a-z0-9_]+$" },
+				"canonicalName": { "type": "string" },
+				"aliases": { "type": "array", "items": { "type": "string" } },
+				"scenes": { "type": "array", "items": { "type": "string" } },
+				"connections": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"target": { "type": "string" },
+							"type": { "type": "string" }
+						}
+					}
+				}
+			}
+		},
+		"content": {
+			"type": "object",
+			"required": ["description", "essence"],
+			"properties": {
+				"description": { "type": "string" },
+				"atmosphere": { "type": "string" },
+				"significance": { "type": "string" },
+				"sensoryDetails": {
+					"type": "object",
+					"properties": {
+						"visual": { "type": "string" },
+						"sound": { "type": "string" },
+						"smell": { "type": "string" }
+					}
+				},
+				"essence": { "type": "string" }
+			}
+		}
+	},
+	"conflict": {
+		"metadata": {
+			"type": "object",
+			"required": ["type", "id", "canonicalName", "parties"],
+			"properties": {
+				"type": { "type": "string", "const": "conflict" },
+				"id": { "type": "string", "pattern": "^conflict_[a-z0-9_]+$" },
+				"canonicalName": { "type": "string" },
+				"conflictType": {
+					"type": "string",
+					"enum": [
+						"internal",
+						"external",
+						"interpersonal",
+						"societal",
+						"environmental"
+					]
+				},
+				"parties": { "type": "array", "items": { "type": "string" } },
+				"escalations": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"stage": { "type": "integer" },
+							"description": { "type": "string" },
+							"chapter": { "type": "string" }
+						}
+					}
+				}
+			}
+		},
+		"content": {
+			"type": "object",
+			"required": ["rootCause", "essence"],
+			"properties": {
+				"rootCause": { "type": "string" },
+				"manifestation": { "type": "string" },
+				"resolution": { "type": "string" },
+				"impact": { "type": "string" },
+				"essence": { "type": "string" }
+			}
+		}
+	}
 }

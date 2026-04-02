@@ -2,7 +2,7 @@
  * @license
  * Copyright 2026 bl1nk-visual-mcp
  * SPDX-License-Identifier: Apache-2.0
- * 
+ *
  * System Prompt for bl1nk Notebook
  */
 

@@ -3,7 +3,10 @@
  * Provides retry logic, enriched error messages, and rate limit detection.
  */
 
-type ToolErrorResult = { content: Array<{ type: "text"; text: string }>; isError: true };
+type ToolErrorResult = {
+	content: Array<{ type: "text"; text: string }>;
+	isError: true;
+};
 
 const TRANSIENT_STATUS_CODES = new Set([500, 502, 503, 504]);
 
@@ -16,15 +19,15 @@ Fix: Create API key at https://dashboard.exa.ai/api-keys , and then update Exa M
  * Extends Error with HTTP status code and timestamp information.
  */
 export class ExaError extends Error {
-  public statusCode: number;
-  public timestamp?: string;
+	public statusCode: number;
+	public timestamp?: string;
 
-  constructor(message: string, statusCode: number, timestamp?: string) {
-    super(message);
-    this.name = 'ExaError';
-    this.statusCode = statusCode;
-    this.timestamp = timestamp;
-  }
+	constructor(message: string, statusCode: number, timestamp?: string) {
+		super(message);
+		this.name = "ExaError";
+		this.statusCode = statusCode;
+		this.timestamp = timestamp;
+	}
 }
 
 /**
@@ -32,25 +35,25 @@ export class ExaError extends Error {
  * Returns a user-friendly error message if both conditions are met.
  */
 export function handleRateLimitError(
-  error: unknown,
-  userProvidedApiKey: boolean | undefined,
-  toolName: string
+	error: unknown,
+	userProvidedApiKey: boolean | undefined,
+	toolName: string,
 ): ToolErrorResult | null {
-  if (!(error instanceof ExaError)) {
-    return null;
-  }
+	if (!(error instanceof ExaError)) {
+		return null;
+	}
 
-  const isRateLimited = error.statusCode === 429;
-  const isUsingFreeMcp = !userProvidedApiKey;
+	const isRateLimited = error.statusCode === 429;
+	const isUsingFreeMcp = !userProvidedApiKey;
 
-  if (isRateLimited && isUsingFreeMcp) {
-    return {
-      content: [{ type: "text" as const, text: FREE_MCP_RATE_LIMIT_MESSAGE }],
-      isError: true,
-    };
-  }
+	if (isRateLimited && isUsingFreeMcp) {
+		return {
+			content: [{ type: "text" as const, text: FREE_MCP_RATE_LIMIT_MESSAGE }],
+			isError: true,
+		};
+	}
 
-  return null;
+	return null;
 }
 
 /**
@@ -58,22 +61,26 @@ export function handleRateLimitError(
  * Delays: 1s after first failure, 2s after second failure.
  */
 export async function retryWithBackoff<T>(
-  fn: () => Promise<T>,
-  maxRetries: number = 2
+	fn: () => Promise<T>,
+	maxRetries = 2,
 ): Promise<T> {
-  let lastError: unknown;
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      lastError = error;
-      if (!(error instanceof ExaError) || !TRANSIENT_STATUS_CODES.has(error.statusCode) || attempt === maxRetries) {
-        throw error;
-      }
-      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
-    }
-  }
-  throw lastError;
+	let lastError: unknown;
+	for (let attempt = 0; attempt <= maxRetries; attempt++) {
+		try {
+			return await fn();
+		} catch (error) {
+			lastError = error;
+			if (
+				!(error instanceof ExaError) ||
+				!TRANSIENT_STATUS_CODES.has(error.statusCode) ||
+				attempt === maxRetries
+			) {
+				throw error;
+			}
+			await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
+		}
+	}
+	throw lastError;
 }
 
 /**
@@ -81,24 +88,36 @@ export async function retryWithBackoff<T>(
  * Handles rate limits, ExaError (with retry guidance + timestamp), and generic errors.
  */
 export function formatToolError(
-  error: unknown,
-  toolName: string,
-  userProvidedApiKey?: boolean
+	error: unknown,
+	toolName: string,
+	userProvidedApiKey?: boolean,
 ): ToolErrorResult {
-  const rateLimitResult = handleRateLimitError(error, userProvidedApiKey, toolName);
-  if (rateLimitResult) return rateLimitResult;
+	const rateLimitResult = handleRateLimitError(
+		error,
+		userProvidedApiKey,
+		toolName,
+	);
+	if (rateLimitResult) return rateLimitResult;
 
-  if (error instanceof ExaError) {
-    const statusCode = error.statusCode || 'unknown';
-    const lines = [
-      `${toolName} error (${statusCode}): ${error.message}`,
-      ...(error.timestamp ? [`Timestamp: ${error.timestamp}`] : []),
-    ];
-    return { content: [{ type: "text" as const, text: lines.join('\n') }], isError: true };
-  }
+	if (error instanceof ExaError) {
+		const statusCode = error.statusCode || "unknown";
+		const lines = [
+			`${toolName} error (${statusCode}): ${error.message}`,
+			...(error.timestamp ? [`Timestamp: ${error.timestamp}`] : []),
+		];
+		return {
+			content: [{ type: "text" as const, text: lines.join("\n") }],
+			isError: true,
+		};
+	}
 
-  return {
-    content: [{ type: "text" as const, text: `${toolName} error: ${error instanceof Error ? error.message : String(error)}` }],
-    isError: true,
-  };
+	return {
+		content: [
+			{
+				type: "text" as const,
+				text: `${toolName} error: ${error instanceof Error ? error.message : String(error)}`,
+			},
+		],
+		isError: true,
+	};
 }

@@ -1,16 +1,83 @@
 ---
-title: TODO - Visual Story Planner MCP UI
+title: TODO - bl1nk-visual-mcp
 description: Source of truth for all implementation tasks
 status: in_progress
-last_updated: 2026-04-01
+last_updated: 2026-04-03
 owner: dev-team
 ---
 
-# TODO.md — Visual Story Planner MCP UI
+# TODO.md — bl1nk-visual-mcp
 
 > **Source of truth** สำหรับงานทั้งหมด
 > Status: `[ ]` todo · `[~]` in progress · `[x]` done
-> Format: `type:feat/fix/arc/style` · `label:core/high-priority/component/config`
+> Format: `type:feat/fix/arc/refactor/docs/test/style` · `label:core/high-priority/critical-blocker/component/config/integration`
+
+---
+
+## ✅ Architecture & Dataflow Fixes (2026-04-03)
+
+*Completed: Fixed tool registration system, unified tool definitions, aligned documentation*
+
+### Critical Blockers Fixed
+
+- [x] `type:arc` `label:critical-blocker` Unify tool definitions — 11 granular + 4 legacy + 1 standalone
+  - Created `GRANULAR_TOOLS` array (11 tools) as source of truth
+  - Kept `BL1NK_VISUAL_TOOLS` (4 legacy tools) for backward compatibility
+  - File: `packages/bl1nk/tools/index.ts`
+- [x] `type:fix` `label:critical-blocker` Fix tool registration logic (`packages/bl1nk/src/index.ts`)
+  - Loop now iterates over `GRANULAR_TOOLS` + `Schemas` correctly
+  - Uses `executeGranularTool` for granular tools, `executeStoryTool` for legacy
+  - Registers `searchEntriesTool` separately with its own schema
+  - Server starts with 16 tools total
+- [x] `type:fix` `label:critical-blocker` Create granular tool executor (`packages/bl1nk/tools/execute.ts`)
+  - `executeGranularTool` handles all 11 granular tools
+  - `executeStoryTool` handles 4 legacy tools
+  - Fixed `formatSearchResults` call (added missing `originalQuery` argument)
+- [x] `type:test` `label:critical-blocker` Create tool registration validation tests
+  - File: `packages/bl1nk/tools/index.test.ts`
+  - Tests: tool count, unique names, schema matching, executor availability
+
+### Documentation Created/Updated
+
+- [x] `type:docs` `label:core` Create `docs/TOOL_MAPPING.md` — Complete mapping of all 16 tools
+- [x] `type:docs` `label:core` Create `docs/ARCHITECTURE.md` — System architecture + dataflow diagrams
+- [x] `type:docs` `label:core` Create `docs/TAURI-APP.md` — Tauri app role
+- [x] `type:docs` `label:core` Create `docs/GITHUB-SYNC.md` — GitHub sync role
+- [x] `type:docs` `label:core` Create `docs/CRAFT-BLOG-CMS.md` — Orphaned package decision
+- [x] `type:docs` `label:core` Update `docs/PROJECT_SUMMARY.md` — Phase 1 + Phase 2 summary
+- [x] `type:docs` `label:core` Update `AGENTS.md` (root) — Tool system documentation
+- [x] `type:docs` `label:core` Update `CLAUDE.md` — 16 tools, architecture, tool registration flow
+- [x] `type:docs` `label:core` Update `GEMINI.md` — All 16 tools with full specifications
+- [x] `type:docs` `label:core` Update `QWEN.md` — Complete project context
+- [x] `type:docs` `label:core` Update `README.md` — Package structure, tool listings, documentation links
+- [x] `type:docs` `label:core` Update `.github/agents/architecture-audit.agent.md` — Current architecture
+- [x] `type:fix` `label:config` Update `gemini-extension.json` — All 15 tools listed
+- [x] `type:fix` `label:config` Update `qwen-extension.json` — All 15 tools listed, correct MCP path
+- [x] `type:docs` `label:config` Move all docs to `docs/` directory
+- [x] `type:docs` `label:config` Move all docs to `docs/` directory
+
+### Package Integration
+
+- [x] `type:fix` `label:high-priority` Add `@bl1nk/visual-mcp` dependency to `packages/tauri-app/package.json`
+- [x] `type:fix` `label:high-priority` Add `@bl1nk/visual-mcp` dependency to `packages/github-sync/package.json`
+- [x] `type:fix` `label:config` Align all package versions to `3.0.0`
+- [x] `type:fix` `label:config` Fix `tsconfig.json` rootDir to include all source files
+
+### CI/CD Workflows Fixed
+
+- [x] `type:fix` `label:config` Fix `.github/workflows/test.yml` — pnpm setup, build paths, plugin validation, exporter script
+- [x] `type:fix` `label:config` Fix `.github/workflows/lint.yml` — pnpm setup, biome check on bl1nk package, markdown lint
+- [x] `type:fix` `label:config` Fix `.github/workflows/format.yml` — pnpm setup, biome format on bl1nk package
+- [x] `type:fix` `label:config` Fix `.github/workflows/release.yml` — pnpm setup, build paths, tool registration verification
+- [x] `type:feat` `label:config` Create `.github/workflows/tool-validation.yml` — validates tool names match across code/configs/docs + version consistency
+
+### CI/CD Workflows Fixed
+
+- [x] `type:fix` `label:config` Fix `.github/workflows/test.yml` — pnpm setup, build paths, plugin validation, exporter script
+- [x] `type:fix` `label:config` Fix `.github/workflows/lint.yml` — pnpm setup, biome check on bl1nk package, markdown lint
+- [x] `type:fix` `label:config` Fix `.github/workflows/format.yml` — pnpm setup, biome format on bl1nk package
+- [x] `type:fix` `label:config` Fix `.github/workflows/release.yml` — pnpm setup, build paths, tool registration verification
+- [x] `type:feat` `label:config` Create `.github/workflows/tool-validation.yml` — validates tool names match across code/configs/docs + version consistency
 
 ---
 
@@ -232,7 +299,7 @@ owner: dev-team
   - รวม validation result (isValid: true, 0 errors)
   - รวม mermaid string (output จาก `toMermaid()`)
   - **Status**: Done - created at `tauri-app/src/lib/mock-data.ts`
-- [ ] `type:feat` `label:core` สร้าง `lib/mcp-tools.ts` — รายการ 9 tools + descriptions
+- [ ] `type:feat` `label:core` สร้าง `lib/mcp-tools.ts` — รายการ 16 tools + descriptions (ดู TOOL_MAPPING.md)
 - [ ] `type:feat` `label:core` สร้าง `lib/catalog.ts` — `defineCatalog()` ครบ 9 components + 5 actions
 
 **[checkpoint: Phase 1]** - Partial (Tauri app implementation)
