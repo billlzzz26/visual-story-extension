@@ -1,0 +1,22 @@
+name: "Setup Kilo"
+description: "Install Bun and Kilo CLI globally"
+inputs:
+  bun-version:
+    description: "Bun version to install"
+    required: false
+    default: "latest"
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: ${{ inputs.bun-version }}
+
+    - name: Install Kilo CLI
+      run: bun add -g @kilocode/cli
+      shell: bash
+
+    - name: Verify Kilo CLI
+      run: kilo --version
+      shell: bash

@@ -33,7 +33,7 @@ customModes:
       - read
       - - edit
         - fileRegex: \.(ts|js|json|md|toml)$
-        - description: Project source files
+          description: Project source files
       - command
       - mcp
 
@@ -83,7 +83,7 @@ customModes:
       - read
       - - edit
         - fileRegex: \.(md|txt|story)$
-        - description: Story text files
+          description: Story text files
       - command
 
   - slug: story-auditor
