@@ -1,41 +1,41 @@
 {
-  "name": "@bl1nk/visual-mcp",
-  "version": "3.0.0",
-  "type": "module",
-  "main": "dist/index.js",
-  "scripts": {
-    "preinstall": "echo 'Installing dependencies...'",
-    "postinstall": "npm run build",
-    "prebuild": "echo 'Building...'",
-    "build": "npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --packages=bundle",
-    "build:tsc": "tsc",
-    "prestart": "npm run build",
-    "start": "node dist/index.js",
-    "dev": "npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --packages=bundle --watch",
-    "pretest": "npm run build",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "markdownlint-cli2 \"**/*.md\"",
-    "format": "biome format --write .",
-    "check": "biome check --apply ."
-  },
-  "dependencies": {
-    "@google/genai": "^1.41.0",
-    "@modelcontextprotocol/sdk": "^1.27.1",
-    "@upstash/ratelimit": "^2.0.5",
-    "@upstash/redis": "^1.34.3",
-    "fs-extra": "^11.3.4",
-    "handlebars": "^4.7.8",
-    "jose": "^5.9.6",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.11.0",
-    "esbuild": "^0.27.3",
-    "markdownlint-cli2": "^0.21.0",
-    "typescript": "^5.3.3",
-    "vitest": "^4.1.2"
-  }
+	"name": "@bl1nk/visual-mcp",
+	"version": "3.0.0",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"preinstall": "echo 'Installing dependencies...'",
+		"postinstall": "npm run build",
+		"prebuild": "echo 'Building...'",
+		"build": "npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --packages=bundle",
+		"build:tsc": "tsc",
+		"prestart": "npm run build",
+		"start": "node dist/index.js",
+		"dev": "npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --packages=bundle --watch",
+		"pretest": "npm run build",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"lint": "markdownlint-cli2 \"**/*.md\"",
+		"format": "biome format --write .",
+		"check": "biome check --apply ."
+	},
+	"dependencies": {
+		"@google/genai": "^1.41.0",
+		"@modelcontextprotocol/sdk": "^1.27.1",
+		"@upstash/ratelimit": "^2.0.5",
+		"@upstash/redis": "^1.34.3",
+		"fs-extra": "^11.3.4",
+		"handlebars": "^4.7.8",
+		"jose": "^5.9.6",
+		"zod": "^3.22.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/fs-extra": "^11.0.4",
+		"@types/node": "^20.11.0",
+		"esbuild": "^0.27.5",
+		"markdownlint-cli2": "^0.21.0",
+		"typescript": "^5.3.3",
+		"vitest": "^4.1.2"
+	}
 }

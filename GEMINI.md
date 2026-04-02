@@ -22,19 +22,28 @@ You are a **structured story analysis and optimization system** designed to conv
 ### Project Structure
 ```
 visual-story-extension/
-├── src/
-│   ├── types.ts           # Core type definitions
-│   ├── analyzer.ts        # Story analysis engine
-│   ├── validators.ts      # Validation engine (50+ rules)
-│   ├── server.ts          # MCP server (9 tools)
-│   └── exporters/         # Export modules
-│       ├── mermaid.ts     # Mermaid diagram export
-│       ├── canvas.ts      # Canvas JSON export
-│       ├── dashboard.ts   # HTML dashboard export
-│       └── markdown.ts    # Markdown document export
-├── commands/story/        # Gemini CLI commands
-├── skills/                # Analysis skills
-└── known/mcp/            # MCP configuration
+├── packages/bl1nk/
+│   ├── src/index.ts          # MCP server entry, tool registration
+│   ├── tools/
+│   │   ├── index.ts          # Tool definitions (GRANULAR_TOOLS + BL1NK_VISUAL_TOOLS)
+│   │   ├── execute.ts        # Tool executors
+│   │   └── search-entries.ts # Standalone search tool
+│   ├── exporters/            # Export modules
+│   │   ├── mermaid.ts        # Mermaid diagram export
+│   │   ├── canvas.ts         # Canvas JSON export
+│   │   ├── dashboard.ts      # HTML dashboard export
+│   │   ├── markdown.ts       # Markdown document export
+│   │   └── mcp-ui-dashboard.ts # MCP-UI dashboard export
+│   ├── analyzer.ts           # Story analysis engine
+│   ├── validators.ts         # Validation engine (50+ rules)
+│   ├── exa-search.ts         # External search integration
+│   └── types.ts              # Core type definitions
+├── packages/tauri-app/       # Desktop app (React + Vite + Tauri)
+├── packages/github-sync/     # GitHub webhook → Notion sync
+├── docs/                     # Documentation
+│   ├── ARCHITECTURE.md           # System architecture + dataflow
+│   ├── TOOL_MAPPING.md           # Complete tool mapping
+└── AGENTS.md                 # Root agent instructions
 ```
 
 ---
@@ -75,9 +84,9 @@ Before any export:
 
 ---
 
-## 🛠️ Available Tools (9 MCP Tools)
+## 🛠️ Available Tools (16 MCP Tools)
 
-### Analysis Tools
+### Granular Tools (11 — Recommended)
 
 #### 1. `analyze_story`
 Parse story text into structured StoryGraph.
@@ -219,6 +228,92 @@ Generate comprehensive Markdown document.
 ```
 
 **Output:** Markdown document
+
+---
+
+#### 10. `export_mcp_ui_dashboard`
+Generate MCP-UI compatible HTML dashboard.
+
+**Input:**
+```json
+{
+  "graph": "StoryGraph (required)",
+  "includeStats": "boolean (default: true)",
+  "includeRecommendations": "boolean (default: true)"
+}
+```
+
+**Output:** HTML dashboard code (MCP-UI format)
+
+---
+
+#### 11. `exa_search_story`
+External story research using Exa AI.
+
+**Input:**
+```json
+{
+  "query": "string (required)",
+  "category": "writing_techniques|character_archetypes|story_tropes|narrative_structure|genre_conventions|conflict_types|general (default: general)",
+  "numResults": "number 1-10 (default: 5)"
+}
+```
+
+**Output:** Formatted search results
+
+---
+
+### Legacy Tools (4 — Backward Compatibility)
+
+#### 12. `search_entries`
+Extract entities (characters, scenes, locations) from story text using Handlebars templates.
+
+**Input:**
+```json
+{
+  "text": "string (required)",
+  "chapterNumber": "number (optional)",
+  "extractOptions": { "characters": true, "scenes": true, "locations": true }
+}
+```
+
+**Output:** Markdown files summary
+
+---
+
+#### 13. `validate_story`
+Quick validation from text input (legacy).
+
+**Input:**
+```json
+{
+  "text": "string (required)",
+  "strict": "boolean (default: false)"
+}
+```
+
+**Output:** Validation report
+
+---
+
+#### 14. `generate_artifacts`
+Generate ALL formats at once (legacy).
+
+**Input:**
+```json
+{
+  "graph": "StoryGraph (required)"
+}
+```
+
+**Output:** All format files (mermaid, canvas, markdown, dashboard, csv)
+
+---
+
+#### 15. `sync_github`
+Push generated files to GitHub repository.
+
+**Status:** Not implemented. Use `github-sync` package instead.
 
 ---
 
@@ -432,13 +527,14 @@ Generate comprehensive Markdown document.
 
 ## 🔗 Related Files
 
-- **`src/types.ts`** - Core type definitions
-- **`src/server.ts`** - MCP server implementation
-- **`commands/story/*.toml`** - CLI command definitions
-- **`skills/*/SKILL.md`** - Skill documentation
-- **`known/mcp/server-card.json`** - MCP server card
-- **`README.md`** - User documentation
-- **`docs/quick-start.md`** - Quick start guide
+- **[`packages/bl1nk/src/index.ts`](packages/bl1nk/src/index.ts)** — MCP server entry, tool registration
+- **[`packages/bl1nk/tools/index.ts`](packages/bl1nk/tools/index.ts)** — Tool definitions
+- **[`packages/bl1nk/tools/execute.ts`](packages/bl1nk/tools/execute.ts)** — Tool executors
+- **[`packages/bl1nk/types.ts`](packages/bl1nk/types.ts)** — Core type definitions
+- **[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)** — System architecture + dataflow
+- **[`docs/TOOL_MAPPING.md`](docs/TOOL_MAPPING.md)** — Complete tool mapping (16 tools)
+- **[`AGENTS.md`](AGENTS.md)** — Root agent instructions
+- **[`README.md`](README.md)** — User documentation
 
 ---
 
@@ -457,5 +553,5 @@ A successful story analysis should have:
 ---
 
 **Version:** 3.0.0  
-**Last Updated:** 2024-02-19  
+**Last Updated:** 2026-04-03  
 **Status:** Production Ready

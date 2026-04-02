@@ -13,14 +13,14 @@
   "mcpServers": {
     "bl1nkVisualServer": {
       "command": "node",
-      "args": ["${extensionPath}${/}dist${/}server.js"],
+      "args": ["${extensionPath}${/}packages${/}bl1nk${/}dist${/}index.js"],
       "cwd": "${extensionPath}"
     }
   },
   "tools": [
     {
       "name": "analyze_story",
-      "description": "Analyze story text and generate StoryGraph JSON"
+      "description": "Parse story text into StoryGraph JSON"
     },
     {
       "name": "export_mermaid",
@@ -39,6 +39,10 @@
       "description": "Convert StoryGraph to formatted Markdown document"
     },
     {
+      "name": "export_mcp_ui_dashboard",
+      "description": "Generate MCP-UI compatible dashboard HTML"
+    },
+    {
       "name": "validate_story_structure",
       "description": "Validate story structure against rules like climax and act distribution"
     },
@@ -55,8 +59,24 @@
       "description": "Build relationship graph between characters"
     },
     {
-      "name": "export_mcp_ui_dashboard",
-      "description": "Generate MCP UI compatible dashboard HTML"
+      "name": "exa_search_story",
+      "description": "External story research using Exa AI"
+    },
+    {
+      "name": "search_entries",
+      "description": "Extract entities (characters, scenes, locations) from story text"
+    },
+    {
+      "name": "validate_story",
+      "description": "Quick validation from text input (legacy)"
+    },
+    {
+      "name": "generate_artifacts",
+      "description": "Generate ALL formats at once (legacy)"
+    },
+    {
+      "name": "sync_github",
+      "description": "Push generated files to GitHub repository (not implemented)"
     }
   ]
 }
