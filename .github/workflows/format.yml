@@ -12,14 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
-      - name: Check formatting
+      - name: Check formatting (bl1nk)
+        working-directory: packages/bl1nk
         run: npx @biomejs/biome format .
 
       - name: Check markdown
-        run: npm run lint
+        run: pnpm run lint

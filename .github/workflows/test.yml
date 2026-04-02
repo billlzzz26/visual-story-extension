@@ -23,20 +23,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
   build-check:
     name: Build Check
@@ -46,22 +51,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 22
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: npm run build
+      - name: Build all packages
+        run: pnpm run build
 
-      - name: Verify output files
+      - name: Verify bl1nk output
         run: |
-          test -f dist/server.js
-          test -f dist/plugin.js
+          test -f packages/bl1nk/dist/index.js
+          echo "bl1nk build OK"
+
+      - name: Verify tauri-app build
+        run: |
+          cd packages/tauri-app
+          pnpm run build
+          echo "tauri-app build OK"
 
   plugin:
     name: Plugin Validation
@@ -71,42 +87,52 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Setup Kilo
-        uses: ./.github/actions/setup-kilo
+          node-version: 22
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Build plugin
-        run: npm run build:plugin
+      - name: Build
+        run: pnpm run build
 
-      - name: Verify plugin exports
+      - name: Verify bl1nk exports
         run: |
           node -e "
-            const pkg = await import('./dist/plugin.js');
+            const pkg = await import('./packages/bl1nk/dist/index.js');
             console.log('default export:', typeof pkg.default);
+            console.log('BL1NK_VISUAL_TOOLS:', Array.isArray(pkg.BL1NK_VISUAL_TOOLS));
+            console.log('GRANULAR_TOOLS:', Array.isArray(pkg.GRANULAR_TOOLS));
+            console.log('Schemas:', typeof pkg.Schemas);
             console.log('OK');
           "
 
-      - name: Verify plugin.json
+      - name: Verify tool registration
         run: |
           node -e "
-            const fs = require('fs');
-            const pj = JSON.parse(fs.readFileSync('.claude-plugin/plugin.json', 'utf8'));
-            console.log('Plugin:', pj.name, pj.version);
-            console.log('Main:', pj.main);
-            if (!pj.main) { console.error('Missing main field'); process.exit(1); }
-            if (!pj.name) { console.error('Missing name field'); process.exit(1); }
-            console.log('OK');
+            const { GRANULAR_TOOLS, BL1NK_VISUAL_TOOLS, Schemas } = await import('./packages/bl1nk/dist/index.js');
+            const granularCount = GRANULAR_TOOLS.length;
+            const legacyCount = BL1NK_VISUAL_TOOLS.length;
+            const schemaCount = Object.keys(Schemas).length;
+            console.log('Granular tools:', granularCount);
+            console.log('Legacy tools:', legacyCount);
+            console.log('Schemas:', schemaCount);
+            if (granularCount !== 11) { console.error('Expected 11 granular tools, got', granularCount); process.exit(1); }
+            if (legacyCount !== 4) { console.error('Expected 4 legacy tools, got', legacyCount); process.exit(1); }
+            if (schemaCount !== 11) { console.error('Expected 11 schemas, got', schemaCount); process.exit(1); }
+            console.log('Tool registration OK');
           "
 
       - name: Type check
+        working-directory: packages/bl1nk
         run: npx tsc --noEmit
 
   validate-exporters:
@@ -117,17 +143,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 22
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Run validation script
-        run: npx tsx scripts/validate-exporters.mjs
+        run: node scripts/validate-exporters.mjs

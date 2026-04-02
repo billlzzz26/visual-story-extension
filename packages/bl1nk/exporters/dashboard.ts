@@ -1,11 +1,15 @@
-import { StoryGraph } from '../types.js';
-import { validateGraph } from '../validators.js';
+import type { StoryGraph } from "../types.js";
+import { validateGraph } from "../validators.js";
 
-export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean; includeRecommendations?: boolean } = {}): string {
-  const v = validateGraph(graph);
-  const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+export function toDashboard(
+	graph: StoryGraph,
+	options: { includeStats?: boolean; includeRecommendations?: boolean } = {},
+): string {
+	const v = validateGraph(graph);
+	const escapeHtml = (s: string) =>
+		s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-  const html = `<!DOCTYPE html>
+	const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,14 +38,16 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
                 </div>
                 <div class="text-right">
                     <span class="px-3 py-1 bg-white/20 rounded-full text-sm font-medium uppercase tracking-wider">
-                        ${escapeHtml(graph.meta.genre || 'General')}
+                        ${escapeHtml(graph.meta.genre || "General")}
                     </span>
                     <p class="mt-2 text-xs opacity-75">v${graph.meta.version}</p>
                 </div>
             </div>
         </header>
 
-        ${options.includeStats !== false ? `
+        ${
+					options.includeStats !== false
+						? `
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="card p-6 text-center">
@@ -61,7 +67,9 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
                 <p class="text-3xl font-bold text-emerald-500 capitalize">${v.analysis.pacing}</p>
             </div>
         </div>
-        ` : ''}
+        `
+						: ""
+				}
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             <!-- Act Distribution -->
@@ -89,13 +97,13 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-6">Key Milestones</h2>
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between p-3 rounded-lg ${v.analysis.hasMidpoint ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-400'}">
+                    <div class="flex items-center justify-between p-3 rounded-lg ${v.analysis.hasMidpoint ? "bg-emerald-50 text-emerald-700" : "bg-gray-50 text-gray-400"}">
                         <span class="font-medium">Midpoint</span>
-                        <span>${v.analysis.hasMidpoint ? '✅' : '❌'}</span>
+                        <span>${v.analysis.hasMidpoint ? "✅" : "❌"}</span>
                     </div>
-                    <div class="flex items-center justify-between p-3 rounded-lg ${v.analysis.hasClimax ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-400'}">
+                    <div class="flex items-center justify-between p-3 rounded-lg ${v.analysis.hasClimax ? "bg-emerald-50 text-emerald-700" : "bg-gray-50 text-gray-400"}">
                         <span class="font-medium">Climax</span>
-                        <span>${v.analysis.hasClimax ? '✅' : '❌'}</span>
+                        <span>${v.analysis.hasClimax ? "✅" : "❌"}</span>
                     </div>
                     <div class="p-4 bg-indigo-50 rounded-xl mt-4">
                         <p class="text-xs text-indigo-600 font-bold uppercase mb-1">Structure Score</p>
@@ -110,30 +118,46 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-4 text-red-600">Structural Issues</h2>
-                ${v.issues.length > 0 ? `
+                ${
+									v.issues.length > 0
+										? `
                     <div class="space-y-3">
-                        ${v.issues.map(i => `
-                            <div class="p-3 rounded-lg border-l-4 ${i.severity === 'error' ? 'bg-red-50 border-red-500 text-red-700' : 'bg-orange-50 border-orange-500 text-orange-700'}">
+                        ${v.issues
+													.map(
+														(i) => `
+                            <div class="p-3 rounded-lg border-l-4 ${i.severity === "error" ? "bg-red-50 border-red-500 text-red-700" : "bg-orange-50 border-orange-500 text-orange-700"}">
                                 <p class="text-sm font-bold uppercase text-xs mb-1">${escapeHtml(i.code)}</p>
                                 <p class="text-sm">${escapeHtml(i.message)}</p>
                             </div>
-                        `).join('')}
+                        `,
+													)
+													.join("")}
                     </div>
-                ` : '<p class="text-emerald-600 font-medium">No structural issues found! ✨</p>'}
+                `
+										: '<p class="text-emerald-600 font-medium">No structural issues found! ✨</p>'
+								}
             </div>
-            ${options.includeRecommendations !== false ? `
+            ${
+							options.includeRecommendations !== false
+								? `
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-4 text-indigo-600">Recommendations</h2>
                 <ul class="space-y-3">
-                    ${v.recommendations.map(r => `
+                    ${v.recommendations
+											.map(
+												(r) => `
                         <li class="flex items-start">
                             <svg class="w-5 h-5 text-indigo-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             <span class="text-gray-700 text-sm">${escapeHtml(r)}</span>
                         </li>
-                    `).join('')}
+                    `,
+											)
+											.join("")}
                 </ul>
             </div>
-            ` : ''}
+            `
+								: ""
+						}
         </div>
 
         <!-- Characters & Conflicts -->
@@ -141,21 +165,27 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-4">Character Roster</h2>
                 <div class="divide-y divide-gray-100">
-                    ${graph.characters.map(c => `
+                    ${graph.characters
+											.map(
+												(c) => `
                         <div class="py-3 flex justify-between items-center">
                             <div>
                                 <p class="font-bold text-gray-900">${escapeHtml(c.name)}</p>
-                                <p class="text-xs text-gray-500">${escapeHtml(c.traits.slice(0, 3).join(', '))}</p>
+                                <p class="text-xs text-gray-500">${escapeHtml(c.traits.slice(0, 3).join(", "))}</p>
                             </div>
                             <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold uppercase">${escapeHtml(c.role)}</span>
                         </div>
-                    `).join('')}
+                    `,
+											)
+											.join("")}
                 </div>
             </div>
             <div class="card p-6">
                 <h2 class="text-xl font-bold mb-4">Core Conflicts</h2>
                 <div class="space-y-4">
-                    ${graph.conflicts.map(c => `
+                    ${graph.conflicts
+											.map(
+												(c) => `
                         <div class="p-4 bg-gray-50 rounded-xl">
                             <div class="flex justify-between mb-2">
                                 <span class="text-xs font-bold text-indigo-600 uppercase">${escapeHtml(c.type)}</span>
@@ -163,7 +193,9 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
                             </div>
                             <p class="text-sm text-gray-800 font-medium">${escapeHtml(c.description)}</p>
                         </div>
-                    `).join('')}
+                    `,
+											)
+											.join("")}
                 </div>
             </div>
         </div>
@@ -193,5 +225,5 @@ export function toDashboard(graph: StoryGraph, options: { includeStats?: boolean
 </body>
 </html>`;
 
-  return html;
+	return html;
 }

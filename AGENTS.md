@@ -33,16 +33,61 @@
 ## Project Structure
 
 ```
-src/
-  server.ts          # MCP server entry, tool registration, Zod schemas
-  types.ts           # TypeScript interfaces (StoryGraph, Character, etc.)
-  analyzer.ts        # Story text → StoryGraph builder
-  validators.ts      # Structural validation logic
-  exa-search.ts      # External search integration
-  exporters/         # Output formatters (mermaid, canvas, dashboard, markdown, mcp-ui)
-tests/               # Integration-level tests
-tauri-app/           # Desktop app (React + Vite + Tauri)
+packages/bl1nk/
+  src/index.ts          # MCP server entry, tool registration, Zod schemas
+  tools/
+    index.ts            # Tool definitions (GRANULAR_TOOLS + BL1NK_VISUAL_TOOLS)
+    execute.ts          # Tool executors (executeGranularTool + executeStoryTool)
+    search-entries.ts   # Standalone search tool
+    generate-artifacts.ts
+  exporters/            # Output formatters (mermaid, canvas, dashboard, markdown, mcp-ui)
+  analyzer.ts           # Story text → StoryGraph builder
+  validators.ts         # Structural validation logic
+  exa-search.ts         # External search integration
+  types.ts              # TypeScript interfaces (StoryGraph, Character, etc.)
+packages/tauri-app/     # Desktop app (React + Vite + Tauri)
+packages/github-sync/   # GitHub webhook → Notion sync
+packages/craft-blog-cms/# ⚠️ Orphaned (Next.js blog/CMS)
 ```
+
+## Tool System
+
+### Granular Tools (11 tools — source of truth)
+
+Defined in `GRANULAR_TOOLS` array, schemas in `Schemas` object, executors in `executeGranularTool`.
+
+| Tool | Schema | Executor | Description |
+|------|--------|----------|-------------|
+| `analyze_story` | `Schemas.analyze_story` | `executeGranularTool` | Parse story text → StoryGraph |
+| `export_mermaid` | `Schemas.export_mermaid` | `executeGranularTool` | Mermaid diagram |
+| `export_canvas` | `Schemas.export_canvas` | `executeGranularTool` | Canvas JSON |
+| `export_dashboard` | `Schemas.export_dashboard` | `executeGranularTool` | HTML dashboard |
+| `export_markdown` | `Schemas.export_markdown` | `executeGranularTool` | Markdown document |
+| `validate_story_structure` | `Schemas.validate_story_structure` | `executeGranularTool` | 3-act validation |
+| `extract_characters` | `Schemas.extract_characters` | `executeGranularTool` | Character extraction |
+| `extract_conflicts` | `Schemas.extract_conflicts` | `executeGranularTool` | Conflict extraction |
+| `build_relationship_graph` | `Schemas.build_relationship_graph` | `executeGranularTool` | Relationship graph |
+| `export_mcp_ui_dashboard` | `Schemas.export_mcp_ui_dashboard` | `executeGranularTool` | MCP-UI dashboard |
+| `exa_search_story` | `Schemas.exa_search_story` | `executeGranularTool` | External search |
+
+### Legacy Tools (4 tools — backward compat)
+
+Defined in `BL1NK_VISUAL_TOOLS` array, executors in `executeStoryTool`.
+
+| Tool | Executor | Description |
+|------|----------|-------------|
+| `search_entries` | `executeStoryTool` | Entity extraction with templates |
+| `validate_story` | `executeStoryTool` | Quick validation from text |
+| `generate_artifacts` | `executeStoryTool` | All formats at once |
+| `sync_github` | `executeStoryTool` | Push to GitHub (not implemented) |
+
+### Standalone Tool (1 tool)
+
+| Tool | Source | Description |
+|------|--------|-------------|
+| `search_entries` | `searchEntriesTool` | Full entity extraction with Handlebars templates |
+
+See [`docs/TOOL_MAPPING.md`](docs/TOOL_MAPPING.md) for complete mapping.
 
 ## Code Style
 
@@ -109,9 +154,9 @@ tauri-app/           # Desktop app (React + Vite + Tauri)
 
 | File | Tool | Format | Purpose |
 |------|------|--------|---------|
-| `GEMINI.md` | Gemini | Markdown | Original Gemini system context |
+| `GEMINI.md` | Gemini | Markdown | Gemini system context |
 | `.gemini/config.toml` | Gemini CLI | TOML | Gemini CLI project config |
-| `QWEN.md` | Qwen | Markdown | Original Qwen system context |
+| `QWEN.md` | Qwen | Markdown | Qwen system context |
 | `.qwen/config.toml` | Qwen CLI | TOML | Qwen CLI project config |
 | `CLAUDE.md` | Claude Code | Markdown | Claude project context |
 | `.opencode/config.md` | OpenCode | Markdown | OpenCode project context |

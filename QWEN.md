@@ -2,20 +2,20 @@
 
 ## Project Overview
 
-**Visual Story Planner v3** is a production-ready **Gemini CLI extension** for structured story analysis, planning, and optimization. It uses the **Model Context Protocol (MCP)** framework to provide a canvas-first approach with Mermaid export capabilities.
+**bl1nk-visual-mcp** is a production-ready **MCP server** for structured story analysis, planning, and optimization. It converts natural-language story text into structured **StoryGraph JSON** and provides 16 tools for visualization and analysis.
 
 ### Core Purpose
 Converts natural-language story text into structured **StoryGraph JSON** and provides multiple export formats for visualization and analysis.
 
 ### Key Features
-- ✅ Structured Story Analysis - Parse narrative text into StoryGraph JSON
-- ✅ Three-Act Structure Validation - Ensure proper story structure (25%-50%-25%)
-- ✅ Character Arc Tracking - Analyze character development and consistency
-- ✅ Conflict Management - Detect, map, and optimize story conflicts
-- ✅ Multiple Export Formats - Mermaid, Canvas JSON, HTML Dashboard, Markdown, JSON
-- ✅ Comprehensive Validation - 50+ validation rules with actionable suggestions
-- ✅ Skill System - Specialized analysis skills for deep insights
-- ✅ 9 MCP Tools - Powerful tools for story manipulation and analysis
+- ✅ Structured Story Analysis — Parse narrative text into StoryGraph JSON
+- ✅ Three-Act Structure Validation — Ensure proper story structure (25%-50%-25%)
+- ✅ Character Arc Tracking — Analyze character development and consistency
+- ✅ Conflict Management — Detect, map, and optimize story conflicts
+- ✅ Multiple Export Formats — Mermaid, Canvas JSON, HTML Dashboard, Markdown, MCP-UI
+- ✅ Comprehensive Validation — 50+ validation rules with actionable suggestions
+- ✅ External Search — Exa AI integration for story research
+- ✅ 16 MCP Tools — 11 granular + 4 legacy + 1 standalone
 
 ---
 
@@ -28,7 +28,7 @@ Converts natural-language story text into structured **StoryGraph JSON** and pro
 | **Package Manager** | pnpm |
 | **Framework** | Model Context Protocol (MCP) SDK |
 | **Validation** | Zod |
-| **Output Formats** | Mermaid, Canvas JSON, Markdown, HTML |
+| **Output Formats** | Mermaid, Canvas JSON, Markdown, HTML, MCP-UI |
 
 ---
 
@@ -36,31 +36,36 @@ Converts natural-language story text into structured **StoryGraph JSON** and pro
 
 ```
 visual-story-extension/
-├── src/
-│   ├── types.d.ts              # TypeScript type declarations
-│   ├── schema.ts               # Core data types (Character, Conflict, EventNode, StoryGraph)
-│   ├── analyzer.ts             # Story text parsing and graph building
-│   ├── validators.ts           # Validation engine (50+ rules)
-│   ├── server.ts               # MCP server with tool registrations
-│   └── exporters/
-│       ├── mermaid.ts          # Mermaid diagram export
-│       └── json.ts             # Canvas JSON export
+├── packages/bl1nk/
+│   ├── src/index.ts          # MCP server entry, tool registration, Zod schemas
+│   ├── tools/
+│   │   ├── index.ts          # Tool definitions (GRANULAR_TOOLS + BL1NK_VISUAL_TOOLS)
+│   │   ├── execute.ts        # Tool executors (executeGranularTool + executeStoryTool)
+│   │   ├── search-entries.ts # Standalone search tool
+│   │   └── generate-artifacts.ts
+│   ├── exporters/
+│   │   ├── mermaid.ts        # Mermaid diagram export
+│   │   ├── canvas.ts         # Canvas JSON export
+│   │   ├── dashboard.ts      # HTML dashboard export
+│   │   ├── markdown.ts       # Markdown document export
+│   │   └── mcp-ui-dashboard.ts # MCP-UI dashboard export
+│   ├── analyzer.ts           # Story text parsing and graph building
+│   ├── validators.ts         # Validation engine (50+ rules)
+│   ├── exa-search.ts         # External search integration (Exa AI)
+│   └── types.ts              # Core type definitions
 │
-├── commands/
-│   └── story/
-│       ├── analyze.toml        # `gemini story analyze` command
-│       └── export.toml         # `gemini story export` command
+├── packages/tauri-app/       # Desktop app (React + Vite + Tauri)
+├── packages/github-sync/     # GitHub webhook → Notion sync
+├── packages/craft-blog-cms/  # ⚠️ Orphaned (Next.js blog/CMS)
 │
-├── skills/
-│   └── structural-audit/
-│       └── SKILL.md            # Structural audit skill definition
-│
-├── dist/                       # Compiled JavaScript output
-├── GEMINI.md                   # System context for Gemini AI
-├── gemini-extension.json       # Extension configuration
-├── package.json                # Dependencies and scripts
-├── tsconfig.json               # TypeScript configuration
-└── README.md                   # User documentation
+├── docs/                       # Documentation
+│   ├── ARCHITECTURE.md           # System architecture + dataflow
+│   ├── TOOL_MAPPING.md           # Complete tool mapping (16 tools)
+│   └── PROJECT_SUMMARY.md        # Project history
+├── GEMINI.md                 # Gemini AI system context
+├── CLAUDE.md                 # Claude Code project context
+├── AGENTS.md                 # Root agent instructions
+└── README.md                 # User documentation
 ```
 
 ---
@@ -70,7 +75,6 @@ visual-story-extension/
 ### Prerequisites
 - Node.js 18+
 - pnpm (or npm)
-- Gemini CLI installed
 
 ### Commands
 
@@ -86,72 +90,84 @@ pnpm run start
 
 # Development watch mode
 pnpm run dev
-```
 
-### Link to Gemini CLI
-
-```bash
-gemini extensions link .
+# Run tests
+pnpm run test
 ```
 
 ### Usage Examples
 
 ```bash
-# Analyze a story
-gemini story analyze "Once upon a time..."
+# Start MCP server
+cd packages/bl1nk
+npm run build
+npm start
 
-# Export as Mermaid diagram
-gemini story export --format mermaid
-
-# Validate story structure
-gemini story validate --strict true
-
-# Perform structural audit
-gemini story audit --depth deep
+# Tauri desktop app
+cd packages/tauri-app
+npm run tauri:dev
 ```
 
 ---
 
 ## Core Data Model (StoryGraph)
 
-### Schema Types (`src/schema.ts`)
+### Schema Types (`packages/bl1nk/types.ts`)
 
 ```typescript
 StoryGraph {
-  meta: { title, genre?, summary? }
+  meta: { title, createdAt, updatedAt, version, genre? }
   characters: Character[]
   conflicts: Conflict[]
   events: EventNode[]
   relationships: Relationship[]
+  tags: string[]
 }
 
 Character {
   id: string
   name: string
-  role?: string
+  role: string
   traits: string[]
-  arc: string[]
+  arc: { start, midpoint, end, transformation, emotionalJourney }
+  relationships: string[]
+  motivations: string[]
+  fears: string[]
+  secretsOrLies: string[]
+  actAppearances: number[]
 }
 
 Conflict {
   id: string
-  type: "internal" | "external" | "emotional"
+  type: string
   description: string
   relatedCharacters: string[]
+  rootCause: string
+  escalations: { stage, description, intensity, affectedCharacters }[]
+  resolution: string
+  actIntroduced: number
 }
 
 EventNode {
   id: string
   label: string
-  act: 1 | 2 | 3
-  importance?: "inciting" | "midpoint" | "climax" | "resolution"
-  notes?: string
+  description: string
+  act: number
+  importance: string
+  sequenceInAct: number
+  location?: string
+  characters: string[]
+  conflicts: string[]
+  emotionalTone: string
+  consequence: string
 }
 
 Relationship {
   from: string
   to: string
-  type?: string
+  type: string
+  strength: number
+  description?: string
 }
 ```
 
@@ -159,14 +175,32 @@ Relationship {
 
 ## MCP Tools
 
-The server registers 4 core tools in `src/server.ts`:
+The server registers 16 tools in `packages/bl1nk/src/index.ts`:
+
+### Granular Tools (11 — Source of Truth)
 
 | Tool | Purpose | Input | Output |
 |------|---------|-------|--------|
-| `analyze_story` | Parse story text into StoryGraph | `text: string` | StoryGraph JSON + validation |
+| `analyze_story` | Parse story text into StoryGraph | `text: string` | StoryGraph JSON |
 | `export_mermaid` | Generate Mermaid diagram | `graph: StoryGraph` | Mermaid code |
-| `export_canvas` | Generate Canvas JSON | `graph: StoryGraph` | Canvas-compatible JSON |
-| `validate_story_structure` | Validate structure | `graph: StoryGraph` | Issues array |
+| `export_canvas` | Generate Canvas JSON | `graph: StoryGraph` | Canvas JSON |
+| `export_dashboard` | Generate HTML dashboard | `graph: StoryGraph` | HTML string |
+| `export_markdown` | Generate Markdown document | `graph: StoryGraph` | Markdown string |
+| `export_mcp_ui_dashboard` | Generate MCP-UI dashboard | `graph: StoryGraph` | HTML string |
+| `validate_story_structure` | Validate structure | `graph: StoryGraph` | ValidationResult |
+| `extract_characters` | Extract character data | `graph: StoryGraph` | Character array |
+| `extract_conflicts` | Extract conflict data | `graph: StoryGraph` | Conflict array |
+| `build_relationship_graph` | Build relationship graph | `graph: StoryGraph` | Relationship data |
+| `exa_search_story` | External story research | `query: string` | Search results |
+
+### Legacy Tools (4 — Backward Compat)
+
+| Tool | Purpose | Input | Output |
+|------|---------|-------|--------|
+| `search_entries` | Entity extraction with templates | `text: string` | Markdown files |
+| `validate_story` | Quick validation from text | `text: string` | ValidationResult |
+| `generate_artifacts` | All formats at once | `graph: StoryGraph` | All files |
+| `sync_github` | Push to GitHub | None | Not implemented |
 
 ---
 
@@ -175,48 +209,55 @@ The server registers 4 core tools in `src/server.ts`:
 ### Code Style
 - **Module System:** ES Modules (`"type": "module"` in package.json)
 - **Imports:** Use `.js` extension for relative imports (TypeScript emits ES modules)
+- **Type-only imports:** `import type { StoryGraph } from './types.js'`
 - **Naming:** camelCase for variables/functions, PascalCase for types/classes
 - **Types:** Strict TypeScript enabled (`"strict": true`)
 
 ### Architecture Patterns
-- **Functional:** Pure functions for analysis and export (`analyzer.ts`, `exporters/*.ts`)
-- **Schema-First:** Types defined in `schema.ts`, validated with Zod
+- **Functional:** Pure functions for analysis and export
+- **Schema-First:** Types defined in Zod schemas, validated at tool boundaries
 - **Validation-First:** Always validate before exporting
+- **Granular Tools:** 11 focused tools (recommended) + 4 legacy tools (backward compat)
 
 ### File Organization
-- Source files in `src/` root (flat structure)
-- Exporters in `src/exporters/` subdirectory
-- Commands defined in `commands/story/*.toml`
-- Skills in `skills/{skill-name}/SKILL.md`
+- Source files in `packages/bl1nk/` root
+- Tools in `packages/bl1nk/tools/`
+- Exporters in `packages/bl1nk/exporters/`
+- Types in `packages/bl1nk/types.ts`
 
 ---
 
 ## Testing Practices
 
-Currently no formal test suite. Recommended approach:
-1. Manual testing via Gemini CLI commands
-2. Validate output JSON structure
-3. Check Mermaid rendering in compatible viewers
+- Framework: Vitest (`globals: true`, `node` environment)
+- Run: `npm test` or `npm run test -- -t "test name"`
+- Pattern: Arrange-Act-Assert
+- Coverage: v8 provider
 
 ---
 
 ## Key Implementation Details
 
-### Analyzer (`src/analyzer.ts`)
-- Uses regex-based heuristics for character/conflict detection
-- Groups sentences into events by act keywords
-- Creates sequential relationships between events
-- Lightweight design (production would use LLM)
+### Analyzer (`packages/bl1nk/analyzer.ts`)
+- Uses regex-based heuristics for character/conflict/event detection
+- Extracts title, characters, events, conflicts from plain text
+- Builds relationships between characters
+- Assigns events to acts based on order
 
-### Validator (`src/validators.ts`)
-- Checks for empty graph/events
+### Validator (`packages/bl1nk/validators.ts`)
+- Checks for required metadata (title, characters, protagonist)
 - Validates act distribution (requires all 3 acts)
-- Detects duplicate event IDs
-- Returns array of issue strings
+- Detects climax and midpoint events
+- Checks act balance (25-50-25 rule)
+- Strict mode: validates character motivations and arcs
+- Returns ValidationResult with issues, analysis, and recommendations
 
 ### Exporters
-- **Mermaid:** Groups events by act in subgraphs, sanitizes IDs
+- **Mermaid:** Groups events by act in subgraphs, different shapes for importance
 - **Canvas JSON:** Generates nodes with positions, edges for relationships
+- **Dashboard:** HTML with Chart.js, TailwindCSS, validation results
+- **Markdown:** Structured document with metadata, analysis, events by act
+- **MCP-UI Dashboard:** Similar to dashboard but MCP-UI compatible format
 
 ---
 
@@ -224,23 +265,22 @@ Currently no formal test suite. Recommended approach:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `VSP_DEFAULT_MODE` | Default export mode | `canvas` |
-
-Options: `canvas`, `mermaid`, `dashboard`
+| `EXA_API_KEY` | Exa AI API key for external search | None |
+| `NODE_ENV` | Environment (development/production/test) | `development` |
 
 ---
 
-## Extension Configuration (`gemini-extension.json`)
+## Extension Configuration
 
 ```json
 {
-  "name": "visual-story-planner",
-  "version": "3.0.0",
-  "contextFileName": "GEMINI.md",
   "mcpServers": {
-    "storyPlannerServer": {
+    "bl1nk": {
       "command": "node",
-      "args": ["${extensionPath}${/}dist${/}server.js"]
+      "args": ["${workspaceFolder}/packages/bl1nk/dist/index.js"],
+      "env": {
+        "EXA_API_KEY": "${env:EXA_API_KEY}"
+      }
     }
   }
 }
@@ -248,44 +288,24 @@ Options: `canvas`, `mermaid`, `dashboard`
 
 ---
 
-## System Context (`GEMINI.md`)
-
-Defines AI behavior:
-- Always convert story text to structured StoryGraph JSON
-- Prefer Canvas JSON mode for client
-- Use Mermaid for exports and quick visualization
-- Validate structure before exporting
-- Report issues with suggestions
-
----
-
-## Skills System
-
-Skills are specialized analysis modules triggered by user prompts.
-
-### Structural Audit Skill (`skills/structural-audit/SKILL.md`)
-- **Triggers:** "audit story", "check structure"
-- **Analyzes:** Act balance, midpoint detection, climax strength, character arcs, conflict clarity
-- **Output:** JSON with summary, issues, recommendations, details
-
----
-
 ## Common Workflows
 
 ### Quick Analysis (5 min)
-1. `gemini story analyze "Your story"`
+1. Call `analyze_story` with story text
 2. Review StoryGraph output
 3. Check validation results
 
 ### Export & Visualize (10 min)
-1. Analyze story
+1. Analyze story → get StoryGraph
 2. Export as Mermaid for diagram tools
 3. Export as Canvas JSON for web apps
+4. Export as Markdown for documentation
 
 ### Deep Audit (15 min)
-1. Analyze with `--depth deep`
-2. Run audit
-3. Review findings and apply recommendations
+1. Analyze with `depth: "deep"`
+2. Run `validate_story_structure`
+3. Extract characters and conflicts
+4. Review findings and apply recommendations
 
 ---
 
@@ -296,14 +316,16 @@ Skills are specialized analysis modules triggered by user prompts.
 | "Story must have a title" | Add title to story metadata |
 | "Missing Act 2 events" | Add more events to Act 2 |
 | Export fails | Run validate first, fix errors |
-| Tools not working | Rebuild: `pnpm run build` |
-| Extension not found | Link again: `gemini extensions link .` |
+| Tools not working | Rebuild: `npm run build` |
+| Server won't start | Check Node.js 18+, run `npm install` |
 
 ---
 
 ## Related Documentation
 
-- **User Guide:** `README.md` - Complete user documentation
-- **System Context:** `GEMINI.md` - AI behavior configuration
-- **Type Definitions:** `src/schema.ts` - Core data model
-- **Server Implementation:** `src/server.ts` - MCP tool registrations
+- **User Guide:** [`README.md`](README.md) — Complete user documentation
+- **System Context:** [`GEMINI.md`](GEMINI.md) — AI behavior configuration
+- **Claude Context:** [`CLAUDE.md`](CLAUDE.md) — Claude Code project context
+- **Architecture:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — System architecture + dataflow
+- **Tool Mapping:** [`docs/TOOL_MAPPING.md`](docs/TOOL_MAPPING.md) — Complete tool mapping (16 tools)
+- **Agent Instructions:** [`AGENTS.md`](AGENTS.md) — Root agent instructions
