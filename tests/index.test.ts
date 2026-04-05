@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { buildInitialGraph } from '../src/analyzer.js';
-import { validateGraph } from '../src/validators.js';
-import { toMermaid } from '../src/exporters/mermaid.js';
-import { toCanvasJSON } from '../src/exporters/canvas.js';
-import { toDashboard } from '../src/exporters/dashboard.js';
-import { executeStoryTool } from '../src/index.js';
-import type { StoryGraph } from '../src/types.js';
+import { buildInitialGraph } from '../packages/bl1nk/analyzer.js';
+import { validateGraph } from '../packages/bl1nk/validators.js';
+import { toMermaid } from '../packages/bl1nk/exporters/mermaid.js';
+import { toCanvasJSON } from '../packages/bl1nk/exporters/canvas.js';
+import { toDashboard } from '../packages/bl1nk/exporters/dashboard.js';
+import { executeStoryTool } from '../packages/bl1nk/index.js';
+import type { StoryGraph } from '../packages/bl1nk/types.js';
 
 describe('bl1nk-visual-mcp Core Logic', () => {
   const storyText = `
