@@ -3,7 +3,7 @@
   "provider": {
     "anthropic": {
       "options": {
-        "apiKey": "an_sk_3f244f4c8add8a32f7ed58ce2863558ed6f8534ea21eb1f4205f907e6c10cb52"
+        "apiKey": "${KILO_API_KEY}"
       }
     }
   },
@@ -15,7 +15,7 @@
       "enabled": true,
       "headers": {
         "Accept": "application/json",
-        "X-Goog-Api-Key": "AQ.Ab8RN6Kit54MgtAUfR_G2MrFs6n9jY2CebY4XRNQjAPDzpy4wg"
+        "X-Goog-Api-Key": "${GOOGLE_STITCH_API_KEY}"
       },
       "timeout": 300000
     }
