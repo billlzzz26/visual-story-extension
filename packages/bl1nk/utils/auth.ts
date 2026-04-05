@@ -31,7 +31,7 @@ export function isJwtToken(token: string): boolean {
  */
 export async function verifyOAuthToken(
 	token: string,
-): Promise<Record<string, any> | null> {
+): Promise<Record<string, unknown> | null> {
 	try {
 		// Dynamic import to avoid bundling jose in all cases
 		const { createRemoteJWKSet } = await import("jose");
@@ -43,7 +43,7 @@ export async function verifyOAuthToken(
 			audience: process.env.OAUTH_AUDIENCE || "exa-mcp-api",
 		});
 
-		return payload as Record<string, any>;
+		return payload as Record<string, unknown>;
 	} catch (error) {
 		console.error("[EXA-MCP] OAuth token verification failed:", error);
 		return null;

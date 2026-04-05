@@ -6,6 +6,8 @@
  * Notebook Types
  */
 
+import type { StoryGraph } from "../types.js";
+
 // ============================================================================
 // Document Types
 // ============================================================================
@@ -53,7 +55,7 @@ export interface DeleteDocumentArgs {
 }
 
 export interface GenerateArtifactsArgs {
-	graph: any; // StoryGraph object
+	graph: StoryGraph; // StoryGraph object
 }
 
 // ============================================================================

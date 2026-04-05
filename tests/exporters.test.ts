@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
-import { buildInitialGraph } from '../src/analyzer.js';
-import { toMarkdown } from '../src/exporters/markdown.js';
-import { toCanvasJSON } from '../src/exporters/json.js';
+import { describe, expect, it } from "vitest";
+import { buildInitialGraph } from "../packages/bl1nk/analyzer.js";
+import { toCanvasJSON } from "../packages/bl1nk/exporters/json.js";
+import { toMarkdown } from "../packages/bl1nk/exporters/markdown.js";
 
-describe('Markdown Exporter', () => {
-  const storyText = `
+describe("Markdown Exporter", () => {
+	const storyText = `
 Title: The Dragon's Heir
 
 Character: Aria, role: protagonist
@@ -31,224 +31,224 @@ Conflict: Aria vs Shadow King
 Conflict: Aria vs Self-Doubt
 `;
 
-  describe('toMarkdown', () => {
-    it('should generate valid markdown with title', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+	describe("toMarkdown", () => {
+		it("should generate valid markdown with title", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('# The Dragon\'s Heir');
-    });
+			expect(md).toContain("# The Dragon's Heir");
+		});
 
-    it('should include story metadata by default', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should include story metadata by default", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('## Story Information');
-      expect(md).toContain('**Version:**');
-    });
+			expect(md).toContain("## Story Information");
+			expect(md).toContain("**Version:**");
+		});
 
-    it('should exclude metadata when includeMetadata is false', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph, { includeMetadata: false });
+		it("should exclude metadata when includeMetadata is false", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph, { includeMetadata: false });
 
-      expect(md).not.toContain('## Story Information');
-    });
+			expect(md).not.toContain("## Story Information");
+		});
 
-    it('should include story analysis by default', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should include story analysis by default", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('## Story Analysis');
-      expect(md).toContain('**Events:**');
-      expect(md).toContain('**Characters:**');
-    });
+			expect(md).toContain("## Story Analysis");
+			expect(md).toContain("**Events:**");
+			expect(md).toContain("**Characters:**");
+		});
 
-    it('should exclude analysis when includeAnalysis is false', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph, { includeAnalysis: false });
+		it("should exclude analysis when includeAnalysis is false", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph, { includeAnalysis: false });
 
-      expect(md).not.toContain('## Story Analysis');
-    });
+			expect(md).not.toContain("## Story Analysis");
+		});
 
-    it('should include issues when validation finds problems', () => {
-      const noClimaxStory = `
+		it("should include issues when validation finds problems", () => {
+			const noClimaxStory = `
 Title: No Climax
 Character: Hero, role: protagonist
 Event: Just walking
 Event: Still walking
 Event: The end
 `;
-      const graph = buildInitialGraph(noClimaxStory);
-      const md = toMarkdown(graph);
+			const graph = buildInitialGraph(noClimaxStory);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('### Issues');
-    });
+			expect(md).toContain("### Issues");
+		});
 
-    it('should list all characters with roles', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should list all characters with roles", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('## Characters');
-      expect(md).toContain('### Aria');
-      expect(md).toContain('**Role:** protagonist');
-      expect(md).toContain('### Shadow King');
-      expect(md).toContain('**Role:** antagonist');
-    });
+			expect(md).toContain("## Characters");
+			expect(md).toContain("### Aria");
+			expect(md).toContain("**Role:** protagonist");
+			expect(md).toContain("### Shadow King");
+			expect(md).toContain("**Role:** antagonist");
+		});
 
-    it('should include character traits when available', () => {
-      const graph = buildInitialGraph(storyText);
-      graph.characters[0].traits = ['brave', 'determined'];
-      const md = toMarkdown(graph);
+		it("should include character traits when available", () => {
+			const graph = buildInitialGraph(storyText);
+			graph.characters[0].traits = ["brave", "determined"];
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('**Traits:** brave, determined');
-    });
+			expect(md).toContain("**Traits:** brave, determined");
+		});
 
-    it('should list all conflicts with type', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should list all conflicts with type", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('## Conflicts');
-      expect(md).toContain('### Aria vs Shadow King');
-      expect(md).toContain('**Type:**');
-    });
+			expect(md).toContain("## Conflicts");
+			expect(md).toContain("### Aria vs Shadow King");
+			expect(md).toContain("**Type:**");
+		});
 
-    it('should organize events by act', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should organize events by act", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('## Events');
-      expect(md).toContain('### Act 1');
-      expect(md).toContain('### Act 2');
-      expect(md).toContain('### Act 3');
-    });
+			expect(md).toContain("## Events");
+			expect(md).toContain("### Act 1");
+			expect(md).toContain("### Act 2");
+			expect(md).toContain("### Act 3");
+		});
 
-    it('should mark important events with importance level', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should mark important events with importance level", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('**[CLIMAX]**');
-      expect(md).toContain('**[RESOLUTION]**');
-    });
+			expect(md).toContain("**[CLIMAX]**");
+			expect(md).toContain("**[RESOLUTION]**");
+		});
 
-    it('should include tags when available', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should include tags when available", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      if (graph.tags.length > 0) {
-        expect(md).toContain('## Tags');
-      }
-    });
+			if (graph.tags.length > 0) {
+				expect(md).toContain("## Tags");
+			}
+		});
 
-    it('should include generation footer', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should include generation footer", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('Generated by bl1nk-visual-mcp');
-    });
+			expect(md).toContain("Generated by bl1nk-visual-mcp");
+		});
 
-    it('should wrap output in artifact format', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should wrap output in artifact format", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('```artifact');
-      expect(md).toContain('id: vsp3_complete_setup_guide');
-      expect(md).toContain('type: code.markdown');
-      expect(md).toContain('```');
-    });
+			expect(md).toContain("```artifact");
+			expect(md).toContain("id: vsp3_complete_setup_guide");
+			expect(md).toContain("type: code.markdown");
+			expect(md).toContain("```");
+		});
 
-    it('should handle story without genre', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should handle story without genre", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('**Version:**');
-      expect(md).toContain('**Updated:**');
-    });
+			expect(md).toContain("**Version:**");
+			expect(md).toContain("**Updated:**");
+		});
 
-    it('should display pacing information', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should display pacing information", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('**Pacing:**');
-    });
+			expect(md).toContain("**Pacing:**");
+		});
 
-    it('should show midpoint and climax status', () => {
-      const graph = buildInitialGraph(storyText);
-      const md = toMarkdown(graph);
+		it("should show midpoint and climax status", () => {
+			const graph = buildInitialGraph(storyText);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('**Midpoint:**');
-      expect(md).toContain('**Climax:**');
-    });
-  });
+			expect(md).toContain("**Midpoint:**");
+			expect(md).toContain("**Climax:**");
+		});
+	});
 
-  describe('toCanvasJSON', () => {
-    it('should generate canvas JSON structure', () => {
-      const graph = buildInitialGraph(storyText);
-      const result = toCanvasJSON(graph);
+	describe("toCanvasJSON", () => {
+		it("should generate canvas JSON structure", () => {
+			const graph = buildInitialGraph(storyText);
+			const result = toCanvasJSON(graph);
 
-      expect(result).toContain('```artifact');
-      expect(result).toContain('id: vsp3_canvas_json');
-    });
+			expect(result).toContain("```artifact");
+			expect(result).toContain("id: vsp3_canvas_json");
+		});
 
-    it('should include nodes for each event', () => {
-      const graph = buildInitialGraph(storyText);
-      const result = toCanvasJSON(graph);
+		it("should include nodes for each event", () => {
+			const graph = buildInitialGraph(storyText);
+			const result = toCanvasJSON(graph);
 
-      expect(result).toContain('"nodes"');
-      expect(result).toContain('"edges"');
-    });
+			expect(result).toContain('"nodes"');
+			expect(result).toContain('"edges"');
+		});
 
-    it('should include graph metadata', () => {
-      const graph = buildInitialGraph(storyText);
-      const result = toCanvasJSON(graph);
+		it("should include graph metadata", () => {
+			const graph = buildInitialGraph(storyText);
+			const result = toCanvasJSON(graph);
 
-      expect(result).toContain('"meta"');
-    });
+			expect(result).toContain('"meta"');
+		});
 
-    it('should handle empty events array', () => {
-      const emptyStory = 'Title: Empty Story';
-      const graph = buildInitialGraph(emptyStory);
-      const result = toCanvasJSON(graph);
+		it("should handle empty events array", () => {
+			const emptyStory = "Title: Empty Story";
+			const graph = buildInitialGraph(emptyStory);
+			const result = toCanvasJSON(graph);
 
-      expect(result).toContain('```artifact');
-    });
+			expect(result).toContain("```artifact");
+		});
 
-    it('should handle empty relationships array', () => {
-      const graph = buildInitialGraph(storyText);
-      graph.relationships = [];
-      const result = toCanvasJSON(graph);
+		it("should handle empty relationships array", () => {
+			const graph = buildInitialGraph(storyText);
+			graph.relationships = [];
+			const result = toCanvasJSON(graph);
 
-      expect(result).toContain('"edges"');
-    });
-  });
+			expect(result).toContain('"edges"');
+		});
+	});
 
-  describe('Edge Cases', () => {
-    it('should handle story with only title', () => {
-      const graph = buildInitialGraph('Title: Minimal');
-      const md = toMarkdown(graph);
+	describe("Edge Cases", () => {
+		it("should handle story with only title", () => {
+			const graph = buildInitialGraph("Title: Minimal");
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('# Minimal');
-      expect(md).toContain('## Characters');
-      expect(md).not.toContain('### Aria');
-    });
+			expect(md).toContain("# Minimal");
+			expect(md).toContain("## Characters");
+			expect(md).not.toContain("### Aria");
+		});
 
-    it('should handle story with special characters in title', () => {
-      const graph = buildInitialGraph('Title: Test & "quotes"');
-      const md = toMarkdown(graph);
+		it("should handle story with special characters in title", () => {
+			const graph = buildInitialGraph('Title: Test & "quotes"');
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('# Test');
-    });
+			expect(md).toContain("# Test");
+		});
 
-    it('should handle story without conflicts', () => {
-      const noConflictStory = `
+		it("should handle story without conflicts", () => {
+			const noConflictStory = `
 Title: No Conflict
 Character: Hero, role: protagonist
 Event: Wake up
 Event: Go to sleep
 `;
-      const graph = buildInitialGraph(noConflictStory);
-      const md = toMarkdown(graph);
+			const graph = buildInitialGraph(noConflictStory);
+			const md = toMarkdown(graph);
 
-      expect(md).toContain('## Conflicts');
-    });
-  });
+			expect(md).toContain("## Conflicts");
+		});
+	});
 });

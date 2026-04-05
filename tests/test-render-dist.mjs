@@ -1,8 +1,8 @@
-import { buildInitialGraph } from './dist/analyzer.js';
-import { toMcpUiDashboard } from './dist/exporters/mcp-ui-dashboard.js';
-import { toMermaid } from './dist/exporters/mermaid.js';
-import fs from 'fs';
-import path from 'path';
+import fs from "node:fs";
+import path from "node:path";
+import { buildInitialGraph } from "./dist/analyzer.js";
+import { toMcpUiDashboard } from "./dist/exporters/mcp-ui-dashboard.js";
+import { toMermaid } from "./dist/exporters/mermaid.js";
 
 // Sample story text for testing
 const storyText = `
@@ -81,8 +81,7 @@ ${mermaidDiagram}
 
 		// Save combined dashboard with mermaid
 		const combinedPath = path.join(outputDir, "combined-dashboard.html");
-		const combinedHtml =
-			`<!DOCTYPE html>
+		const combinedHtml = `<!DOCTYPE html>
 <html>
 <head>
   <title>Visual Story Planner - Combined Dashboard</title>
@@ -112,13 +111,15 @@ ${mermaidDiagram}
 
     <div id="dashboard" class="tab-content active">
       ${(() => {
-        const start = dashboardHtml.indexOf('<div class="max-w-6xl');
-        const end = dashboardHtml.lastIndexOf("</div>");
-        if (start === -1 || end === -1 || end < start) {
-          throw new Error("Unable to locate dashboard content boundaries in generated HTML");
-        }
-        return dashboardHtml.substring(start, end + 6);
-      })()}
+				const start = dashboardHtml.indexOf('<div class="max-w-6xl');
+				const end = dashboardHtml.lastIndexOf("</div>");
+				if (start === -1 || end === -1 || end < start) {
+					throw new Error(
+						"Unable to locate dashboard content boundaries in generated HTML",
+					);
+				}
+				return dashboardHtml.substring(start, end + 6);
+			})()}
     </div>
 
     <div id="mermaid" class="tab-content">

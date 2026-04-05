@@ -81,16 +81,34 @@ owner: dev-team
 
 ---
 
-## 📋 Next Step (2026-04-01)
+## 📋 Next Step (2026-04-06)
 
-*Performance and security issues from code review*
+*Completed: Type system improvements and comprehensive edge case testing*
+
+### Type System Improvements ✅
+
+- [x] `type:refactor` `label:core` Expand `types.ts` to cover all system parts (11 granular tools + legacy tools + parser + search + notebook + plugin)
+  - Added 50+ type definitions covering entire codebase
+  - Removed `"normal"` and `""` from `EventImportance` and `EmotionalTone` for strict typing
+  - **Status:** Done - Comprehensive type coverage across all modules
+
+- [x] `type:fix` `label:core` Reduce `Record<string, unknown>` usage in `execute.ts`
+  - Replaced `Record<string, unknown>` with typed `StoryGraph` and specific result types
+  - Added return type `Promise<ToolResult>` for better type safety
+  - **Status:** Done - Type-safe tool execution
+
+- [x] `type:test` `label:core` Add comprehensive edge cases and improve tests (`index.test.ts`)
+  - Added 8 new edge case tests: act boundaries, special chars, duplicates, whitespace, climax detection, parser tests, case-insensitive roles, character-event matching
+  - All 68 tests passing
+  - **Status:** Done - Robust test coverage for edge cases
 
 ### High Priority
 
-- [ ] `type:fix` `label:high-priority` Fix RegExp creation in nested loop (`analyzer.ts:149`)
+- [x] `type:fix` `label:high-priority` Fix RegExp creation in nested loop (`analyzer.ts:149`)
   - Creates new RegExp for every character-event pair (O(n×m) compilations)
   - For 10 chars × 20 events = 200 RegExp objects unnecessarily
   - **Fix:** Pre-compile regex patterns once before the loop
+  - **Status:** Done - Moved regex compilation outside nested loop in `analyzer.ts:136-144`
 
 - [ ] `type:fix` `label:high-priority` Add CSV escaping to prevent data corruption (`generate-artifacts.ts:60-77`)
   - No CSV escaping for values containing quotes, commas, or newlines

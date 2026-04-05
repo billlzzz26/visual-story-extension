@@ -1,0 +1,32 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"files": {
+		"ignore": [
+			"**/dist/**",
+			"**/node_modules/**",
+			"**/out/**",
+			"**/target/**",
+			"packages/craft-blog-cms/**",
+			"packages/github-sync/**",
+			"packages/tauri-app/**",
+			"tauri-app/**"
+		],
+		"maxSize": 2097152
+	},
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineWidth": 80
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	}
+}

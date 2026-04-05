@@ -9,6 +9,5 @@ coverage
 outputs/
 *-output.*
 test-exports.js
-.github/prompts/
-.github/skills/
-.github/hooks/
+skill-lock.json
+tsconfig.tsbuildinfo

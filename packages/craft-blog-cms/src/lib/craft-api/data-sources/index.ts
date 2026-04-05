@@ -1,31 +1,40 @@
-import type { CraftApiClient } from '../client'
-import type { DataSourceConfig, DataSourceResult, FieldSchema, InitConfig } from '../types'
-import { fetchBlocks } from './blocks'
+import type { CraftApiClient } from "../client";
+import type {
+	DataSourceConfig,
+	DataSourceResult,
+	FieldSchema,
+	InitConfig,
+} from "../types";
+import { fetchBlocks } from "./blocks";
 
 export interface ResolvedResources {
-  documentId?: string
-  folderId?: string
-  collectionId?: string
-  collectionIds?: Record<string, string>
-  spaceId?: string
+	documentId?: string;
+	folderId?: string;
+	collectionId?: string;
+	collectionIds?: Record<string, string>;
+	spaceId?: string;
 }
 
-export function buildCraftWebUrl(spaceId: string, documentId: string, blockId?: string): string {
-  const base = `https://docs.craft.do/editor/d/${spaceId}/${documentId}`
-  return blockId ? `${base}/x/${blockId}` : base
+export function buildCraftWebUrl(
+	spaceId: string,
+	documentId: string,
+	blockId?: string,
+): string {
+	const base = `https://docs.craft.do/editor/d/${spaceId}/${documentId}`;
+	return blockId ? `${base}/x/${blockId}` : base;
 }
 
 export function buildCraftBlockUrl(
-  blockUrlTemplate: string | undefined,
-  blockId: string | undefined
+	blockUrlTemplate: string | undefined,
+	blockId: string | undefined,
 ): string | undefined {
-  if (!blockUrlTemplate || !blockId) return undefined
-  return blockUrlTemplate
-    .replaceAll('{blockId}', blockId)
-    .replaceAll('{{blockId}}', blockId)
-    .replaceAll(':blockId', blockId)
-    .replaceAll('%BLOCK_ID%', blockId)
-    .replaceAll('%s', blockId)
+	if (!blockUrlTemplate || !blockId) return undefined;
+	return blockUrlTemplate
+		.replaceAll("{blockId}", blockId)
+		.replaceAll("{{blockId}}", blockId)
+		.replaceAll(":blockId", blockId)
+		.replaceAll("%BLOCK_ID%", blockId)
+		.replaceAll("%s", blockId);
 }
 
 /**
@@ -35,49 +44,52 @@ export function buildCraftBlockUrl(
  * demo and API-connected modes.
  */
 export function mergeWithDesignSchema(
-  apiSchema: FieldSchema[],
-  designProperties?: Record<string, { type: string; title: string; enum?: string[] }>
+	apiSchema: FieldSchema[],
+	designProperties?: Record<
+		string,
+		{ type: string; title: string; enum?: string[] }
+	>,
 ): FieldSchema[] {
-  if (!designProperties) return apiSchema
+	if (!designProperties) return apiSchema;
 
-  const designKeys = Object.keys(designProperties)
-  const apiByKey = new Map(apiSchema.map((f) => [f.key, f]))
+	const designKeys = Object.keys(designProperties);
+	const apiByKey = new Map(apiSchema.map((f) => [f.key, f]));
 
-  const merged: FieldSchema[] = []
-  const seen = new Set<string>()
+	const merged: FieldSchema[] = [];
+	const seen = new Set<string>();
 
-  for (const key of designKeys) {
-    const dp = designProperties[key]
-    seen.add(key)
+	for (const key of designKeys) {
+		const dp = designProperties[key];
+		seen.add(key);
 
-    let fieldType: FieldSchema['type'] = 'text'
-    if (dp.type === 'number') fieldType = 'number'
-    else if (dp.type === 'date') fieldType = 'date'
-    else if (dp.type === 'boolean') fieldType = 'boolean'
-    else if (dp.enum?.length) fieldType = 'enum'
+		let fieldType: FieldSchema["type"] = "text";
+		if (dp.type === "number") fieldType = "number";
+		else if (dp.type === "date") fieldType = "date";
+		else if (dp.type === "boolean") fieldType = "boolean";
+		else if (dp.enum?.length) fieldType = "enum";
 
-    merged.push({
-      key,
-      title: dp.title || apiByKey.get(key)?.title || key,
-      type: fieldType,
-      enum: dp.enum,
-      description: apiByKey.get(key)?.description
-    })
-  }
+		merged.push({
+			key,
+			title: dp.title || apiByKey.get(key)?.title || key,
+			type: fieldType,
+			enum: dp.enum,
+			description: apiByKey.get(key)?.description,
+		});
+	}
 
-  for (const field of apiSchema) {
-    if (!seen.has(field.key)) merged.push(field)
-  }
+	for (const field of apiSchema) {
+		if (!seen.has(field.key)) merged.push(field);
+	}
 
-  return merged
+	return merged;
 }
 
 export async function fetchDataSource(
-  client: CraftApiClient,
-  config: DataSourceConfig,
-  resources?: ResolvedResources,
-  initConfig?: InitConfig
+	client: CraftApiClient,
+	config: DataSourceConfig,
+	resources?: ResolvedResources,
+	initConfig?: InitConfig,
 ): Promise<DataSourceResult> {
-  const spaceId = resources?.spaceId
-    return fetchBlocks(client, config, resources?.documentId, spaceId)
+	const spaceId = resources?.spaceId;
+	return fetchBlocks(client, config, resources?.documentId, spaceId);
 }

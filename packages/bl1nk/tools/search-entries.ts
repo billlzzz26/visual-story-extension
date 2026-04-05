@@ -12,27 +12,28 @@
  * This is a SEARCH tool - it finds and catalogs entities, not analyzes story quality.
  */
 
-import { readFileSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import Handlebars from "handlebars";
 import { z } from "zod";
 import entitiesConfig from "../../known/entities.json" assert { type: "json" };
+import { STORY_PATTERNS } from "../core/parser.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Load templates at runtime
 const characterTemplate = readFileSync(
-	join(__dirname, "../../templates/characters/character.md"),
+	join(__dirname, "../templates/characters/character.md"),
 	"utf8",
 );
 const sceneTemplate = readFileSync(
-	join(__dirname, "../../templates/scene/scene.md"),
+	join(__dirname, "../templates/scene/scene.md"),
 	"utf8",
 );
 const locationTemplate = readFileSync(
-	join(__dirname, "../../templates/world/location.md"),
+	join(__dirname, "../templates/world/location.md"),
 	"utf8",
 );
 
@@ -49,7 +50,7 @@ interface RawEntry {
 	type: "character" | "scene" | "location" | "conflict";
 	name: string;
 	mentions: Mention[];
-	context?: any;
+	context?: Record<string, unknown>;
 }
 
 interface Mention {
@@ -62,8 +63,8 @@ interface Mention {
 
 interface StoredEntry {
 	entityType: string;
-	metadata: any;
-	content: any;
+	metadata: Record<string, unknown>;
+	content: string;
 }
 
 // ============================================================================
@@ -99,30 +100,36 @@ class EntityManager {
 // Extraction Functions
 // ============================================================================
 
-function extractCharacters(text: string, chapterNum: number): RawEntry[] {
+export function extractCharacters(text: string, chapterNum: number): RawEntry[] {
 	const characters: RawEntry[] = [];
 	const lines = text.split("\n");
 
-	// Simple extraction: look for character-like patterns
-	// This is a basic implementation - real version would use AI
-	const charPattern = /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g;
-	const dialoguePattern =
-		/"([^"]+)"\s*(?:said|called|whispered|shouted)\s*(?:by)?\s*([A-Z][a-z]+)/g;
+	// 1. Regex patterns
+	const charPattern = STORY_PATTERNS.CHARACTER;
+	const dialoguePattern = STORY_PATTERNS.DIALOGUE;
+	const foundNames = new Set<string>();
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 
+		// Reset global regex indices for each line
+		charPattern.lastIndex = 0;
+		dialoguePattern.lastIndex = 0;
+
 		// Extract from dialogue
-		let match;
-		while ((match = dialoguePattern.exec(line)) !== null) {
+		while (true) {
+			const match = dialoguePattern.exec(line);
+			if (match === null) break;
 			const [_, dialogue, speaker] = match;
+			const name = speaker.trim();
+			foundNames.add(name.toLowerCase());
 			characters.push({
 				type: "character",
-				name: speaker.trim(),
+				name: name,
 				mentions: [
 					{
 						chapter: `chapter-${chapterNum}`,
-						nameUsed: speaker.trim(),
+						nameUsed: name,
 						context: dialogue.trim(),
 						speaker: "narrator",
 						surroundingText: line.trim(),
@@ -131,12 +138,15 @@ function extractCharacters(text: string, chapterNum: number): RawEntry[] {
 			});
 		}
 
-		// Extract from narration
-		while ((match = charPattern.exec(line)) !== null) {
+		// Extract from explicit character lines
+		while (true) {
+			const match = charPattern.exec(line);
+			if (match === null) break;
 			const name = match[1].trim();
 			// Filter out common words
 			if (["The", "A", "An", "Chapter", "Title"].includes(name)) continue;
 
+			foundNames.add(name.toLowerCase());
 			characters.push({
 				type: "character",
 				name: name,
@@ -152,12 +162,40 @@ function extractCharacters(text: string, chapterNum: number): RawEntry[] {
 		}
 	}
 
+	// 2. Dictionary extraction (bridge from v1 & Thai support)
+	for (const name of STORY_PATTERNS.ENTITY_DICTIONARY.characters) {
+		if (foundNames.has(name.toLowerCase())) continue;
+
+		// Simple search for the name in the whole text
+		const lines = text.split("\n");
+		for (let i = 0; i < lines.length; i++) {
+			const line = lines[i];
+			if (line.includes(name)) {
+				foundNames.add(name.toLowerCase());
+				characters.push({
+					type: "character",
+					name: name,
+					mentions: [
+						{
+							chapter: `chapter-${chapterNum}`,
+							nameUsed: name,
+							context: line.trim().substring(0, 100),
+							speaker: "narrator",
+							surroundingText: line.trim(),
+						},
+					],
+				});
+				// Found once, we'll dedup later anyway
+			}
+		}
+	}
+
 	// Deduplicate
 	const deduped = new Map<string, RawEntry>();
 	for (const char of characters) {
 		const key = char.name.toLowerCase();
 		if (deduped.has(key)) {
-			deduped.get(key)!.mentions.push(...char.mentions);
+			deduped.get(key)?.mentions.push(...char.mentions);
 		} else {
 			deduped.set(key, char);
 		}
@@ -166,14 +204,16 @@ function extractCharacters(text: string, chapterNum: number): RawEntry[] {
 	return Array.from(deduped.values());
 }
 
-function extractScenes(text: string, chapterNum: number): RawEntry[] {
+export function extractScenes(text: string, chapterNum: number): RawEntry[] {
 	const scenes: RawEntry[] = [];
 
 	// Extract chapter/scene headers
-	const scenePattern = /(?:Chapter|Scene)\s*\d*:?\s*(.+)/gi;
-	let match;
+	const scenePattern = STORY_PATTERNS.SCENE;
+	scenePattern.lastIndex = 0;
 
-	while ((match = scenePattern.exec(text)) !== null) {
+	while (true) {
+		const match = scenePattern.exec(text);
+		if (match === null) break;
 		scenes.push({
 			type: "scene",
 			name: match[1].trim() || `Chapter ${chapterNum}`,
@@ -209,35 +249,28 @@ function extractScenes(text: string, chapterNum: number): RawEntry[] {
 	return scenes;
 }
 
-function extractLocations(text: string, chapterNum: number): RawEntry[] {
+export function extractLocations(text: string, chapterNum: number): RawEntry[] {
 	const locations: RawEntry[] = [];
 
-	// Common location keywords
-	const locationKeywords = [
-		"forge",
-		"palace",
-		"castle",
-		"temple",
-		"forest",
-		"mountain",
-		"village",
-		"city",
-		"room",
-		"hall",
-	];
+	// Common location keywords (English + Thai from Unified Engine)
+	const locationKeywords = STORY_PATTERNS.LOCATION_KEYWORDS;
 
 	for (const keyword of locationKeywords) {
-		const regex = new RegExp(`\\b(?:the\\s+)?${keyword}\\b`, "gi");
-		let match;
+		// Use word boundary for English, but not for Thai (as Thai has no spaces)
+		const isThai = /[\u0E00-\u0E7F]/.test(keyword);
+		const pattern = isThai ? keyword : `\\b${keyword}\\b`;
+		const regex = new RegExp(pattern, "gi");
 
-		while ((match = regex.exec(text)) !== null) {
+		while (true) {
+			const match = regex.exec(text);
+			if (match === null) break;
 			const context = text.substring(
 				Math.max(0, match.index - 50),
 				match.index + 50,
 			);
 			locations.push({
 				type: "location",
-				name: match[0].trim(),
+				name: keyword, // Use the keyword as the name for consistency
 				mentions: [
 					{
 						chapter: `chapter-${chapterNum}`,
@@ -256,7 +289,7 @@ function extractLocations(text: string, chapterNum: number): RawEntry[] {
 	for (const loc of locations) {
 		const key = loc.name.toLowerCase();
 		if (deduped.has(key)) {
-			deduped.get(key)!.mentions.push(...loc.mentions);
+			deduped.get(key)?.mentions.push(...loc.mentions);
 		} else {
 			deduped.set(key, loc);
 		}
@@ -278,7 +311,7 @@ function resolveAliases(entries: RawEntry[]): StoredEntry[] {
 		if (!byType.has(entry.type)) {
 			byType.set(entry.type, []);
 		}
-		byType.get(entry.type)!.push(entry);
+		byType.get(entry.type)?.push(entry);
 	}
 
 	// Process each type
@@ -341,204 +374,126 @@ function generateId(type: string, name: string): string {
 		.replace(/[^a-z0-9_]/g, "")}`;
 }
 
-function extractAliasesFromMentions(mentions: Mention[]): any[] {
-	const aliases: any[] = [];
+function extractAliasesFromMentions(mentions: Mention[]): string[] {
+	const aliases: string[] = [];
 	const namesUsed = new Set<string>();
 
 	for (const mention of mentions) {
 		if (!namesUsed.has(mention.nameUsed)) {
 			namesUsed.add(mention.nameUsed);
-			aliases.push({
-				name: mention.nameUsed,
-				usedBy: [mention.speaker || "narrator"],
-				context: mention.context,
-			});
+			aliases.push(mention.nameUsed);
 		}
 	}
 
 	return aliases;
 }
 
-function generateContent(entry: RawEntry, type: string): any {
+function generateContent(entry: RawEntry, type: string): string {
 	const summary = generateSummary(entry);
 	const essence = generateEssence(entry, type);
 
-	return {
+	if (type === "character") {
+		return characterTemplateFn({
+			name: entry.name,
+			summary,
+			essence,
+			mentions: entry.mentions,
+			events: extractEvents(entry),
+			quotes: extractKeyQuotes(entry.mentions),
+		});
+	}
+	if (type === "scene") {
+		return sceneTemplateFn({
+			name: entry.name,
+			summary,
+			essence,
+			mentions: entry.mentions,
+		});
+	}
+	return locationTemplateFn({
+		name: entry.name,
 		summary,
 		essence,
-		...(type === "character" && {
-			personality: extractPersonalityTraits(entry),
-			motivation: "To be determined from more context",
-			arc: {
-				start: "TBD",
-				midpoint: "TBD",
-				end: "TBD",
-				transformation: "TBD",
-			},
-			keyQuotes: extractKeyQuotes(entry.mentions),
-		}),
-		...(type === "scene" && {
-			events: extractEvents(entry),
-			emotionalTone: "TBD",
-			conflicts: [],
-			turningPoint: "TBD",
-		}),
-		...(type === "location" && {
-			description: "TBD",
-			atmosphere: "TBD",
-			significance: "TBD",
-			sensoryDetails: {},
-		}),
-	};
+		mentions: entry.mentions,
+	});
 }
 
 function generateSummary(entry: RawEntry): string {
-	const mentionCount = entry.mentions.length;
-	const chapters = [...new Set(entry.mentions.map((m) => m.chapter))];
-
-	return `${entry.name} appears ${mentionCount} time(s) in ${chapters.join(", ")}.`;
+	const firstMention = entry.mentions[0];
+	return `First mentioned in ${firstMention.chapter}: "${firstMention.context}"`;
 }
 
 function generateEssence(entry: RawEntry, type: string): string {
-	if (type === "character") {
-		return `A character whose full story emerges through ${entry.mentions.length} mentions.`;
-	} else if (type === "scene") {
-		return `A scene that advances the narrative.`;
-	} else {
-		return `A location where story events unfold.`;
-	}
-}
-
-function extractPersonalityTraits(entry: RawEntry): string[] {
-	// Simple extraction from context
-	const traits: string[] = [];
-
-	for (const mention of entry.mentions) {
-		if (
-			mention.context.includes("said") ||
-			mention.context.includes("called")
-		) {
-			traits.push("dialogue-speaker");
-		}
-	}
-
-	return [...new Set(traits)];
-}
-
-function extractKeyQuotes(mentions: Mention[]): any[] {
-	const quotes: any[] = [];
-
-	for (const mention of mentions) {
-		if (mention.context && mention.context.length > 0) {
-			quotes.push({
-				quote: mention.context,
-				chapter: mention.chapter,
-				context: mention.speaker || "narration",
-			});
-		}
-	}
-
-	return quotes.slice(0, 5); // Limit to 5
-}
-
-function extractEvents(entry: RawEntry): any[] {
-	return entry.mentions.map((m) => ({
-		description: m.context,
-		impact: "TBD",
-	}));
+	return `A ${type} named ${entry.name} with ${entry.mentions.length} total mentions.`;
 }
 
 function generateTags(entry: RawEntry): string[] {
-	const tags: string[] = [];
+	const tags = [entry.type];
+	if (entry.mentions.length > 5) tags.push("frequent");
+	return tags;
+}
 
-	if (entry.type === "character") {
-		tags.push(entry.type);
-		if (
-			entry.mentions.some(
-				(m) => m.context.includes("brother") || m.context.includes("sister"),
-			)
-		) {
-			tags.push("family");
-		}
-		if (
-			entry.mentions.some(
-				(m) =>
-					m.context.includes("king") ||
-					m.context.includes("queen") ||
-					m.context.includes("princess"),
-			)
-		) {
-			tags.push("royal");
+function extractKeyQuotes(mentions: Mention[]): string[] {
+	const quotes: string[] = [];
+
+	for (const mention of mentions) {
+		if (mention.speaker === "narrator" && mention.context.length > 10) {
+			quotes.push(mention.context);
 		}
 	}
 
-	return tags;
+	return quotes;
+}
+
+function extractEvents(entry: RawEntry): Record<string, unknown>[] {
+	return entry.mentions.map((m) => ({
+		description: m.context,
+		chapter: m.chapter,
+	}));
 }
 
 // ============================================================================
 // Template Rendering (using Handlebars)
 // ============================================================================
 
-function renderCharacter(data: any): string {
+function renderCharacter(data: Record<string, unknown>): string {
 	// Prepare data for template
 	const templateData = {
 		...data,
-		hasAliases: data.aliases && data.aliases.length > 0,
-		hasMentions: data.mentions && data.mentions.length > 0,
-		hasRelationships: data.relationships && data.relationships.length > 0,
-		hasPersonality:
-			data.content?.personality && data.content.personality.length > 0,
-		hasMotivation: data.content?.motivation,
-		hasArc: data.content?.arc,
-		hasKeyQuotes: data.content?.keyQuotes && data.content.keyQuotes.length > 0,
-		jsonString: JSON.stringify(data, null, 2),
+		name: data.canonicalName,
 	};
-
 	return characterTemplateFn(templateData);
 }
 
-function renderScene(data: any): string {
+function renderScene(data: Record<string, unknown>): string {
 	const templateData = {
 		...data,
-		hasCharacters: data.characters && data.characters.length > 0,
-		hasLocation: data.location,
-		hasTimeline: data.timeline,
-		hasEvents: data.content?.events && data.content.events.length > 0,
-		hasEmotionalTone: data.content?.emotionalTone,
-		hasConflicts: data.content?.conflicts && data.content.conflicts.length > 0,
-		hasTurningPoint: data.content?.turningPoint,
-		jsonString: JSON.stringify(data, null, 2),
+		name: data.canonicalName,
 	};
-
 	return sceneTemplateFn(templateData);
 }
 
-function renderLocation(data: any): string {
+function renderLocation(data: Record<string, unknown>): string {
 	const templateData = {
 		...data,
-		hasAliases: data.aliases && data.aliases.length > 0,
-		hasScenes: data.scenes && data.scenes.length > 0,
-		hasConnections: data.connections && data.connections.length > 0,
-		hasDescription: data.content?.description,
-		hasAtmosphere: data.content?.atmosphere,
-		hasSignificance: data.content?.significance,
-		hasSensoryDetails: data.content?.sensoryDetails,
-		jsonString: JSON.stringify(data, null, 2),
+		name: data.canonicalName,
 	};
-
 	return locationTemplateFn(templateData);
 }
 
-function getTemplateForType(type: string): Function {
+function getTemplateForType(
+	type: string,
+): (data: Record<string, unknown>) => string {
 	switch (type) {
 		case "character":
-			return characterTemplateFn;
+			return renderCharacter;
 		case "scene":
-			return sceneTemplateFn;
+			return renderScene;
 		case "location":
-			return locationTemplateFn;
+			return renderLocation;
 		default:
-			return characterTemplateFn;
+			return (data: Record<string, unknown>) =>
+				`Unknown entity type: ${type}\n${JSON.stringify(data)}`;
 	}
 }
 
@@ -583,7 +538,7 @@ function getFolderForType(type: string): string {
 		case "location":
 			return "locations";
 		default:
-			return type + "s";
+			return `${type}s`;
 	}
 }
 
@@ -594,7 +549,7 @@ function generateIndexFile(entries: StoredEntry[]): string {
 		if (!byType.has(entry.entityType)) {
 			byType.set(entry.entityType, []);
 		}
-		byType.get(entry.entityType)!.push(entry);
+		byType.get(entry.entityType)?.push(entry);
 	}
 
 	let content = `---
@@ -609,7 +564,7 @@ lastUpdated: ${new Date().toISOString()}
 
 	for (const [type, typeEntries] of byType.entries()) {
 		const folder = getFolderForType(type);
-		const title = type.charAt(0).toUpperCase() + type.slice(1) + "s";
+		const title = `${type.charAt(0).toUpperCase() + type.slice(1)}s`;
 
 		content += `## ${title} (${typeEntries.length})\n`;
 
@@ -631,21 +586,24 @@ lastUpdated: ${new Date().toISOString()}
 	}
 
 	// Entity resolution summary
-	content += `---\n\n## Entity Resolution Summary\n\n`;
+	content += "---\n\n## Entity Resolution Summary\n\n";
 
 	for (const [type, typeEntries] of byType.entries()) {
 		if (type === "character") {
 			for (const entry of typeEntries) {
-				if (entry.metadata.aliases && entry.metadata.aliases.length > 1) {
+				if (
+					entry.metadata.aliases &&
+					(entry.metadata.aliases as string[]).length > 1
+				) {
 					content += `### ${entry.metadata.canonicalName}\n`;
-					content += `**Known aliases:** ${entry.metadata.aliases.map((a: any) => a.name).join(", ")}\n\n`;
+					content += `**Known aliases:** ${(entry.metadata.aliases as string[]).join(", ")}\n\n`;
 				}
 			}
 		}
 	}
 
 	// Statistics
-	content += `## Statistics\n`;
+	content += "## Statistics\n";
 	content += `- Total Characters: ${byType.get("character")?.length || 0}\n`;
 	content += `- Total Scenes: ${byType.get("scene")?.length || 0}\n`;
 	content += `- Total Locations: ${byType.get("location")?.length || 0}\n`;
@@ -718,17 +676,23 @@ BEST FOR:
 		// 1. FIND - Extract entries
 		if (args.extractOptions?.characters !== false) {
 			const characters = extractCharacters(args.text, args.chapterNumber || 1);
-			characters.forEach((c) => entityManager.add(c));
+			for (const c of characters) {
+				entityManager.add(c);
+			}
 		}
 
 		if (args.extractOptions?.scenes !== false) {
 			const scenes = extractScenes(args.text, args.chapterNumber || 1);
-			scenes.forEach((s) => entityManager.add(s));
+			for (const s of scenes) {
+				entityManager.add(s);
+			}
 		}
 
 		if (args.extractOptions?.locations !== false) {
 			const locations = extractLocations(args.text, args.chapterNumber || 1);
-			locations.forEach((l) => entityManager.add(l));
+			for (const l of locations) {
+				entityManager.add(l);
+			}
 		}
 
 		// 2. STORE - Build metadata + content with entity resolution
@@ -753,20 +717,13 @@ BEST FOR:
 			content: [
 				{
 					type: "text" as const,
-					text:
-						`✅ Searched: Chapter ${args.chapterNumber || "new"}\n\n` +
-						`📊 Found:\n` +
-						`- Characters: ${charCount}\n` +
-						`- Scenes: ${sceneCount}\n` +
-						`- Locations: ${locCount}\n\n` +
-						`📁 Generated ${Object.keys(files).length} files:\n` +
-						Object.keys(files)
-							.map((f) => `- ${f}`)
-							.join("\n") +
-						`\n\n🔗 Next steps:\n` +
-						`- Run "search_entries" again for next chapter\n` +
-						`- Run "export_files" to upload to GitHub\n` +
-						`- Open index.md to see all entries`,
+					text: `✅ Searched: Chapter ${args.chapterNumber || "new"}\n\n📊 Found:\n- Characters: ${charCount}\n- Scenes: ${sceneCount}\n- Locations: ${locCount}\n\n📁 Generated ${Object.keys(files).length} files:\n${Object.keys(
+						files,
+					)
+						.map((f) => `- ${f}`)
+						.join(
+							"\n",
+						)}\n\n🔗 Next steps:\n- Run "search_entries" again for next chapter\n- Run "export_files" to upload to GitHub\n- Open index.md to see all entries`,
 				},
 			],
 		};

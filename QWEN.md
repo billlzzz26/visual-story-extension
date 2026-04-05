@@ -1,5 +1,7 @@
 # Visual Story Planner v3 (VSP3) - Project Context
 
+**Primary Reference:** See [AGENTS.md](AGENTS.md) for core project information, commands, structure, and coding guidelines.
+
 ## Project Overview
 
 **bl1nk-visual-mcp** is a production-ready **MCP server** for structured story analysis, planning, and optimization. It converts natural-language story text into structured **StoryGraph JSON** and provides 16 tools for visualization and analysis.

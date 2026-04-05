@@ -1,5 +1,7 @@
 # CLAUDE.md — bl1nk-visual-mcp
 
+**Primary Reference:** See [AGENTS.md](AGENTS.md) for core project information, commands, structure, and coding guidelines.
+
 ## Project Overview
 
 MCP server + Kilo Code plugin for structured story analysis and visualization.

@@ -123,9 +123,21 @@ export async function searchStoryReferences(
 			);
 		}
 
-		let data: any;
+		interface RawExaResult {
+			title?: string;
+			url?: string;
+			published_date?: string;
+			highlights?: string[];
+			score?: number;
+		}
+
+		interface RawExaResponse {
+			results?: RawExaResult[];
+		}
+
+		let data: RawExaResponse;
 		try {
-			data = await response.json();
+			data = (await response.json()) as RawExaResponse;
 		} catch (error: unknown) {
 			throw new ExaError(
 				`Exa API returned malformed JSON: ${error instanceof Error ? error.message : String(error)}`,
@@ -134,13 +146,15 @@ export async function searchStoryReferences(
 			);
 		}
 
-		const results: ExaSearchResult[] = (data.results ?? []).map((r: any) => ({
-			title: r.title ?? "(no title)",
-			url: r.url ?? "",
-			publishedDate: r.published_date,
-			highlights: r.highlights ?? [],
-			score: r.score,
-		}));
+		const results: ExaSearchResult[] = (data.results ?? []).map(
+			(r: RawExaResult) => ({
+				title: r.title ?? "(no title)",
+				url: r.url ?? "",
+				publishedDate: r.published_date,
+				highlights: r.highlights ?? [],
+				score: r.score,
+			}),
+		);
 
 		return {
 			results,

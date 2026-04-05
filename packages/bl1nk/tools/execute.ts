@@ -13,6 +13,14 @@ import { toDashboard } from "../exporters/dashboard.js";
 import { toMarkdown } from "../exporters/markdown.js";
 import { toMcpUiDashboard } from "../exporters/mcp-ui-dashboard.js";
 import { toMermaid } from "../exporters/mermaid.js";
+import type {
+	Character,
+	CharacterExtractionResult,
+	ConflictExtractionResult,
+	RelationshipGraphResult,
+	StoryGraph,
+	ToolResult,
+} from "../types.js";
 import { formatToolError } from "../utils/error-handler.js";
 import { validateGraph } from "../validators.js";
 import { generateArtifactsTool } from "./generate-artifacts.js";
@@ -29,7 +37,7 @@ function formatErrorResult(toolName: string, error: unknown) {
 export async function executeGranularTool(
 	toolName: string,
 	args: Record<string, unknown>,
-) {
+): Promise<ToolResult> {
 	if (!args || typeof args !== "object") {
 		return {
 			content: [
@@ -65,15 +73,10 @@ export async function executeGranularTool(
 			case "export_mermaid": {
 				const graph = args.graph;
 				if (graph == null) {
-					return {
-						content: [
-							{
-								type: "text" as const,
-								text: "Error: graph parameter is required",
-							},
-						],
-						isError: true,
-					};
+					return formatToolError(
+						new Error("graph parameter is required"),
+						"export_mermaid",
+					);
 				}
 				const style = (args.style as string) || "default";
 				const includeMetadata = args.includeMetadata !== false;
@@ -87,7 +90,7 @@ export async function executeGranularTool(
 			}
 
 			case "export_canvas": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -101,13 +104,10 @@ export async function executeGranularTool(
 				}
 				const includeMetadata = args.includeMetadata !== false;
 				const autoLayout = args.autoLayout !== false;
-				const canvas = toCanvasJSON(
-					graph as Parameters<typeof toCanvasJSON>[0],
-					{
-						includeMetadata,
-						autoLayout,
-					},
-				);
+				const canvas = toCanvasJSON(graph, {
+					includeMetadata,
+					autoLayout,
+				});
 				return {
 					content: [
 						{ type: "text" as const, text: JSON.stringify(canvas, null, 2) },
@@ -116,7 +116,7 @@ export async function executeGranularTool(
 			}
 
 			case "export_dashboard": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -130,7 +130,7 @@ export async function executeGranularTool(
 				}
 				const includeStats = args.includeStats !== false;
 				const includeRecommendations = args.includeRecommendations !== false;
-				const html = toDashboard(graph as Parameters<typeof toDashboard>[0], {
+				const html = toDashboard(graph, {
 					includeStats,
 					includeRecommendations,
 				});
@@ -140,7 +140,7 @@ export async function executeGranularTool(
 			}
 
 			case "export_markdown": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -154,7 +154,7 @@ export async function executeGranularTool(
 				}
 				const includeMetadata = args.includeMetadata !== false;
 				const includeAnalysis = args.includeAnalysis !== false;
-				const md = toMarkdown(graph as Parameters<typeof toMarkdown>[0], {
+				const md = toMarkdown(graph, {
 					includeMetadata,
 					includeAnalysis,
 				});
@@ -164,7 +164,7 @@ export async function executeGranularTool(
 			}
 
 			case "validate_story_structure": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -178,10 +178,7 @@ export async function executeGranularTool(
 				}
 				const strict = args.strict === true;
 				const includeRecommendations = args.includeRecommendations !== false;
-				const result = validateGraph(
-					graph as Parameters<typeof validateGraph>[0],
-					strict,
-				);
+				const result = validateGraph(graph, strict);
 				const { recommendations, ...rest } = result;
 				return {
 					content: [
@@ -198,7 +195,7 @@ export async function executeGranularTool(
 			}
 
 			case "extract_characters": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -211,14 +208,18 @@ export async function executeGranularTool(
 					};
 				}
 				const detailed = args.detailed !== false;
-				const characters = (graph as Record<string, unknown>).characters;
-				const output = detailed
+				const characters = graph.characters;
+				const characterList: CharacterExtractionResult["characters"] = detailed
 					? characters
-					: (characters as Array<Record<string, unknown>>)?.map((c) => ({
+					: characters.map((c) => ({
 							id: c.id,
 							name: c.name,
 							role: c.role,
 						}));
+				const output: CharacterExtractionResult = {
+					count: characterList.length,
+					characters: characterList,
+				};
 				return {
 					content: [
 						{ type: "text" as const, text: JSON.stringify(output, null, 2) },
@@ -227,7 +228,7 @@ export async function executeGranularTool(
 			}
 
 			case "extract_conflicts": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -240,15 +241,20 @@ export async function executeGranularTool(
 					};
 				}
 				const includeEscalation = args.includeEscalation !== false;
-				const conflicts = (graph as Record<string, unknown>).conflicts;
-				const output = includeEscalation
-					? conflicts
-					: (conflicts as Array<Record<string, unknown>>)?.map((c) => ({
-							id: c.id,
-							type: c.type,
-							description: c.description,
-							relatedCharacters: c.relatedCharacters,
-						}));
+				const conflicts = graph.conflicts;
+				const conflictList: ConflictExtractionResult["conflicts"] =
+					includeEscalation
+						? conflicts
+						: conflicts.map((c) => ({
+								id: c.id,
+								type: c.type,
+								description: c.description,
+								relatedCharacters: c.relatedCharacters,
+							}));
+				const output: ConflictExtractionResult = {
+					count: conflictList.length,
+					conflicts: conflictList,
+				};
 				return {
 					content: [
 						{ type: "text" as const, text: JSON.stringify(output, null, 2) },
@@ -257,7 +263,7 @@ export async function executeGranularTool(
 			}
 
 			case "build_relationship_graph": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -270,17 +276,15 @@ export async function executeGranularTool(
 					};
 				}
 				const includeStats = args.includeStats !== false;
-				const relationships = (graph as Record<string, unknown>).relationships;
-				const characters = (graph as Record<string, unknown>).characters as
-					| Array<Record<string, unknown>>
-					| undefined;
-				const output = {
+				const relationships = graph.relationships;
+				const characters = graph.characters;
+				const output: RelationshipGraphResult = {
+					count: relationships.length,
 					relationships,
 					...(includeStats && {
 						stats: {
-							totalRelationships:
-								(relationships as Array<unknown>)?.length || 0,
-							totalCharacters: characters?.length || 0,
+							totalRelationships: relationships.length,
+							totalCharacters: characters.length,
 						},
 					}),
 				};
@@ -292,7 +296,7 @@ export async function executeGranularTool(
 			}
 
 			case "export_mcp_ui_dashboard": {
-				const graph = args.graph;
+				const graph = args.graph as StoryGraph | undefined;
 				if (graph == null) {
 					return {
 						content: [
@@ -306,13 +310,10 @@ export async function executeGranularTool(
 				}
 				const includeStats = args.includeStats !== false;
 				const includeRecommendations = args.includeRecommendations !== false;
-				const html = toMcpUiDashboard(
-					graph as Parameters<typeof toMcpUiDashboard>[0],
-					{
-						includeStats,
-						includeRecommendations,
-					},
-				);
+				const html = toMcpUiDashboard(graph, {
+					includeStats,
+					includeRecommendations,
+				});
 				return {
 					content: [{ type: "text" as const, text: html }],
 				};
@@ -368,7 +369,7 @@ export async function executeGranularTool(
 export async function executeStoryTool(
 	toolName: string,
 	args: Record<string, unknown>,
-) {
+): Promise<ToolResult> {
 	if (!args || typeof args !== "object") {
 		return {
 			content: [
@@ -379,6 +380,16 @@ export async function executeStoryTool(
 	}
 
 	try {
+		// 1. Try Granular Tools first (11 tools - source of truth)
+		const granularResult = await executeGranularTool(toolName, args);
+		if (
+			!granularResult.isError ||
+			!granularResult.content[0].text.includes("Error: Unknown tool")
+		) {
+			return granularResult;
+		}
+
+		// 2. Fallback to Legacy Tools (4 tools - backward compatibility)
 		switch (toolName) {
 			case "search_entries": {
 				return await searchEntriesTool.execute(

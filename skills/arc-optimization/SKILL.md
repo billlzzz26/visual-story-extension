@@ -1,14 +1,6 @@
 ---
 name: arc-optimization
-description: >
-  Optimize story pacing, emotional arcs, tension curves, and narrative flow for
-  Visual Story Planner StoryGraphs. Always activate when the user says: "pacing",
-  "too fast", "too slow", "emotional arc", "tension build", "story feels flat",
-  "optimize story", "improve flow", "climax doesn't land", "restructure events",
-  "my story drags", or "how do I build tension". Also activate when a structural
-  audit shows ACT_IMBALANCE warnings — arc optimization is the fix. Produces a
-  pacing score, tension curve visualization (ASCII), emotional arc trajectory,
-  and an ordered list of concrete restructuring moves with before/after event counts.
+description: (1)Optimize story pacing, emotional arcs, tension curves, and narrative flow for Visual Story Planner StoryGraphs. Always activate when the user says:"pacing", "too fast", "too slow", "emotional arc", "tension build", "story feels flat", "optimize story", "improve flow", "climax doesn't land", "restructure events", "my story drags", or "how do I build tension". Also activate when a structural audit shows ACT_IMBALANCE warnings — arc optimization is the fix. Produces a pacing score, tension curve visualization (ASCII), emotional arc trajectory,and an ordered list of concrete restructuring moves with before/after event counts.
 ---
 
 # Arc & Pacing Optimizer

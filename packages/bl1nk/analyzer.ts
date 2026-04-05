@@ -1,3 +1,4 @@
+import { extractStoryEntities } from "./core/parser.js";
 import {
 	Character,
 	Conflict,
@@ -6,22 +7,6 @@ import {
 	type StoryGraph,
 } from "./types.js";
 
-// Pre-compiled regex patterns to avoid re-compilation on every buildInitialGraph call
-const TITLE_PATTERN_1 = /^Title:[ \t]*(\S[^\r\n]*)$/im;
-const TITLE_PATTERN_2 = /^#+[ \t]+(\S[^\r\n]*)$/m;
-const CHAR_PATTERN =
-	/^Character:[ \t]*([A-Za-z][^,\r\n]*?)(?:,[ \t]*role:[ \t]*(\w+))?$/gim;
-const EVENT_PATTERN = /^Event:[ \t]*(\S[^\r\n]*)$/gim;
-const CONFLICT_PATTERN = /^Conflict:[ \t]*(\S[^\r\n]*)$/gim;
-
-// Pre-compiled theme patterns (optimized to avoid large string allocations via toLowerCase())
-const THEME_PATTERNS = {
-	love: /love|romance/i,
-	power: /power|control/i,
- survival: /survival|survive|endure/i,
-	destiny: /destiny|heritage/i,
-};
-
 /**
  * Builds an initial StoryGraph by extracting metadata, characters, events, conflicts, relationships, and tags from plain text.
  *
@@ -29,9 +14,11 @@ const THEME_PATTERNS = {
  * @returns A StoryGraph populated with default metadata and arrays of characters, events, conflicts, relationships, and tags inferred from the input
  */
 export function buildInitialGraph(text: string): StoryGraph {
+	const entities = extractStoryEntities(text);
+
 	const graph: StoryGraph = {
 		meta: {
-			title: "Untitled Story",
+			title: entities.title || "Untitled Story",
 			createdAt: "",
 			updatedAt: "",
 			version: "1.0.0",
@@ -40,25 +27,12 @@ export function buildInitialGraph(text: string): StoryGraph {
 		conflicts: [],
 		events: [],
 		relationships: [],
-		tags: [],
+		tags: entities.themes,
 	};
 
-	// Reset global regex indices for stateful patterns
-	CHAR_PATTERN.lastIndex = 0;
-	EVENT_PATTERN.lastIndex = 0;
-	CONFLICT_PATTERN.lastIndex = 0;
-
-	// Extract title
-	const titleMatch =
-		TITLE_PATTERN_1.exec(text) || TITLE_PATTERN_2.exec(text);
-	if (titleMatch) graph.meta.title = titleMatch[1].trim();
-
-	// Extract characters: "Character: Name, role: protagonist"
-	let charIndex = 0;
-	let match = CHAR_PATTERN.exec(text);
-	while (match !== null) {
-		const name = match[1].trim();
-		const roleText = match[2]?.toLowerCase() || "";
+	// Map characters
+	for (const char of entities.characters) {
+		const roleText = char.role || "";
 		const role = roleText.includes("protagonist")
 			? "protagonist"
 			: roleText.includes("antagonist")
@@ -68,8 +42,8 @@ export function buildInitialGraph(text: string): StoryGraph {
 					: "supporting";
 
 		graph.characters.push({
-			id: `char_${charIndex++}`,
-			name,
+			id: `char_${char.index}`,
+			name: char.name,
 			role,
 			traits: [],
 			arc: {
@@ -85,16 +59,13 @@ export function buildInitialGraph(text: string): StoryGraph {
 			secretsOrLies: [],
 			actAppearances: [1, 2, 3],
 		});
-		match = CHAR_PATTERN.exec(text);
 	}
 
-	// Extract events: "Event: Event name"
-	let eventIndex = 0;
-	match = EVENT_PATTERN.exec(text);
-	while (match !== null) {
-		const label = match[1].trim();
+	// Map events
+	for (const event of entities.events) {
+		const label = event.name;
 		const lowerLabel = label.toLowerCase();
-		const act = eventIndex < 4 ? 1 : eventIndex < 9 ? 2 : 3;
+		const act = event.index < 4 ? 1 : event.index < 9 ? 2 : 3;
 		const importance = lowerLabel.includes("inciting")
 			? "inciting"
 			: lowerLabel.includes("midpoint")
@@ -106,26 +77,27 @@ export function buildInitialGraph(text: string): StoryGraph {
 						: "rising";
 
 		graph.events.push({
-			id: `event_${eventIndex++}`,
+			id: `event_${event.index}`,
 			label,
 			description: label,
 			act,
 			importance,
 			sequenceInAct:
-				act === 1 ? eventIndex : act === 2 ? eventIndex - 4 : eventIndex - 9,
+				act === 1
+					? event.index + 1
+					: act === 2
+						? event.index - 3
+						: event.index - 8,
 			characters: [],
 			conflicts: [],
 			emotionalTone: "neutral",
 			consequence: "",
 		});
-		match = EVENT_PATTERN.exec(text);
 	}
 
-	// Extract conflicts: "Conflict: Description"
-	let conflictIndex = 0;
-	match = CONFLICT_PATTERN.exec(text);
-	while (match !== null) {
-		const description = match[1].trim();
+	// Map conflicts
+	for (const conflict of entities.conflicts) {
+		const description = conflict.name;
 		const lowerDesc = description.toLowerCase();
 		const type =
 			lowerDesc.includes("self") || lowerDesc.includes("doubt")
@@ -135,7 +107,7 @@ export function buildInitialGraph(text: string): StoryGraph {
 					: "external";
 
 		graph.conflicts.push({
-			id: `conflict_${conflictIndex++}`,
+			id: `conflict_${conflict.index}`,
 			type,
 			description,
 			relatedCharacters: [],
@@ -146,7 +118,6 @@ export function buildInitialGraph(text: string): StoryGraph {
 			resolution: "",
 			actIntroduced: 1,
 		});
-		match = CONFLICT_PATTERN.exec(text);
 	}
 
 	// Build relationships
@@ -179,12 +150,6 @@ export function buildInitialGraph(text: string): StoryGraph {
 			}
 		}
 	}
-
-	// Extract themes (optimized: use pre-compiled regex to avoid large string allocations)
-	if (THEME_PATTERNS.love.test(text)) graph.tags.push("love");
-	if (THEME_PATTERNS.power.test(text)) graph.tags.push("power");
-	if (THEME_PATTERNS.survival.test(text)) graph.tags.push("survival");
-	if (THEME_PATTERNS.destiny.test(text)) graph.tags.push("destiny");
 
 	return graph;
 }

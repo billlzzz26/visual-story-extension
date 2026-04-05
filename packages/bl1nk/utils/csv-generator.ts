@@ -6,7 +6,7 @@
  * CSV Generator for StoryGraph data.
  */
 
-import type { StoryGraph } from "../types.js";
+import type { Character, Conflict, EventNode, StoryGraph } from "../types.js";
 
 /**
  * Generate CSV files from StoryGraph
@@ -61,7 +61,7 @@ export function generateIndividualCSVs(
 // Helper Functions
 // ============================================================================
 
-function generateCharactersCSV(characters: any[]): string {
+function generateCharactersCSV(characters: Character[]): string {
 	const headers = ["id", "name", "role", "status", "tags"];
 	const rows = characters.map((char) => [
 		char.id,
@@ -74,7 +74,7 @@ function generateCharactersCSV(characters: any[]): string {
 	return [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
 }
 
-function generateEventsCSV(events: any[]): string {
+function generateEventsCSV(events: EventNode[]): string {
 	const headers = ["id", "label", "act", "importance", "characters"];
 	const rows = events.map((event) => [
 		event.id,
@@ -87,7 +87,7 @@ function generateEventsCSV(events: any[]): string {
 	return [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
 }
 
-function generateConflictsCSV(conflicts: any[]): string {
+function generateConflictsCSV(conflicts: Conflict[]): string {
 	const headers = ["id", "type", "description", "relatedCharacters"];
 	const rows = conflicts.map((conflict) => [
 		conflict.id,

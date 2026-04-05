@@ -1,11 +1,11 @@
 {
-  "mcpServers": {
-    "bl1nk": {
-      "command": "node",
-      "args": ["${workspaceFolder}/packages/bl1nk/dist/index.js"],
-      "env": {
-        "EXA_API_KEY": "${env:EXA_API_KEY}"
-      }
-    }
-  }
+	"mcpServers": {
+		"bl1nk": {
+			"command": "node",
+			"args": ["${workspaceFolder}/packages/bl1nk/dist/index.js"],
+			"env": {
+				"EXA_API_KEY": "${env:EXA_API_KEY}"
+			}
+		}
+	}
 }

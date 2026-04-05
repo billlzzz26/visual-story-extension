@@ -223,44 +223,64 @@ const server = new McpServer({
 	version: "3.0.0",
 });
 
-// Register 11 granular tools (source of truth)
-for (const tool of GRANULAR_TOOLS) {
-	const schema = Schemas[tool.name as keyof typeof Schemas];
-	if (!schema) {
-		console.error(`Warning: No schema found for tool "${tool.name}"`);
-		continue;
+let toolsRegistered = false;
+function registerTools() {
+	if (toolsRegistered) return;
+
+	try {
+		// Register 11 granular tools (source of truth)
+		for (const tool of GRANULAR_TOOLS) {
+			const schema = Schemas[tool.name as keyof typeof Schemas];
+			if (!schema) {
+				console.error(`Warning: No schema found for tool "${tool.name}"`);
+				continue;
+			}
+			server.tool(
+				tool.name,
+				tool.description,
+				schema.shape as ZodRawShape,
+				async (args: Record<string, unknown>) =>
+					executeGranularTool(tool.name, args),
+			);
+		}
+
+		// Register 4 legacy tools (backward compatibility)
+		for (const tool of BL1NK_VISUAL_TOOLS) {
+			server.tool(
+				tool.name,
+				tool.description,
+				{} as ZodRawShape,
+				async (args: Record<string, unknown>) =>
+					executeStoryTool(tool.name, args),
+			);
+		}
+
+		// Register search_entries tool (has its own schema in the tool definition)
+		server.tool(
+			searchEntriesTool.name,
+			searchEntriesTool.description,
+			searchEntriesTool.inputSchema.shape as ZodRawShape,
+			async (args: Record<string, unknown>) =>
+				searchEntriesTool.execute(
+					args as Parameters<typeof searchEntriesTool.execute>[0],
+				),
+		);
+
+		toolsRegistered = true;
+	} catch (error: unknown) {
+		if (
+			error instanceof Error &&
+			error.message.includes("already registered")
+		) {
+			toolsRegistered = true;
+			return;
+		}
+		throw error;
 	}
-	server.tool(
-		tool.name,
-		tool.description,
-		schema.shape as ZodRawShape,
-		async (args: Record<string, unknown>) =>
-			executeGranularTool(tool.name, args),
-	);
 }
 
-// TODO: Define schemas for legacy tools
-// TODO: Define schemas for legacy tools
-// Register 4 legacy tools (backward compatibility)
-for (const tool of BL1NK_VISUAL_TOOLS) {
-	server.tool(
-		tool.name,
-		tool.description,
-		{} as ZodRawShape,
-		async (args: Record<string, unknown>) => executeStoryTool(tool.name, args),
-	);
-}
-
-// Register search_entries tool (has its own schema in the tool definition)
-server.tool(
-	searchEntriesTool.name,
-	searchEntriesTool.description,
-	searchEntriesTool.inputSchema.shape as ZodRawShape,
-	async (args: Record<string, unknown>) =>
-		searchEntriesTool.execute(
-			args as Parameters<typeof searchEntriesTool.execute>[0],
-		),
-);
+// Initial registration
+registerTools();
 
 async function startServer() {
 	try {

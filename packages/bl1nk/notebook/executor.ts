@@ -360,7 +360,7 @@ export class NotebookExecutionRuntime {
 
 			if (content !== undefined) {
 				if (append && existingDoc.content) {
-					updateData.content = existingDoc.content + "\n\n" + content;
+					updateData.content = `${existingDoc.content}\n\n${content}`;
 				} else {
 					updateData.content = content;
 				}
