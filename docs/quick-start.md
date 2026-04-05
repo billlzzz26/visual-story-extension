@@ -48,12 +48,18 @@ Ensure your project has this structure:
 
 ```
 visual-story-extension/
-├── src/
+├── packages/bl1nk/
+│   ├── index.ts
+│   ├── src/index.ts
 │   ├── types.ts
-│   ├── schema.ts
 │   ├── analyzer.ts
 │   ├── validators.ts
-│   ├── server.ts
+│   ├── exa-search.ts
+│   ├── tools/
+│   │   ├── index.ts
+│   │   ├── execute.ts
+│   │   ├── search-entries.ts
+│   │   └── generate-artifacts.ts
 │   └── exporters/
 │       ├── mermaid.ts
 │       ├── canvas.ts

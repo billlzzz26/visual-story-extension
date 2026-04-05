@@ -1,11 +1,11 @@
-import type { StoryGraph } from "../types.js";
+import type { CanvasEdge, CanvasNode, StoryGraph } from "../types.js";
 
 export function toCanvasJSON(
 	graph: StoryGraph,
 	options: { includeMetadata?: boolean; autoLayout?: boolean } = {},
 ) {
-	const nodes: any[] = [];
-	const edges: any[] = [];
+	const nodes: CanvasNode[] = [];
+	const edges: CanvasEdge[] = [];
 
 	// 1. Create Event Nodes
 	graph.events.forEach((e, i) => {
@@ -118,7 +118,12 @@ export function toCanvasJSON(
 }
 
 function getEventStyle(importance: string) {
-	const styles: Record<string, any> = {
+	interface NodeStyle {
+		backgroundColor: string;
+		borderColor: string;
+		borderWidth: number;
+	}
+	const styles: Record<string, NodeStyle> = {
 		inciting: {
 			backgroundColor: "#f3e5f5",
 			borderColor: "#7b1fa2",

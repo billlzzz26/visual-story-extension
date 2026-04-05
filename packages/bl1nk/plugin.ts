@@ -57,9 +57,18 @@ const ExtractCharactersArgs = z.object({
 });
 
 const ExtractConflictsArgs = z.object({
-	text: z.string().describe("Story text to extract conflicts from"),
+	text: z.string().describe("Story text to analyze and extract conflicts from"),
 	includeEscalation: z.boolean().default(true),
 });
+
+type AnalyzeStoryArgsType = z.infer<typeof AnalyzeStoryArgs>;
+type ExportMermaidArgsType = z.infer<typeof ExportMermaidArgs>;
+type ExportMarkdownArgsType = z.infer<typeof ExportMarkdownArgs>;
+type ExportCanvasArgsType = z.infer<typeof ExportCanvasArgs>;
+type ValidateStoryArgsType = z.infer<typeof ValidateStoryArgs>;
+type ExtractCharactersArgsType = z.infer<typeof ExtractCharactersArgs>;
+type ExtractConflictsArgsType = z.infer<typeof ExtractConflictsArgs>;
+type ExaSearchArgsType = z.infer<typeof ExaSearchArgs>;
 
 const ExaSearchArgs = z.object({
 	query: z.string().describe("Search query for story writing references"),
@@ -103,8 +112,9 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 				description:
 					"Analyze story text and generate a StoryGraph with characters, events, conflicts, and relationships. " +
 					'Recognizes patterns like "Title:", "Character: Name, role: protagonist", "Event: ...", "Conflict: ...".',
-				args: AnalyzeStoryArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: AnalyzeStoryArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const analyzeArgs = args as AnalyzeStoryArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
@@ -112,13 +122,13 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 							message: "analyze_story called",
 							extra: {
 								sessionID: ctx.sessionID,
-								textLen: (args as any).text.length,
+								textLen: analyzeArgs.text.length,
 							},
 						},
 					});
 
-					const graph = buildInitialGraph((args as any).text);
-					if ((args as any).includeMetadata) {
+					const graph = buildInitialGraph(analyzeArgs.text);
+					if (analyzeArgs.includeMetadata) {
 						graph.meta.createdAt = new Date().toISOString();
 						graph.meta.updatedAt = new Date().toISOString();
 					}
@@ -132,21 +142,22 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 				description:
 					"Analyze story text and export as a Mermaid diagram. " +
 					"Creates a flowchart grouped by Acts with different shapes for climax, midpoint, and inciting events.",
-				args: ExportMermaidArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: ExportMermaidArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const exportArgs = args as ExportMermaidArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
 							level: "debug",
 							message: "export_mermaid called",
-							extra: { sessionID: ctx.sessionID, style: (args as any).style },
+							extra: { sessionID: ctx.sessionID, style: exportArgs.style },
 						},
 					});
 
-					const graph = buildInitialGraph((args as any).text);
+					const graph = buildInitialGraph(exportArgs.text);
 					return toMermaid(graph, {
-						style: (args as any).style,
-						includeMetadata: (args as any).includeMetadata,
+						style: exportArgs.style,
+						includeMetadata: exportArgs.includeMetadata,
 					});
 				},
 			}),
@@ -155,8 +166,9 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 				description:
 					"Analyze story text and export as structured Markdown documentation. " +
 					"Includes story metadata, analysis statistics, character roster, events, and conflicts.",
-				args: ExportMarkdownArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: ExportMarkdownArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const exportArgs = args as ExportMarkdownArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
@@ -166,10 +178,10 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 						},
 					});
 
-					const graph = buildInitialGraph((args as any).text);
+					const graph = buildInitialGraph(exportArgs.text);
 					return toMarkdown(graph, {
-						includeMetadata: (args as any).includeMetadata,
-						includeAnalysis: (args as any).includeAnalysis,
+						includeMetadata: exportArgs.includeMetadata,
+						includeAnalysis: exportArgs.includeAnalysis,
 					});
 				},
 			}),
@@ -178,8 +190,9 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 				description:
 					"Analyze story text and export as Canvas JSON (Obsidian-compatible). " +
 					"Creates nodes for events, characters, and conflicts with edges for sequence and relationships.",
-				args: ExportCanvasArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: ExportCanvasArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const exportArgs = args as ExportCanvasArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
@@ -189,9 +202,9 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 						},
 					});
 
-					const graph = buildInitialGraph((args as any).text);
+					const graph = buildInitialGraph(exportArgs.text);
 					const canvas = toCanvasJSON(graph, {
-						includeMetadata: (args as any).includeMetadata,
+						includeMetadata: exportArgs.includeMetadata,
 					});
 					return JSON.stringify(canvas, null, 2);
 				},
@@ -201,19 +214,23 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 				description:
 					"Validate story text against 3-act structure rules. " +
 					"Checks for missing title, protagonist, acts, climax, midpoint, and act distribution (25-50-25 rule).",
-				args: ValidateStoryArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: ValidateStoryArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const validateArgs = args as ValidateStoryArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
 							level: "debug",
 							message: "validate_story_structure called",
-							extra: { sessionID: ctx.sessionID, strict: (args as any).strict },
+							extra: {
+								sessionID: ctx.sessionID,
+								strict: validateArgs.strict,
+							},
 						},
 					});
 
-					const graph = buildInitialGraph((args as any).text);
-					const result = validateGraph(graph, (args as any).strict);
+					const graph = buildInitialGraph(validateArgs.text);
+					const result = validateGraph(graph, validateArgs.strict);
 					return JSON.stringify(result, null, 2);
 				},
 			}),
@@ -221,8 +238,9 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 			extract_characters: tool({
 				description:
 					"Extract characters from story text. Identifies names, roles (protagonist/antagonist/mentor/supporting), and appearances across acts.",
-				args: ExtractCharactersArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: ExtractCharactersArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const extractArgs = args as ExtractCharactersArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
@@ -232,7 +250,7 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 						},
 					});
 
-					const graph = buildInitialGraph((args as any).text);
+					const graph = buildInitialGraph(extractArgs.text);
 					const chars = graph.characters;
 					return JSON.stringify(
 						{ count: chars.length, characters: chars },
@@ -245,8 +263,9 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 			extract_conflicts: tool({
 				description:
 					"Extract conflicts from story text. Identifies internal vs external conflicts and escalation stages.",
-				args: ExtractConflictsArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: ExtractConflictsArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const extractArgs = args as ExtractConflictsArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
@@ -256,7 +275,7 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 						},
 					});
 
-					const graph = buildInitialGraph((args as any).text);
+					const graph = buildInitialGraph(extractArgs.text);
 					const conflicts = graph.conflicts;
 					return JSON.stringify(
 						{ count: conflicts.length, conflicts },
@@ -270,8 +289,9 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 				description:
 					"Search the web for story writing references using Exa AI. " +
 					"Returns writing techniques, character archetypes, tropes, narrative structures, and genre conventions.",
-				args: ExaSearchArgs.shape as any,
-				async execute(args: any, ctx: any) {
+				args: ExaSearchArgs.shape as Record<string, unknown>,
+				async execute(args: unknown, ctx: { sessionID: string }) {
+					const exaArgs = args as ExaSearchArgsType;
 					await client.app.log({
 						body: {
 							service: "bl1nk-visual-mcp",
@@ -279,27 +299,21 @@ const bl1nkPlugin: Plugin = async ({ client }: PluginInput): Promise<Hooks> => {
 							message: "exa_search_story called",
 							extra: {
 								sessionID: ctx.sessionID,
-								query: (args as any).query,
-								category: (args as any).category,
+								query: exaArgs.query,
+								category: exaArgs.category,
 							},
 						},
 					});
 
 					try {
 						const response = await searchStoryReferences(
-							(args as any).query,
-							(args as any).category,
-							(args as any).numResults,
+							exaArgs.query,
+							exaArgs.category,
+							exaArgs.numResults,
 						);
-						return formatSearchResults(response, (args as any).query);
+						return formatSearchResults(response, exaArgs.query);
 					} catch (error: unknown) {
-						// Note: formatToolError returns MCP tool response format
-						const errorResult = formatToolError(
-							error,
-							"exa_search_story",
-							true,
-						);
-						return errorResult.content[0].text;
+						return formatToolError("exa_search_story", error);
 					}
 				},
 			}),

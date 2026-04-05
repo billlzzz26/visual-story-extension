@@ -198,7 +198,7 @@ bl1nk-visual-mcp-monorepo (root)
 ## Tool Registration Flow
 
 ```
-1. Server starts (src/index.ts)
+1. Server starts (packages/bl1nk/src/index.ts)
    ↓
 2. Create McpServer instance
    ↓

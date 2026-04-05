@@ -77,7 +77,7 @@ export async function retryWithBackoff<T>(
 			) {
 				throw error;
 			}
-			await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
+			await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
 		}
 	}
 	throw lastError;

@@ -37,18 +37,18 @@ export function initializeMcpServer(
 	}
 
 	// Register each tool with the server
-	toolsToRegister.forEach((tool) => {
-		const schema = (Schemas as any)[tool.name];
+	for (const tool of toolsToRegister) {
+		const schema = (Schemas as Record<string, { shape: unknown }>)[tool.name];
 		if (!schema) {
 			console.error(`[EXA-MCP] Missing schema for tool: ${tool.name}`);
-			return;
+			continue;
 		}
 
 		server.tool(
 			tool.name,
 			tool.description,
-			schema.shape as any,
-			async (args: any) => {
+			schema.shape as Record<string, unknown>,
+			async (args: Record<string, unknown>) => {
 				// Inject exaApiKey into args if provided (for exa_search_story tool)
 				if (tool.name === "exa_search_story" && config.exaApiKey) {
 					// Note: exa-search.ts reads from process.env.EXA_API_KEY
@@ -61,7 +61,7 @@ export function initializeMcpServer(
 						if (originalKey) {
 							process.env.EXA_API_KEY = originalKey;
 						} else {
-							delete process.env.EXA_API_KEY;
+							process.env.EXA_API_KEY = undefined;
 						}
 					}
 				}
@@ -69,7 +69,7 @@ export function initializeMcpServer(
 				return executeStoryTool(tool.name, args);
 			},
 		);
-	});
+	}
 
 	if (debug) {
 		console.log("[EXA-MCP] Server initialization complete");

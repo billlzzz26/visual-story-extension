@@ -8,7 +8,7 @@ export function toCanvasJSON(graph: StoryGraph) {
 	}));
 
 	const edges = (graph.relationships || []).map((r, i) => ({
-		id: "e" + i,
+		id: `e${i}`,
 		source: r.from,
 		target: r.to,
 		type: r.type || "sequence",
@@ -28,7 +28,7 @@ type: application/json
 content: |-
 ${canvasData
 	.split("\n")
-	.map((line) => "  " + line)
+	.map((line) => `  ${line}`)
 	.join("\n")}
 \`\`\``;
 }

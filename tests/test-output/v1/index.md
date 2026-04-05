@@ -1,7 +1,7 @@
 ---
 type: index
 title: Story Index - Test Story
-lastUpdated: 2026-04-01T17:47:34.534Z
+lastUpdated: 2026-04-05T21:34:44.150Z
 ---
 
 # Story Index
@@ -16,9 +16,9 @@ lastUpdated: 2026-04-01T17:47:34.534Z
 - [[characters/การ์ดภารกิจ]] — Aliases: หญิงสาวเมด
 
 ## Scenes (3)
-- [[scenes/chapter_8:_การ์ดภารกิจและการตัดสินใจ]]
-- [[scenes/chapter_13:_คนแปลกหน้า]]
-- [[scenes/chapter_44:_สงครามสัตว์อสูร_9]]
+- [[scenes/การ์ดภารกิจและการตัดสินใจ]]
+- [[scenes/คนแปลกหน้า]]
+- [[scenes/สงครามสัตว์อสูร_9]]
 
 ## Locations (3)
 - [[locations/เมืองไวท์ชาโดว์]]

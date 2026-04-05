@@ -1,8 +1,8 @@
-import { buildInitialGraph } from '../src/analyzer.js';
-import { toMcpUiDashboard } from '../src/exporters/mcp-ui-dashboard.js';
-import { toMermaid } from '../src/exporters/mermaid.js';
-import fs from 'fs';
-import path from 'path';
+import fs from "node:fs";
+import path from "node:path";
+import { buildInitialGraph } from "../packages/bl1nk/analyzer.js";
+import { toMcpUiDashboard } from "../packages/bl1nk/exporters/mcp-ui-dashboard.js";
+import { toMermaid } from "../packages/bl1nk/exporters/mermaid.js";
 
 // Sample story text for testing
 const storyText = `
@@ -23,38 +23,38 @@ Conflict: Luke's internal struggle with the dark side
 `;
 
 async function generateDashboard() {
-  try {
-    // Build the story graph
-    const graph = buildInitialGraph(storyText);
-    graph.meta.createdAt = new Date().toISOString();
-    graph.meta.updatedAt = new Date().toISOString();
+	try {
+		// Build the story graph
+		const graph = buildInitialGraph(storyText);
+		graph.meta.createdAt = new Date().toISOString();
+		graph.meta.updatedAt = new Date().toISOString();
 
-    // Generate MCP UI Dashboard HTML
-    const dashboardHtml = toMcpUiDashboard(graph, {
-      includeStats: true,
-      includeRecommendations: true
-    });
+		// Generate MCP UI Dashboard HTML
+		const dashboardHtml = toMcpUiDashboard(graph, {
+			includeStats: true,
+			includeRecommendations: true,
+		});
 
-    // Generate Mermaid diagram
-    const mermaidDiagram = toMermaid(graph, {
-      includeMetadata: true,
-      style: 'default'
-    });
+		// Generate Mermaid diagram
+		const mermaidDiagram = toMermaid(graph, {
+			includeMetadata: true,
+			style: "default",
+		});
 
-    // Create output directory
-    const outputDir = './test-output';
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
+		// Create output directory
+		const outputDir = "./test-output";
+		if (!fs.existsSync(outputDir)) {
+			fs.mkdirSync(outputDir, { recursive: true });
+		}
 
-    // Save dashboard
-    const dashboardPath = path.join(outputDir, 'dashboard.html');
-    fs.writeFileSync(dashboardPath, dashboardHtml);
-    console.log(`Dashboard saved to: ${dashboardPath}`);
+		// Save dashboard
+		const dashboardPath = path.join(outputDir, "dashboard.html");
+		fs.writeFileSync(dashboardPath, dashboardHtml);
+		console.log(`Dashboard saved to: ${dashboardPath}`);
 
-    // Save mermaid diagram as HTML
-    const mermaidHtmlPath = path.join(outputDir, 'mermaid-diagram.html');
-    const mermaidHtml = `<!DOCTYPE html>
+		// Save mermaid diagram as HTML
+		const mermaidHtmlPath = path.join(outputDir, "mermaid-diagram.html");
+		const mermaidHtml = `<!DOCTYPE html>
 <html>
 <head>
   <title>Story Structure - Mermaid Diagram</title>
@@ -71,12 +71,12 @@ ${mermaidDiagram}
   </div>
 </body>
 </html>`;
-    fs.writeFileSync(mermaidHtmlPath, mermaidHtml);
-    console.log(`Mermaid diagram saved to: ${mermaidHtmlPath}`);
+		fs.writeFileSync(mermaidHtmlPath, mermaidHtml);
+		console.log(`Mermaid diagram saved to: ${mermaidHtmlPath}`);
 
-    // Save combined dashboard with mermaid
-    const combinedPath = path.join(outputDir, 'combined-dashboard.html');
-    const combinedHtml = `<!DOCTYPE html>
+		// Save combined dashboard with mermaid
+		const combinedPath = path.join(outputDir, "combined-dashboard.html");
+		const combinedHtml = `<!DOCTYPE html>
 <html>
 <head>
   <title>Visual Story Planner - Combined Dashboard</title>
@@ -105,7 +105,7 @@ ${mermaidDiagram}
     </div>
 
     <div id="dashboard" class="tab-content active">
-      ${dashboardHtml.substring(dashboardHtml.indexOf('<div class="max-w-6xl'), dashboardHtml.lastIndexOf('</div>') + 6)}
+      ${dashboardHtml.substring(dashboardHtml.indexOf('<div class="max-w-6xl'), dashboardHtml.lastIndexOf("</div>") + 6)}
     </div>
 
     <div id="mermaid" class="tab-content">
@@ -135,29 +135,31 @@ ${mermaidDiagram}
   </script>
 </body>
 </html>`;
-    fs.writeFileSync(combinedPath, combinedHtml);
-    console.log(`Combined dashboard saved to: ${combinedPath}`);
+		fs.writeFileSync(combinedPath, combinedHtml);
+		console.log(`Combined dashboard saved to: ${combinedPath}`);
 
-    return {
-      dashboardPath,
-      mermaidHtmlPath,
-      combinedPath,
-      graph
-    };
-  } catch (error) {
-    console.error('Error generating dashboard:', error);
-    throw error;
-  }
+		return {
+			dashboardPath,
+			mermaidHtmlPath,
+			combinedPath,
+			graph,
+		};
+	} catch (error) {
+		console.error("Error generating dashboard:", error);
+		throw error;
+	}
 }
 
 // Run the generator
-generateDashboard().then(result => {
-  console.log('\n✅ Dashboard generation complete!');
-  console.log('Generated files:');
-  console.log(`  - Dashboard: ${result.dashboardPath}`);
-  console.log(`  - Mermaid Diagram: ${result.mermaidHtmlPath}`);
-  console.log(`  - Combined: ${result.combinedPath}`);
-}).catch(error => {
-  console.error('❌ Error:', error.message);
-  process.exit(1);
-});
+generateDashboard()
+	.then((result) => {
+		console.log("\n✅ Dashboard generation complete!");
+		console.log("Generated files:");
+		console.log(`  - Dashboard: ${result.dashboardPath}`);
+		console.log(`  - Mermaid Diagram: ${result.mermaidHtmlPath}`);
+		console.log(`  - Combined: ${result.combinedPath}`);
+	})
+	.catch((error) => {
+		console.error("❌ Error:", error.message);
+		process.exit(1);
+	});
