@@ -54,7 +54,7 @@ Or use npm:
 - **Switch between hundreds of LLMs without constraints.** Other CLI tools only work with one model or curate opinionated lists. With Kilo, you can switch models without booting up another tool.
 - **Choose the right mode for the task in your workflow.** Select between Architect, Ask, Debug, Orchestrator, or custom agent modes.
 - **Automate tasks.** Get AI assistance writing shell scripts for tasks like renaming all of the files in a folder or transforming sizes for a set of images.
-- **Extend capabilities with skills.** Add domain expertise and repeatable workflows through [Agent Skills](#skills).
+- **Extend capabilities with skills.** Add domain expertise and repeatable workflows through [Agent Skills](/docs/code-with-ai/agents/skills).
 
 ## CLI Reference
 
