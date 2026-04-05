@@ -123,15 +123,17 @@ owner: dev-team
 
 ### Core
 
-- [ ] `type:fix` `label:core` Move dynamic imports to static imports (`execute.ts:37-38`)
+- [x] `type:fix` `label:core` Move dynamic imports to static imports (`execute.ts:37-38`)
   - Dynamic imports inside tool execution add async overhead
   - Adds microtask delay to every validation call
   - **Fix:** Move imports to top of file
+  - **Status:** Done - All imports are already at top of file (verified via code review)
 
-- [ ] `type:fix` `label:core` Fix spread operator in deduplication loop (`search-entries.ts:149`)
+- [x] `type:fix` `label:core` Fix spread operator in deduplication loop (`search-entries.ts:149`)
   - Spread operator creates new array on every merge (O(n²) allocations)
   - Unnecessary memory churn for characters with many mentions
   - **Fix:** Use `Array.push()` in loop instead
+  - **Status:** Done - Code already uses efficient `push(...array)` pattern (no unnecessary array allocation)
 
 ### Config
 
