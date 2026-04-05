@@ -18,7 +18,7 @@ const CONFLICT_PATTERN = /^Conflict:[ \t]*(\S[^\r\n]*)$/gim;
 const THEME_PATTERNS = {
 	love: /love|romance/i,
 	power: /power|control/i,
-	survival: /survive|endure/i,
+ survival: /survival|survive|endure/i,
 	destiny: /destiny|heritage/i,
 };
 
