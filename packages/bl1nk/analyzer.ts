@@ -6,6 +6,22 @@ import {
 	type StoryGraph,
 } from "./types.js";
 
+// Pre-compiled regex patterns to avoid re-compilation on every buildInitialGraph call
+const TITLE_PATTERN_1 = /^Title:[ \t]*(\S[^\r\n]*)$/im;
+const TITLE_PATTERN_2 = /^#+[ \t]+(\S[^\r\n]*)$/m;
+const CHAR_PATTERN =
+	/^Character:[ \t]*([A-Za-z][^,\r\n]*?)(?:,[ \t]*role:[ \t]*(\w+))?$/gim;
+const EVENT_PATTERN = /^Event:[ \t]*(\S[^\r\n]*)$/gim;
+const CONFLICT_PATTERN = /^Conflict:[ \t]*(\S[^\r\n]*)$/gim;
+
+// Pre-compiled theme patterns (optimized to avoid large string allocations via toLowerCase())
+const THEME_PATTERNS = {
+	love: /love|romance/i,
+	power: /power|control/i,
+ survival: /survival|survive|endure/i,
+	destiny: /destiny|heritage/i,
+};
+
 /**
  * Builds an initial StoryGraph by extracting metadata, characters, events, conflicts, relationships, and tags from plain text.
  *
@@ -27,17 +43,19 @@ export function buildInitialGraph(text: string): StoryGraph {
 		tags: [],
 	};
 
+	// Reset global regex indices for stateful patterns
+	CHAR_PATTERN.lastIndex = 0;
+	EVENT_PATTERN.lastIndex = 0;
+	CONFLICT_PATTERN.lastIndex = 0;
+
 	// Extract title
 	const titleMatch =
-		text.match(/^Title:[ \t]*(\S[^\r\n]*)$/im) ||
-		text.match(/^#+[ \t]+(\S[^\r\n]*)$/m);
+		TITLE_PATTERN_1.exec(text) || TITLE_PATTERN_2.exec(text);
 	if (titleMatch) graph.meta.title = titleMatch[1].trim();
 
 	// Extract characters: "Character: Name, role: protagonist"
-	const charPattern =
-		/^Character:[ \t]*([A-Za-z][^,\r\n]*?)(?:,[ \t]*role:[ \t]*(\w+))?$/gim;
-	let match = charPattern.exec(text);
 	let charIndex = 0;
+	let match = CHAR_PATTERN.exec(text);
 	while (match !== null) {
 		const name = match[1].trim();
 		const roleText = match[2]?.toLowerCase() || "";
@@ -67,13 +85,12 @@ export function buildInitialGraph(text: string): StoryGraph {
 			secretsOrLies: [],
 			actAppearances: [1, 2, 3],
 		});
-		match = charPattern.exec(text);
+		match = CHAR_PATTERN.exec(text);
 	}
 
 	// Extract events: "Event: Event name"
-	const eventPattern = /^Event:[ \t]*(\S[^\r\n]*)$/gim;
 	let eventIndex = 0;
-	match = eventPattern.exec(text);
+	match = EVENT_PATTERN.exec(text);
 	while (match !== null) {
 		const label = match[1].trim();
 		const lowerLabel = label.toLowerCase();
@@ -101,13 +118,12 @@ export function buildInitialGraph(text: string): StoryGraph {
 			emotionalTone: "neutral",
 			consequence: "",
 		});
-		match = eventPattern.exec(text);
+		match = EVENT_PATTERN.exec(text);
 	}
 
 	// Extract conflicts: "Conflict: Description"
-	const conflictPattern = /^Conflict:[ \t]*(\S[^\r\n]*)$/gim;
 	let conflictIndex = 0;
-	match = conflictPattern.exec(text);
+	match = CONFLICT_PATTERN.exec(text);
 	while (match !== null) {
 		const description = match[1].trim();
 		const lowerDesc = description.toLowerCase();
@@ -130,7 +146,7 @@ export function buildInitialGraph(text: string): StoryGraph {
 			resolution: "",
 			actIntroduced: 1,
 		});
-		match = conflictPattern.exec(text);
+		match = CONFLICT_PATTERN.exec(text);
 	}
 
 	// Build relationships
@@ -164,16 +180,11 @@ export function buildInitialGraph(text: string): StoryGraph {
 		}
 	}
 
-	// Extract themes
-	const lower = text.toLowerCase();
-	if (lower.includes("love") || lower.includes("romance"))
-		graph.tags.push("love");
-	if (lower.includes("power") || lower.includes("control"))
-		graph.tags.push("power");
-	if (lower.includes("survive") || lower.includes("endure"))
-		graph.tags.push("survival");
-	if (lower.includes("destiny") || lower.includes("heritage"))
-		graph.tags.push("destiny");
+	// Extract themes (optimized: use pre-compiled regex to avoid large string allocations)
+	if (THEME_PATTERNS.love.test(text)) graph.tags.push("love");
+	if (THEME_PATTERNS.power.test(text)) graph.tags.push("power");
+	if (THEME_PATTERNS.survival.test(text)) graph.tags.push("survival");
+	if (THEME_PATTERNS.destiny.test(text)) graph.tags.push("destiny");
 
 	return graph;
 }

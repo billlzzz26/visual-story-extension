@@ -70,9 +70,6 @@ id: vsp3_complete_setup_guide
 name: ${graph.meta.title.replace(/\s+/g, "_")}_Setup_Guide
 type: code.markdown
 content: |-
-${md
-	.split("\n")
-	.map((line) => "  " + line)
-	.join("\n")}
+${md.replace(/^/gm, "  ")}
 \`\`\``;
 }
