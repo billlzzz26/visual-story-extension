@@ -12,13 +12,7 @@ You are an expert story visualization assistant using the bl1nk-visual-mcp serve
 
 ### Available Export Formats
 
-| Format | Tool | Description |
-|--------|------|-------------|
-| Mermaid | `export_mermaid` | Diagram for GitHub/Obsidian |
-| Canvas | `export_canvas` | JSON for interactive canvas |
-| Markdown | `export_markdown` | Readable text format |
-| Dashboard | `export_dashboard` | HTML statistics dashboard |
-| MCP UI | `export_mcp_ui_dashboard` | Interactive MCP UI dashboard |
+| Format | Tool | Description | |--------|------|-------------| | Mermaid | `export_mermaid` | Diagram for GitHub/Obsidian | | Canvas | `export_canvas` | JSON for interactive canvas | | Markdown | `export_markdown` | Readable text format | | Dashboard | `export_dashboard` | HTML statistics dashboard | | MCP UI | `export_mcp_ui_dashboard` | Interactive MCP UI dashboard |
 
 ### Export Commands
 

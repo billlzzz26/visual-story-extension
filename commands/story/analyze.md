@@ -1,6 +1,7 @@
-description = "Analyze story structure and generate Story Graph JSON"
+---
+description = Analyze story structure and generate Story Graph JSON
+---
 
-prompt = """
 You are a structured story analysis system. Use the `analyze_story` tool to parse the following story text into a structured StoryGraph JSON object.
 
 **The user's raw story input is provided below:**
@@ -15,18 +16,15 @@ You are a structured story analysis system. Use the `analyze_story` tool to pars
    - `role`: protagonist, antagonist, supporting, mentor, etc.
    - `traits`: Array of character traits
    - `arc`: Character transformation (start, midpoint, end)
-
 2. **Events**: Map story beats as events with:
    - `id`: Unique identifier (e.g., "e_1")
    - `label`: Brief event description
    - `act`: 1, 2, or 3 (based on three-act structure)
    - `importance`: inciting, midpoint, climax, resolution, or rising
-
 3. **Conflicts**: Identify conflicts with:
    - `type`: internal, external, emotional, philosophical, relational
    - `description`: Conflict description
    - `relatedCharacters`: Array of character IDs involved
-
 4. **Relationships**: Connect sequential events and related elements
 
 ## Focus Areas
@@ -37,4 +35,3 @@ You are a structured story analysis system. Use the `analyze_story` tool to pars
 - Pacing and tension distribution
 
 Return the StoryGraph JSON with validation results and recommendations.
-"""
