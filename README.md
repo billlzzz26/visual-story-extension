@@ -221,14 +221,14 @@ visual-story-extension/
 
 **packages/bl1nk/.env:**
 ```bash
-EXA_API_KEY=your_exa_api_key
+# EXA_API_KEY=your_exa_api_key
 ```
 
 **packages/github-sync/.env:**
 ```bash
-GITHUB_WEBHOOK_SECRET=your_webhook_secret
-NOTION_API_KEY=your_notion_api_key
-NOTION_DATABASE_ID=your_notion_database_id
+# GITHUB_WEBHOOK_SECRET=your_webhook_secret
+# NOTION_API_KEY=your_notion_api_key
+# NOTION_DATABASE_ID=your_notion_database_id
 ```
 
 ---

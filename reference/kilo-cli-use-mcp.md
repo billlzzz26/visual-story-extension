@@ -54,7 +54,7 @@ Local MCP servers run on your machine and communicate via standard input/output.
       "command": ["npx", "-y", "my-mcp-command"],
       "enabled": true,
       "environment": {
-        "API_KEY": "your_api_key"
+        "API_KEY": "{env:API_KEY}"
       }
     }
   }
@@ -83,7 +83,7 @@ Remote MCP servers are accessed over HTTP/HTTPS. Set `type` to `"remote"`.
       "url": "https://my-mcp-server.com/mcp",
       "enabled": true,
       "headers": {
-        "Authorization": "Bearer MY_API_KEY"
+        "Authorization": "Bearer {env:MY_API_KEY}"
       }
     }
   }
