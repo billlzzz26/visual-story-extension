@@ -392,7 +392,7 @@ When running in autonomous mode:
 
 ### Auto-Approval in Autonomous Mode
 
-Autonomous mode respects your [auto-approval configuration](#auto-approval-settings). Operations which are not auto-approved will not be allowed.
+Autonomous mode respects your permission configuration. Operations which are not auto-approved will not be allowed.
 
 ### Autonomous Mode Follow-up Questions
 
