@@ -1,0 +1,136 @@
+name: Tool Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-tools:
+    name: Validate Tool Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Validate tool names match across code, configs, and docs
+        run: |
+          node -e "
+          const fs = require('fs');
+
+          // 1. Load tool names from built package
+          const { GRANULAR_TOOLS, BL1NK_VISUAL_TOOLS, Schemas } = require('./packages/bl1nk/dist/index.js');
+          const codeTools = new Set([
+            ...GRANULAR_TOOLS.map(t => t.name),
+            ...BL1NK_VISUAL_TOOLS.map(t => t.name)
+          ]);
+          const schemaTools = new Set(Object.keys(Schemas));
+
+          console.log('=== Code Tools ===');
+          console.log([...codeTools].sort().join(', '));
+          console.log('=== Schema Tools ===');
+          console.log([...schemaTools].sort().join(', '));
+
+          // 2. Load gemini-extension.json
+          const geminiExt = JSON.parse(fs.readFileSync('gemini-extension.json', 'utf8'));
+          const geminiTools = new Set(geminiExt.tools.map(t => t.name));
+
+          console.log('=== Gemini Extension Tools ===');
+          console.log([...geminiTools].sort().join(', '));
+
+          // 3. Load qwen-extension.json
+          const qwenExt = JSON.parse(fs.readFileSync('qwen-extension.json', 'utf8'));
+          const qwenTools = new Set(qwenExt.tools.map(t => t.name));
+
+          console.log('=== Qwen Extension Tools ===');
+          console.log([...qwenTools].sort().join(', '));
+
+          // 4. Validate: all extension tools must exist in code
+          const allCodeTools = new Set([...codeTools, ...schemaTools]);
+          let errors = 0;
+
+          for (const tool of geminiTools) {
+            if (!allCodeTools.has(tool) && tool !== 'search_entries') {
+              console.error('ERROR: gemini-extension.json references tool not in code:', tool);
+              errors++;
+            }
+          }
+
+          for (const tool of qwenTools) {
+            if (!allCodeTools.has(tool) && tool !== 'search_entries') {
+              console.error('ERROR: qwen-extension.json references tool not in code:', tool);
+              errors++;
+            }
+          }
+
+          // 5. Validate: all granular tools must have schemas
+          for (const tool of GRANULAR_TOOLS) {
+            if (!Schemas[tool.name]) {
+              console.error('ERROR: Granular tool missing schema:', tool.name);
+              errors++;
+            }
+          }
+
+          // 6. Validate: no duplicate tool names
+          const allNames = [...GRANULAR_TOOLS.map(t => t.name), ...BL1NK_VISUAL_TOOLS.map(t => t.name)];
+          const duplicates = allNames.filter((name, i) => allNames.indexOf(name) !== i);
+          if (duplicates.length > 0) {
+            console.error('ERROR: Duplicate tool names:', duplicates);
+            errors++;
+          }
+
+          // 7. Validate version consistency
+          const rootPkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const bl1nPkg = JSON.parse(fs.readFileSync('packages/bl1nk/package.json', 'utf8'));
+          const geminiVer = geminiExt.version;
+          const qwenVer = qwenExt.version;
+
+          console.log('=== Version Check ===');
+          console.log('root:', rootPkg.version);
+          console.log('bl1nk:', bl1nPkg.version);
+          console.log('gemini-ext:', geminiVer);
+          console.log('qwen-ext:', qwenVer);
+
+          if (rootPkg.version !== bl1nPkg.version) {
+            console.error('ERROR: root and bl1nk versions mismatch');
+            errors++;
+          }
+          if (geminiVer !== bl1nPkg.version) {
+            console.error('ERROR: gemini-extension version mismatch with bl1nk');
+            errors++;
+          }
+          if (qwenVer !== bl1nPkg.version) {
+            console.error('ERROR: qwen-extension version mismatch with bl1nk');
+            errors++;
+          }
+
+          if (errors > 0) {
+            console.error('\nTool validation FAILED with', errors, 'errors');
+            process.exit(1);
+          }
+
+          console.log('\nAll tool validations passed!');
+          console.log('- Granular tools: ' + GRANULAR_TOOLS.length);
+          console.log('- Legacy tools: ' + BL1NK_VISUAL_TOOLS.length);
+          console.log('- Schemas: ' + Object.keys(Schemas).length);
+          console.log('- Gemini extension tools: ' + geminiTools.size);
+          console.log('- Qwen extension tools: ' + qwenTools.size);
+          console.log('- Version: ' + bl1nPkg.version);
+          "

@@ -13,14 +13,34 @@
   "mcpServers": {
     "bl1nkVisualServer": {
       "command": "node",
-      "args": ["${extensionPath}${/}dist${/}server.js"],
+      "args": ["${extensionPath}${/}packages${/}bl1nk${/}dist${/}index.js"],
       "cwd": "${extensionPath}"
     }
   },
   "tools": [
     {
       "name": "analyze_story",
-      "description": "Analyze story structure and extract 3-act structure"
+      "description": "Parse story text into StoryGraph JSON"
+    },
+    {
+      "name": "export_mermaid",
+      "description": "Convert StoryGraph to Mermaid diagram"
+    },
+    {
+      "name": "export_canvas",
+      "description": "Convert StoryGraph to Canvas JSON for interactive editing"
+    },
+    {
+      "name": "export_dashboard",
+      "description": "Generate HTML dashboard with statistics and charts"
+    },
+    {
+      "name": "export_markdown",
+      "description": "Convert StoryGraph to formatted Markdown document"
+    },
+    {
+      "name": "export_mcp_ui_dashboard",
+      "description": "Generate MCP-UI compatible dashboard HTML"
     },
     {
       "name": "validate_story_structure",
@@ -35,16 +55,28 @@
       "description": "Extract conflicts and their escalation levels"
     },
     {
-      "name": "export_mermaid",
-      "description": "Export story graph as Mermaid diagram"
+      "name": "build_relationship_graph",
+      "description": "Build relationship graph between characters"
     },
     {
-      "name": "export_canvas",
-      "description": "Export story graph as JSON for interactive canvas"
+      "name": "exa_search_story",
+      "description": "External story research using Exa AI"
     },
     {
-      "name": "export_dashboard",
-      "description": "Export story statistics as HTML dashboard"
+      "name": "search_entries",
+      "description": "Extract entities (characters, scenes, locations) from story text"
+    },
+    {
+      "name": "validate_story",
+      "description": "Quick validation from text input (legacy)"
+    },
+    {
+      "name": "generate_artifacts",
+      "description": "Generate ALL formats at once (legacy)"
+    },
+    {
+      "name": "sync_github",
+      "description": "Push generated files to GitHub repository (not implemented)"
     }
   ]
 }
