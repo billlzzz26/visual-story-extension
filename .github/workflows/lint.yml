@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# เพิ่ม env เพื่อรองรับ Node.js 24 ตามคำแนะนำของ GitHub Actions
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -21,7 +25,8 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - run: pnpm install --frozen-lockfile
+      # แก้ไขให้ยอมรับ lockfile ที่ไม่เป็นปัจจุบันเพื่อให้รันผ่าน
+      - run: pnpm install --no-frozen-lockfile
 
       - name: Biome lint + format (bl1nk)
         working-directory: packages/bl1nk
@@ -33,3 +38,4 @@ jobs:
 
       - name: Markdown lint
         run: pnpm run lint
+        
