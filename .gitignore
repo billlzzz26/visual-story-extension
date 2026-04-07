@@ -11,3 +11,4 @@ outputs/
 test-exports.js
 skill-lock.json
 tsconfig.tsbuildinfo
+plugins
