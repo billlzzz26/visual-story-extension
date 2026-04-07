@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import type { CraftApiClient } from "../client";
 import { LoadingState } from "../components/LoadingState";
+import { BookShelfLayout } from "../layouts/BookShelfLayout";
 import { PageBuilderLayout } from "../layouts/PageBuilderLayout";
 import type {
 	DataSourceActions,
@@ -37,13 +38,23 @@ export function LayoutRenderer({
 						: undefined
 				}
 			>
-				<PageBuilderLayout
-					items={items}
-					schema={schema}
-					actions={actions}
-					options={options}
-					client={client}
-				/>
+				{layout === "cards" || layout === "gallery" ? (
+					<BookShelfLayout
+						items={items}
+						schema={schema}
+						actions={actions}
+						options={options}
+						client={client}
+					/>
+				) : (
+					<PageBuilderLayout
+						items={items}
+						schema={schema}
+						actions={actions}
+						options={options}
+						client={client}
+					/>
+				)}
 			</div>
 		</Suspense>
 	);
