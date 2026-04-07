@@ -45,10 +45,16 @@ function parseArgs(args: string[]): Options {
 			options.stdin = true;
 		} else if (arg === "--ascii") {
 			options.ascii = true;
-		} else if (arg === "--theme" && args[i + 1]) {
-			options.theme = args[++i];
-		} else if (arg === "--output" && args[i + 1]) {
-			options.output = args[++i];
+  } else if (arg === "--theme") {
+              const nextArg = args[i + 1];
+              if (nextArg && !nextArg.startsWith("-")) {
+                  options.theme = args[++i];
+              }
+          } else if (arg === "--output") {
+              const nextArg = args[i + 1];
+              if (nextArg && !nextArg.startsWith("-")) {
+                  options.output = args[++i];
+              }
 		} else if (!arg.startsWith("-")) {
 			options.input = arg;
 		}
