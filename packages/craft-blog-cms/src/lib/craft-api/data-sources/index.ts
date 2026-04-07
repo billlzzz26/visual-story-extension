@@ -6,6 +6,7 @@ import type {
 	InitConfig,
 } from "../types";
 import { fetchBlocks } from "./blocks";
+import { fetchCollections } from "./collections";
 
 export interface ResolvedResources {
 	documentId?: string;
@@ -13,6 +14,7 @@ export interface ResolvedResources {
 	collectionId?: string;
 	collectionIds?: Record<string, string>;
 	spaceId?: string;
+	blockUrlTemplate?: string;
 }
 
 export function buildCraftWebUrl(
@@ -39,9 +41,6 @@ export function buildCraftBlockUrl(
 
 /**
  * Merge API-returned schema with the app config's design schema.
- * The design schema (from YAML) is the source of truth for field types,
- * enum values, and descriptions — ensuring forms render identically in
- * demo and API-connected modes.
  */
 export function mergeWithDesignSchema(
 	apiSchema: FieldSchema[],
@@ -90,6 +89,10 @@ export async function fetchDataSource(
 	resources?: ResolvedResources,
 	initConfig?: InitConfig,
 ): Promise<DataSourceResult> {
+	if (config.type === "collections") {
+		return fetchCollections(client, resources, initConfig);
+	}
 	const spaceId = resources?.spaceId;
-	return fetchBlocks(client, config, resources?.documentId, spaceId);
+	const blockUrlTemplate = resources?.blockUrlTemplate;
+	return fetchBlocks(client, config, resources?.documentId, blockUrlTemplate ?? spaceId);
 }
