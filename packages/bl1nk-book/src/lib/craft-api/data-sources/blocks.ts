@@ -29,38 +29,25 @@ async function fetchRootBlockWithRetry(
 		} catch (err) {
 			lastError = err;
 			const isRetryable =
-				err instanceof TypeError ||
-				(err instanceof CraftApiError &&
-					(err.status === 0 ||
-						err.status === 404 ||
-						err.status === 429));
-			if (!isRetryable || attempt === 3) break;
-			console.warn(
-				`[fetchBlocks] Root block lookup failed on attempt ${attempt}/3; retrying…`,
-				err,
-			);
-			await sleep(250 * attempt);
-		}
-	}
+            err instanceof CraftApiError &&
+            (err.status === 0 || err.status === 404 || err.status === 429);
+        if (!isRetryable || attempt === 3) break;
+        console.warn(
+            `[fetchBlocks] Root block lookup failed on attempt ${attempt}/3; retrying…`,
+            err,
+        );
+        await sleep(250 * attempt);
+    }
+}
 
-	if (lastError instanceof CraftApiError && lastError.status === 404) {
-		console.warn(
-			"[fetchBlocks] Root block not found yet; returning an empty block list for now.",
-			lastError,
-		);
-		return null;
-	}
-
-	if (lastError instanceof CraftApiError && lastError.status === 429) {
-		console.warn(
-			"[fetchBlocks] Block lookup hit rate limit; returning an empty block list for now.",
-			lastError,
-		);
-		return null;
-	}
-
-	if (lastError instanceof TypeError) {
-		console.warn(
+if (
+    lastError instanceof CraftApiError &&
+    (lastError.status === 0 ||
+        lastError.status === 404 ||
+        lastError.status === 429)
+) {
+    console.warn(
+        "[fetchBlocks] Block lookup temporarily unavailable; returning an empty block list for now.",
 			"[fetchBlocks] Block lookup failed to fetch; returning an empty block list for now.",
 			lastError,
 		);

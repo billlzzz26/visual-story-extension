@@ -94,5 +94,5 @@ export async function fetchDataSource(
 	}
 	const spaceId = resources?.spaceId;
 	const blockUrlTemplate = resources?.blockUrlTemplate;
-	return fetchBlocks(client, config, resources?.documentId, blockUrlTemplate ?? spaceId);
+ return fetchBlocks(client, config, resources?.documentId, blockUrlTemplate);
 }

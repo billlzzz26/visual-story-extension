@@ -45,12 +45,12 @@ async function registerClient(redirectUri: string) {
 
 export async function POST(request: NextRequest) {
 	try {
-		let body: { redirectUri?: string };
-		try {
-			body = (await request.json()) as { redirectUri?: string };
-		} catch {
-			throw new OAuthValidationError("Invalid request body");
-		}
+  let body: { redirectUri?: string };
+  try {
+      body = await request.json();
+  } catch {
+      throw new OAuthValidationError("Invalid request body");
+  }
 		const redirectUri = validateOAuthRedirectUri(body?.redirectUri || "");
 
 		let clientId = STATIC_CLIENT_ID;

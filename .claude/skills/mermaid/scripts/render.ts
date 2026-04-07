@@ -1,4 +1,4 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env -S npx tsx
 // @ts-nocheck
 /**
  * Mermaid diagram renderer using beautiful-mermaid

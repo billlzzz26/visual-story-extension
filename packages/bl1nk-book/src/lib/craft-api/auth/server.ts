@@ -52,13 +52,10 @@ export function validateOAuthRedirectUri(redirectUri: string): string {
 		throw new OAuthValidationError("Invalid redirectUri");
 	}
 
-	if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-		throw new OAuthValidationError(
-			"redirectUri must use http or https",
-		);
-	}
+ if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+         throw new OAuthValidationError("redirectUri must use http or https");
+     }
 
-	if (
 		!getAllowedOrigins().has(parsed.origin) &&
 		!isLocalOrigin(parsed.origin)
 	) {
