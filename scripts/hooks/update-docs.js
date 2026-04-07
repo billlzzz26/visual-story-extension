@@ -46,8 +46,18 @@ async function main() {
   }, {});
 
   const now = new Date();
-  const header = `---\ntitle: Completed Tasks\ndescription: Generated summary of completed TODO.md tasks\nlast_generated: ${formatDate(now)}\n---\n\n`;
-  let body = `# Completed Tasks\n\nGenerated from \\`TODO.md\\` on ${formatDate(now)}.\n\n`;
+  const dateStr = formatDate(now);
+
+  // แก้ไขส่วน String Template ให้สะอาดขึ้น
+  const header = `---
+title: Completed Tasks
+description: Generated summary of completed TODO.md tasks
+last_generated: ${dateStr}
+---
+
+`;
+
+  let body = `# Completed Tasks\n\nGenerated from \`TODO.md\` on ${dateStr}.\n\n`;
 
   if (completedTasks.length === 0) {
     body += "No completed tasks were found in TODO.md.\n";
