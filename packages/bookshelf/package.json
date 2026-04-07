@@ -1,0 +1,31 @@
+{
+        "name": "bookshelf",
+        "version": "3.0.0",
+        "private": true,
+        "license": "MIT",
+        "scripts": {
+                "dev": "next dev -p 3000 -H 0.0.0.0",
+                "build": "next build",
+                "start": "next start -p 5000 -H 0.0.0.0"
+        },
+        "dependencies": {
+                "@radix-ui/react-slot": "^1.2.4",
+                "class-variance-authority": "^0.7.1",
+                "clsx": "^2.1.1",
+                "js-cookie": "^3.0.0",
+                "lucide-react": "^0.400.0",
+                "next": "^15.0.0",
+                "react": "^19.0.0",
+                "react-dom": "^19.0.0",
+                "sonner": "^2.0.0",
+                "tailwind-merge": "^3.5.0"
+        },
+        "devDependencies": {
+                "@tailwindcss/postcss": "^4.0.0",
+                "@types/js-cookie": "^3.0.0",
+                "@types/node": "^22.0.0",
+                "@types/react": "^19.0.0",
+                "tailwindcss": "^4.0.0",
+                "typescript": "^5.0.0"
+        }
+}
