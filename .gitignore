@@ -12,3 +12,10 @@ test-exports.js
 skill-lock.json
 tsconfig.tsbuildinfo
 plugins
+# Secrets
+*.secret
+.env.local
+.env.*.local
+# Kilo config (may contain API keys)
+.kilo/kilo.json
+kilo.json
