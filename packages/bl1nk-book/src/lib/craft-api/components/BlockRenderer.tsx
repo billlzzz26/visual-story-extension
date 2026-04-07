@@ -182,8 +182,8 @@ function BlockNode({
 					key={child.id}
 					block={child}
 					depth={depth + 1}
-					onUpdate={onUpdate}
-					onDelete={onDelete}
+     onUpdate={undefined}
+     onDelete={undefined}
 				/>
 			))}
 		</div>
