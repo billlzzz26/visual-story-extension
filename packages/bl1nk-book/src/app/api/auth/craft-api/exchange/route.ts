@@ -20,7 +20,31 @@ function clearOAuthSessionCookie(response: NextResponse) {
 
 export async function POST(request: NextRequest) {
 	try {
-		const { code, state } = await request.json();
+		let body: unknown;
+		try {
+			body = await request.json();
+		} catch {
+			const response = NextResponse.json(
+				{ error: "Invalid JSON body" },
+				{ status: 400 },
+			);
+			applyNoStoreHeaders(response.headers);
+			return response;
+		}
+		const code =
+			body !== null &&
+			typeof body === "object" &&
+			"code" in body &&
+			typeof (body as { code: unknown }).code === "string"
+				? (body as { code: string }).code
+				: "";
+		const state =
+			body !== null &&
+			typeof body === "object" &&
+			"state" in body &&
+			typeof (body as { state: unknown }).state === "string"
+				? (body as { state: string }).state
+				: "";
 		if (!code || !state) {
 			const response = NextResponse.json(
 				{ error: "Missing code or state" },

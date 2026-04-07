@@ -59,7 +59,7 @@ export async function POST() {
 		response.cookies.set(
 			REFRESH_COOKIE,
 			JSON.stringify({
-				refreshToken: tokens.refresh_token,
+				refreshToken: tokens.refresh_token ?? session.refreshToken,
 				clientId: session.clientId,
 			}),
 			{
