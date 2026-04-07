@@ -40,17 +40,18 @@ await runtime.deleteDocument({ id: 'doc-123' });
 
 ## Document Types
 
-| Type | Use Case |
-|------|----------|
-| `markdown` | Reading, documentation |
-| `html` | Interactive dashboards |
-| `json` | Canvas, data exchange |
-| `csv` | Database import |
-| `mermaid` | Diagrams, flowcharts |
+| Type     | Use Case               |
+| -------- | ---------------------- |
+| markdown | Reading, documentation |
+| html     | Interactive dashboards |
+| json     | Canvas, data exchange  |
+| csv      | Database import        |
+| mermaid  | Diagrams, flowcharts   |
 
 ## Integration
 
 Documents are automatically:
+
 - Associated with topics
 - Linked to tasks (if in task context)
 - Tracked with word counts
