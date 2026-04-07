@@ -1,0 +1,29 @@
+{
+  "name": "visual-story-extension",
+  "image": "mcr.microsoft.com/devcontainers/universal:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    }
+  },
+  "remoteEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  },
+  "forwardPorts": [3000, 3001, 5173, 5174, 8080],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "rust-lang.rust-analyzer"
+      ]
+    }
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/codespace/.ssh,readonly",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/codespace/.gitconfig,readonly"
+  ],
+  "postCreateCommand": "npm install",
+  "waitFor": "onCreateCommand"
+}

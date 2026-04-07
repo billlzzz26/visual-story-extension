@@ -3,11 +3,18 @@
 	"version": "3.0.0",
 	"private": true,
 	"type": "module",
+	"engines": {
+		"node": ">=22 <=24"
+	},
 	"scripts": {
 		"build": "pnpm -r run build",
 		"test": "pnpm -r run test",
 		"lint": "pnpm -r run lint",
-		"format": "pnpm -r run format"
+		"format": "pnpm -r run format",
+		"hook:pre-commit": "pnpm lint",
+		"docs:update": "node ./scripts/hooks/update-docs.js",
+		"hook:task-complete": "pnpm run lint && pnpm run docs:update",
+		"hooks:install": "git config core.hooksPath .githooks"
 	},
 	"dependencies": {
 		"@google/genai": "^1.41.0",

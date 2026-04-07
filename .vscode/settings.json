@@ -1,0 +1,6 @@
+{
+    "workbench.editor.autoLockGroups": {
+        "github-issues": true
+    },
+    "amazonQ.telemetry": false
+}

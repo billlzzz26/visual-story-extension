@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, "../..");
+const todoPath = path.join(repoRoot, "TODO.md");
+const outPath = path.join(repoRoot, "docs", "completed-tasks.md");
+
+function formatDate(date) {
+  return date.toISOString().split("T")[0];
+}
+
+async function main() {
+  const content = await fs.readFile(todoPath, "utf8");
+  const lines = content.split(/\r?\n/);
+  const completedTasks = [];
+  let currentSection = "General";
+
+  for (const line of lines) {
+    const headingMatch = line.match(/^#{1,6}\s+(.*)$/);
+    if (headingMatch) {
+      currentSection = headingMatch[1].trim();
+      continue;
+    }
+
+    const taskMatch = line.match(/^- \[x\]\s*(.*)$/);
+    if (!taskMatch) {
+      continue;
+    }
+
+    completedTasks.push({
+      section: currentSection,
+      text: taskMatch[1].trim(),
+    });
+  }
+
+  const sections = completedTasks.reduce((map, task) => {
+    if (!map[task.section]) {
+      map[task.section] = [];
+    }
+    map[task.section].push(task.text);
+    return map;
+  }, {});
+
+  const now = new Date();
+  const header = `---\ntitle: Completed Tasks\ndescription: Generated summary of completed TODO.md tasks\nlast_generated: ${formatDate(now)}\n---\n\n`;
+  let body = `# Completed Tasks\n\nGenerated from \\`TODO.md\\` on ${formatDate(now)}.\n\n`;
+
+  if (completedTasks.length === 0) {
+    body += "No completed tasks were found in TODO.md.\n";
+  } else {
+    body += `Total completed tasks: ${completedTasks.length}\n\n`;
+    for (const section of Object.keys(sections)) {
+      body += `## ${section}\n\n`;
+      for (const taskText of sections[section]) {
+        body += `- [x] ${taskText}\n`;
+      }
+      body += "\n";
+    }
+  }
+
+  await fs.writeFile(outPath, header + body, "utf8");
+  process.stdout.write(`Updated ${path.relative(repoRoot, outPath)} with ${completedTasks.length} completed tasks.\n`);
+}
+
+main().catch((error) => {
+  console.error("Failed to update docs:", error);
+  process.exit(1);
+});
