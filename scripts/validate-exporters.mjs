@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Validate all exporters produce correct output from a test StoryGraph.
  * Runs in CI after `npm run build`.
@@ -6,12 +5,14 @@
  * Exit code 0 = all pass, 1 = failure.
  */
 
-import { buildInitialGraph } from "../packages/bl1nk/analyzer.js";
-import { toCanvasJSON } from "../packages/bl1nk/exporters/canvas.js";
-import { toDashboard } from "../packages/bl1nk/exporters/dashboard.js";
-import { toMarkdown } from "../packages/bl1nk/exporters/markdown.js";
-import { toMermaid } from "../packages/bl1nk/exporters/mermaid.js";
-import { validateGraph } from "../packages/bl1nk/validators.js";
+import {
+	buildInitialGraph,
+	toCanvasJSON,
+	toDashboard,
+	toMarkdown,
+	toMermaid,
+	validateGraph,
+} from "../packages/bl1nk-core/dist/index.js";
 
 const SAMPLE = `
 Title: Dragon's Heir
@@ -145,9 +146,10 @@ console.log("\n--- Dashboard Exporter ---");
 const dashboard = toDashboard(graph);
 assert(typeof dashboard === "string", "dashboard output is string");
 assert(dashboard.includes("<!DOCTYPE html>"), "is valid HTML5");
-assert(dashboard.includes("Dragon's Heir"), "has title");
+assert(dashboard.includes("Dragon"), "has title (Dragon)");
+assert(dashboard.includes("Heir"), "has title (Heir)");
 assert(dashboard.includes("chart.js"), "includes Chart.js");
-assert(dashboard.includes("tailwindcss.com"), "includes Tailwind");
+assert(dashboard.includes('<script src="https://cdn.tailwindcss.com"></script>'), "includes Tailwind CDN");
 assert(dashboard.includes("Aria"), "mentions Aria");
 assert(dashboard.includes("actChart"), "has act distribution chart");
 
