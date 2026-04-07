@@ -13,7 +13,9 @@
 	"mcpServers": {
 		"bl1nkVisualServer": {
 			"command": "node",
-			"args": ["${extensionPath}${/}packages${/}bl1nk${/}dist${/}index.js"],
+			"args": [
+				"${extensionPath}${/}packages${/}bl1nk${/}dist${/}index.js"
+			],
 			"cwd": "${extensionPath}"
 		}
 	},

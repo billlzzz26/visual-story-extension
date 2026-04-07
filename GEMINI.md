@@ -15,38 +15,14 @@ You are a **structured story analysis and optimization system** designed to conv
 ## 🏗️ Architecture
 
 ### Technology Stack
-- **Runtime:** Node.js 18+
-- **Language:** TypeScript 5.3+
-- **Framework:** Model Context Protocol (MCP) SDK
-- **Validation:** Zod
-- **Build:** esbuild
+See [QWEN.md](QWEN.md#technology-stack) for full stack details.
 
 ### Project Structure
-```
-visual-story-extension/
-├── packages/bl1nk/
-│   ├── src/index.ts          # MCP server entry, tool registration
-│   ├── tools/
-│   │   ├── index.ts          # Tool definitions (GRANULAR_TOOLS + BL1NK_VISUAL_TOOLS)
-│   │   ├── execute.ts        # Tool executors
-│   │   └── search-entries.ts # Standalone search tool
-│   ├── exporters/            # Export modules
-│   │   ├── mermaid.ts        # Mermaid diagram export
-│   │   ├── canvas.ts         # Canvas JSON export
-│   │   ├── dashboard.ts      # HTML dashboard export
-│   │   ├── markdown.ts       # Markdown document export
-│   │   └── mcp-ui-dashboard.ts # MCP-UI dashboard export
-│   ├── analyzer.ts           # Story analysis engine
-│   ├── validators.ts         # Validation engine (50+ rules)
-│   ├── exa-search.ts         # External search integration
-│   └── types.ts              # Core type definitions
-├── packages/tauri-app/       # Desktop app (React + Vite + Tauri)
-├── packages/github-sync/     # GitHub webhook → Notion sync
-├── docs/                     # Documentation
-│   ├── ARCHITECTURE.md           # System architecture + dataflow
-│   ├── TOOL_MAPPING.md           # Complete tool mapping
-└── AGENTS.md                 # Root agent instructions
-```
+See [QWEN.md](QWEN.md#project-structure) for full structure.
+> **Note:** `mcp-ui-dashboard.ts` merged into `dashboard.ts` (2026-04-07).
+
+### MCP Tools
+See [docs/TOOL_MAPPING.md](docs/TOOL_MAPPING.md) for complete tool mapping (16 tools).
 
 ---
 
