@@ -2,6 +2,16 @@
 
 **Primary Reference:** See [AGENTS.md](AGENTS.md) for core project information, commands, structure, and coding guidelines.
 
+## Workflow Rules (MANDATORY)
+
+1. **อ่าน TODO.md ก่อนเริ่มทำงานทุกครั้ง** — `TODO.md` คือ source of truth สำหรับงานทั้งหมด
+   - ทุก task มี status: `[ ]` todo · `[~]` in progress · `[x]` done
+   - ทุก task มี priority: `critical-blocker` > `high-priority` > `core` > `config` > `low-priority`
+2. **อัปเดต TODO.md ทุกครั้งที่จบงาน** — เปลี่ยน `[ ]` → `[x]` หรือ `[~]` ตามสถานะ
+3. **ตรวจสอบ dead code และ duplicate files ก่อนสรุปว่าเสร็จ** — อย่าปล่อยให้ไฟล์ซ้ำหรือโค้ดที่ไม่มี caller ตกค้าง
+4. **ทำงานให้เสร็จเป็นรายข้อ** — ไม่ใช่ทำทีละนิดทิ้งไว้ ทำงานหนึ่งให้เสร็จสมบูรณ์ก่อนเริ่มข้อถัดไป
+5. **อ่านเอกสารที่มีอยู่** — QWEN.md, AGENTS.md, TODO.md, docs/ARCHITECTURE.md, docs/TOOL_MAPPING.md
+
 ## Project Overview
 
 **bl1nk-visual-mcp** is a production-ready **MCP server** for structured story analysis, planning, and optimization. It converts natural-language story text into structured **StoryGraph JSON** and provides 16 tools for visualization and analysis.
@@ -48,9 +58,8 @@ visual-story-extension/
 │   ├── exporters/
 │   │   ├── mermaid.ts        # Mermaid diagram export
 │   │   ├── canvas.ts         # Canvas JSON export
-│   │   ├── dashboard.ts      # HTML dashboard export
-│   │   ├── markdown.ts       # Markdown document export
-│   │   └── mcp-ui-dashboard.ts # MCP-UI dashboard export
+│   │   ├── dashboard.ts      # HTML dashboard (classic + modern theme, includes toMcpUiDashboard)
+│   │   └── markdown.ts       # Markdown document export
 │   ├── analyzer.ts           # Story text parsing and graph building
 │   ├── validators.ts         # Validation engine (50+ rules)
 │   ├── exa-search.ts         # External search integration (Exa AI)

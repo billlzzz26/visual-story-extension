@@ -1,0 +1,54 @@
+# CODEOWNERS
+
+# This file controls who is automatically requested for review when
+# someone opens a pull request that modifies code that you own.
+#
+# Format: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @billlzzz26
+
+# Core MCP server
+packages/bl1nk-core/ @billlzzz26
+packages/bl1nk-core/src/ @billlzzz26
+packages/bl1nk-core/tools/ @billlzzz26
+packages/bl1nk-core/exporters/ @billlzzz26
+packages/bl1nk-core/utils/ @billlzzz26
+packages/bl1nk-core/core/ @billlzzz26
+
+# Skills and extensions
+.agents/skills/ @billlzzz26
+.qwen/skills/ @billlzzz26
+.claude/skills/ @billlzzz26
+.kilo/skills/ @billlzzz26
+skills/ @billlzzz26
+
+# Extension manifests
+qwen-extension.json @billlzzz26
+gemini-extension.json @billlzzz26
+.mcp.json @billlzzz26
+.claude-plugin/ @billlzzz26
+kilo.jsonc @billlzzz26
+manifest-source.json @billlzzz26
+
+# Scripts
+scripts/ @billlzzz26
+
+# Hooks
+hooks/ @billlzzz26
+
+# Commands
+commands/ @billlzzz26
+
+# Documentation
+docs/ @billlzzz26
+*.md @billlzzz26
+
+# CI/CD
+.github/workflows/ @billlzzz26
+
+# Configuration
+package.json @billlzzz26
+tsconfig.json @billlzzz26
+biome.json @billlzzz26
+.gitignore @billlzzz26

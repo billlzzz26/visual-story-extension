@@ -1,0 +1,16 @@
+{
+	"agent": {
+		"story-analyzer": {
+			"description": "Analyzes story structure using bl1nk MCP tools — validates 3-act structure, tracks character arcs, maps conflicts, and generates visual diagrams.",
+			"mode": "subagent"
+		},
+		"story-validator": {
+			"description": "Validates story structure against industry standards — checks act distribution, midpoint, climax, pacing, and character development.",
+			"mode": "subagent"
+		},
+		"story-exporter": {
+			"description": "Exports StoryGraph to multiple formats — Mermaid diagrams, Canvas JSON, HTML dashboards, Markdown documents, and CSV data.",
+			"mode": "subagent"
+		}
+	}
+}

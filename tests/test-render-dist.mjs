@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { buildInitialGraph } from "./dist/analyzer.js";
-import { toMcpUiDashboard } from "./dist/exporters/mcp-ui-dashboard.js";
+import { toMcpUiDashboard } from "./dist/exporters/dashboard.js";
 import { toMermaid } from "./dist/exporters/mermaid.js";
 
 // Sample story text for testing
