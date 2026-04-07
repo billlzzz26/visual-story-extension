@@ -11,6 +11,10 @@ owner: dev-team
 > **Source of truth** สำหรับงานทั้งหมด
 > Status: `[ ]` todo · `[~]` in progress · `[x]` done
 > Format: `type:feat/fix/arc/refactor/docs/test/style` · `label:core/high-priority/critical-blocker/component/config/integration`
+>
+> หมายเหตุ: ให้ปรับสถานะ TODO.md ทุกครั้งเมื่อจบงานหรือเปลี่ยนสถานะงาน
+>
+> คู่มือเพิ่มเติม: `docs/INSTRUCTIONS_TH.md`
 
 ---
 

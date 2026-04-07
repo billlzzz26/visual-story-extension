@@ -121,16 +121,18 @@ export function extractStoryEntities(text: string) {
 	const foundNames = new Set<string>();
 
 	// 2a. Regex extraction
-	while ((match = STORY_PATTERNS.CHARACTER.exec(text)) !== null) {
-		const name = match[1].trim();
-		foundNames.add(name);
+	while (true) {
+		match = STORY_PATTERNS.CHARACTER.exec(text)
+		if (match === null) break
+		const name = match[1].trim()
+		foundNames.add(name)
 		results.characters.push({
 			type: "character",
 			name,
 			role: match[2]?.toLowerCase() || "supporting",
 			index: charIdx++,
 			raw: match[0],
-		});
+		})
 	}
 
 	// 2b. Dictionary extraction (bridge from v1)
@@ -149,39 +151,45 @@ export function extractStoryEntities(text: string) {
 	}
 
 	// 3. Extract Events
-	STORY_PATTERNS.EVENT.lastIndex = 0;
-	let eventIdx = 0;
-	while ((match = STORY_PATTERNS.EVENT.exec(text)) !== null) {
+	STORY_PATTERNS.EVENT.lastIndex = 0
+	let eventIdx = 0
+	while (true) {
+		match = STORY_PATTERNS.EVENT.exec(text)
+		if (match === null) break
 		results.events.push({
 			type: "event",
 			name: match[1].trim(),
 			index: eventIdx++,
 			raw: match[0],
-		});
+		})
 	}
 
 	// 4. Extract Conflicts
-	STORY_PATTERNS.CONFLICT.lastIndex = 0;
-	let conflictIdx = 0;
-	while ((match = STORY_PATTERNS.CONFLICT.exec(text)) !== null) {
+	STORY_PATTERNS.CONFLICT.lastIndex = 0
+	let conflictIdx = 0
+	while (true) {
+		match = STORY_PATTERNS.CONFLICT.exec(text)
+		if (match === null) break
 		results.conflicts.push({
 			type: "conflict",
 			name: match[1].trim(),
 			index: conflictIdx++,
 			raw: match[0],
-		});
+		})
 	}
 
 	// 5. Extract Scenes
-	STORY_PATTERNS.SCENE.lastIndex = 0;
-	let sceneIdx = 0;
-	while ((match = STORY_PATTERNS.SCENE.exec(text)) !== null) {
+	STORY_PATTERNS.SCENE.lastIndex = 0
+	let sceneIdx = 0
+	while (true) {
+		match = STORY_PATTERNS.SCENE.exec(text)
+		if (match === null) break
 		results.scenes.push({
 			type: "scene",
 			name: match[1].trim(),
 			index: sceneIdx++,
 			raw: match[0],
-		});
+		})
 	}
 
 	// 6. Extract Locations (New: improved logic)

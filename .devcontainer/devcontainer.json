@@ -1,6 +1,7 @@
 {
   "name": "visual-story-extension",
   "image": "mcr.microsoft.com/devcontainers/universal:latest",
+  "remoteUser": "codespace",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "24"
@@ -20,10 +21,6 @@
       ]
     }
   },
-  "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/codespace/.ssh,readonly",
-    "source=${localEnv:HOME}/.gitconfig,target=/home/codespace/.gitconfig,readonly"
-  ],
-  "postCreateCommand": "npm install",
-  "waitFor": "onCreateCommand"
+  "postCreateCommand": "corepack enable && pnpm install --frozen-lockfile",
+  "waitFor": "postCreateCommand"
 }
