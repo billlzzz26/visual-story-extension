@@ -622,13 +622,6 @@ export enum NotebookApiName {
 	GENERATE_ARTIFACTS = "notebook_generate_artifacts",
 }
 
-/** Notebook identifier */
-export const NotebookIdentifier = {
-	name: "bl1nk-notebook",
-	version: "1.0.0",
-	description: "Interactive document management for bl1nk-visual-mcp",
-} as const;
-
 // ============================================================================
 // Plugin Types (from plugin.ts)
 // ============================================================================

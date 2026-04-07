@@ -56,19 +56,6 @@ export function generateCSV(graph: StoryGraph): string {
 	return lines.join("\n");
 }
 
-/**
- * Generate individual CSV files
- */
-export function generateIndividualCSVs(
-	graph: StoryGraph,
-): Record<string, string> {
-	return {
-		"characters.csv": generateCharactersCSV(graph.characters),
-		"events.csv": generateEventsCSV(graph.events),
-		"conflicts.csv": generateConflictsCSV(graph.conflicts),
-	};
-}
-
 // ============================================================================
 // Helper Functions
 // ============================================================================
