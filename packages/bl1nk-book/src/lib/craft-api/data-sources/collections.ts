@@ -52,7 +52,9 @@ export async function fetchCollections(
 	try {
 		const itemsRes = await client.getCollectionItems(collectionId);
 		items = itemsRes.items;
-	} catch {
+ } catch (err) {
+     const status = (err as { status?: number }).status;
+     if (status === 401 || status === 403) throw err;
 		items = [];
 	}
 
