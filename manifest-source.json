@@ -1,0 +1,40 @@
+{
+	"name": "bl1nk-visual-mcp",
+	"version": "3.0.0",
+	"description": "Story analysis and visualization MCP server",
+	"author": "bl1nk team",
+	"mcpServer": {
+		"command": "node",
+		"entryPoint": "packages/bl1nk/dist/index.js"
+	},
+	"tools": [
+		{ "name": "analyze_story", "description": "Parse story text into StoryGraph JSON" },
+		{ "name": "export_mermaid", "description": "Convert StoryGraph to Mermaid diagram" },
+		{ "name": "export_canvas", "description": "Convert StoryGraph to Canvas JSON for interactive editing" },
+		{ "name": "export_dashboard", "description": "Generate HTML dashboard with statistics and charts" },
+		{ "name": "export_markdown", "description": "Convert StoryGraph to formatted Markdown document" },
+		{ "name": "export_mcp_ui_dashboard", "description": "Generate MCP-UI compatible dashboard HTML" },
+		{ "name": "validate_story_structure", "description": "Validate story structure against rules like climax and act distribution" },
+		{ "name": "extract_characters", "description": "Extract character roles, traits, and arcs" },
+		{ "name": "extract_conflicts", "description": "Extract conflicts and their escalation levels" },
+		{ "name": "build_relationship_graph", "description": "Build relationship graph between characters" },
+		{ "name": "exa_search_story", "description": "External story research using Exa AI" },
+		{ "name": "search_entries", "description": "Extract entities (characters, scenes, locations) from story text" },
+		{ "name": "validate_story", "description": "Quick validation from text input (legacy)" },
+		{ "name": "generate_artifacts", "description": "Generate ALL formats at once (legacy)" },
+		{ "name": "sync_github", "description": "Push generated files to GitHub repository (not implemented)" }
+	],
+	"settings": [
+		{
+			"name": "Default Mode",
+			"description": "Default render mode (canvas|mermaid|dashboard)",
+			"envVar": "BL1NK_DEFAULT_MODE",
+			"sensitive": false
+		}
+	],
+	"contextFiles": {
+		"qwen": "QWEN.md",
+		"gemini": "GEMINI.md",
+		"claude": "CLAUDE.md"
+	}
+}

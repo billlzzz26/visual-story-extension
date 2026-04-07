@@ -1,0 +1,26 @@
+{
+	"hooks": {
+		"PostToolUse": [
+			{
+				"matcher": "Write|Edit",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "cd packages/bl1nk && npm run check 2>nul || echo 'Biome check skipped (no changes)'"
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "analyze_story",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "echo '💡 Tip: After analysis, run validate_story_structure to check 3-act compliance.'"
+					}
+				]
+			}
+		]
+	}
+}

@@ -5,7 +5,13 @@
 ## Project Overview
 
 MCP server + Kilo Code plugin for structured story analysis and visualization.
-Converts natural-language story text → StoryGraph JSON with 16 MCP tools (11 granular + 4 legacy + 1 standalone) + multiple exporters.
+Converts natural-language story text → StoryGraph JSON with 16 MCP tools.
+
+See [QWEN.md](QWEN.md) for full project structure, technology stack, and documentation links.
+See [docs/TOOL_MAPPING.md](docs/TOOL_MAPPING.md) for complete tool mapping.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system architecture.
+
+> **Note:** `mcp-ui-dashboard.ts` merged into `dashboard.ts` (2026-04-07).
 
 ## Quick Commands
 
@@ -21,27 +27,7 @@ npm run check          # Biome lint + format (auto-fix)
 
 ## Architecture
 
-```
-packages/bl1nk/
-  src/index.ts          # MCP server entry, tool registration, Zod schemas
-  tools/
-    index.ts            # Tool definitions (GRANULAR_TOOLS + BL1NK_VISUAL_TOOLS)
-    execute.ts          # Tool executors (executeGranularTool + executeStoryTool)
-    search-entries.ts   # Standalone search tool
-    generate-artifacts.ts
-  exporters/            # Output formatters
-    mermaid.ts          # Mermaid diagram export
-    canvas.ts           # Canvas JSON export
-    dashboard.ts        # HTML dashboard export
-    markdown.ts         # Markdown document export
-    mcp-ui-dashboard.ts # MCP UI dashboard export
-  analyzer.ts           # Story text → StoryGraph builder
-  validators.ts         # Structural validation logic
-  exa-search.ts         # External search integration (Exa AI)
-  types.ts              # TypeScript interfaces (StoryGraph, Character, etc.)
-packages/tauri-app/     # Desktop app (React + Vite + Tauri)
-packages/github-sync/   # GitHub webhook → Notion sync
-```
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full system architecture and dataflow diagrams.
 
 ## Code Style
 

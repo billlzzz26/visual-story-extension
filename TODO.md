@@ -2,7 +2,7 @@
 title: TODO - bl1nk-visual-mcp
 description: Source of truth for all implementation tasks
 status: in_progress
-last_updated: 2026-04-03
+last_updated: 2026-04-07
 owner: dev-team
 ---
 
@@ -114,16 +114,15 @@ owner: dev-team
   - **Fix:** Pre-compile regex patterns once before the loop
   - **Status:** Done - Moved regex compilation outside nested loop in `analyzer.ts:136-144`
 
-- [ ] `type:fix` `label:high-priority` Add CSV escaping to prevent data corruption (`generate-artifacts.ts:60-77`)
-  - No CSV escaping for values containing quotes, commas, or newlines
-  - Character name like `John "The Brave"` would break CSV parsing
-  - Risk of CSV injection attacks
-  - **Fix:** Implement `escapeCSV()` function
+- [x] `type:fix` `label:high-priority` Add CSV escaping to prevent data corruption (`utils/csv-generator.ts`)
+  - Implemented `escapeCSV()` function — handles quotes, commas, newlines
+  - Applied to both `generateCSV()` and `generateIndividualCSVs()`
+  - **Status:** Done — 2026-04-07
 
-- [ ] `type:fix` `label:high-priority` Lazy load templates to avoid blocking event loop (`search-entries.ts:24-27`)
-  - Synchronous file I/O at module load time blocks event loop
-  - Server startup will be slow
-  - **Fix:** Lazy load templates on first use
+- [x] `type:fix` `label:high-priority` Lazy load templates to avoid blocking event loop (`search-entries.ts`)
+  - Replaced module-level `readFileSync` with `getTemplates()` lazy loader + cache
+  - Templates loaded on first use, not at import time
+  - **Status:** Done — 2026-04-07
 
 ### Core
 
@@ -244,19 +243,74 @@ owner: dev-team
 
 ---
 
+## ✅ Code Review Cleanup (2026-04-07)
+
+*Completed: Fixed issues from comprehensive codebase review, consolidated files, removed duplicates*
+
+### Critical Fixes
+
+- [x] `type:fix` `label:critical-blocker` Fix typo `" mentor-of"` → `"mentor-of"` in `packages/bl1nk/types.ts:55`
+  - Leading space caused type mismatch — `type === "mentor-of"` would never match
+  - **Status:** Done — 2026-04-07
+
+- [x] `type:fix` `label:critical-blocker` Fix response body consumed twice in `packages/bookshelf/src/lib/craft-api/client.ts`
+  - `retryResponse.text()` then `retryResponse.json()` — body already consumed
+  - Changed to store text result and parse for both success and error paths
+  - **Status:** Done — 2026-04-07
+
+### Code Quality
+
+- [x] `type:refactor` `label:core` Replace global regex `.exec()` with `.matchAll()` in `packages/bl1nk/core/parser.ts`
+  - 4 regex patterns (CHARACTER, EVENT, CONFLICT, SCENE) now use `matchAll()` — no `lastIndex` mutation
+  - **Status:** Done — 2026-04-07
+
+- [x] `type:refactor` `label:core` Merge `dashboard.ts` + `mcp-ui-dashboard.ts` into single file
+  - Added `DashboardTheme = "classic" | "modern"` option with full theme color tokens
+  - `mcp-ui-dashboard.ts` deleted — `toMcpUiDashboard()` exported from `dashboard.ts`
+  - All imports updated across codebase
+  - **Status:** Done — 2026-04-07
+
+- [x] `type:refactor` `label:core` Remove duplicate CSV generator in `generate-artifacts.ts`
+  - Now imports `generateCSV` from `utils/csv-generator.ts`
+  - Added `escapeCSV()` for safe CSV output
+  - **Status:** Done — 2026-04-07
+
+- [x] `type:refactor` `label:core` Remove dead code in `search-entries.ts`
+  - Removed unused `generateFiles()`, `renderCharacter/Scene/Location`, `generateIndexFile`, `getFolderForType` (~160 lines)
+  - **Status:** Done — 2026-04-07
+
+- [x] `type:refactor` `label:core` Remove dead code in `auth.ts`
+  - Removed unused `jwksCache`, stub `createRemoteJWKSet()`, top-level `jwtVerify` import
+  - **Status:** Done — 2026-04-07
+
+- [x] `type:refactor` `label:core` Remove orphaned `@google/genai` dependency
+  - Not imported anywhere — removed from root + bl1nk package.json
+  - **Status:** Done — 2026-04-07
+
+### Documentation
+
+- [x] `type:docs` `label:config` Update `QWEN.md` — Added mandatory workflow rules (read TODO.md, update TODO.md, check dead code)
+- [x] `type:docs` `label:config` Update `QWEN.md` — Removed `mcp-ui-dashboard.ts` from project structure
+- [x] `type:docs` `label:config` Update `TODO.md` — Marked completed items, removed obsolete entries
+
+---
+
 ## 🔴 Critical Fixes from Code Review (2026-04-01)
 
 *Priority: Must fix before next release*
 
-- [ ] `type:fix` `label:high-priority` Remove orphaned `@google/genai` dependency from `package.json:31`
+- [x] `type:fix` `label:high-priority` Remove orphaned `@google/genai` dependency from `package.json`
   - Not imported anywhere in codebase
-  - Increases install size and potential security surface
-- [ ] `type:fix` `label:high-priority` Fix `prestart` script to build both server and plugin
-  - Current: `"prestart": "npm run build:server"` → Should be: `"npm run build"`
-  - Plugin export at `./dist/plugin.js` will be missing otherwise
-- [ ] `type:fix` `label:high-priority` Add JSON parse error handling in `src/exa-search.ts:97`
-  - Wrap `response.json()` in try-catch
-  - Prevents server crash on malformed API response
+  - **Status:** Done — 2026-04-07 (removed from root + bl1nk package.json)
+
+- [x] `type:fix` `label:high-priority` Fix `prestart` script to build both server and plugin
+  - Current: `"prestart": "npm run build"` — already builds everything via esbuild bundle
+  - **Status:** Done — verified via code review (build bundles all imports)
+
+- [x] `type:fix` `label:high-priority` Add JSON parse error handling in `src/exa-search.ts`
+  - Already wrapped in try-catch at line ~138
+  - **Status:** Done — verified via code review
+
 - [ ] `type:feat` `label:high-priority` Add startup validation for Exa API key
   - Currently validated at call time (`src/exa-search.ts:45-49`)
   - Should validate at server startup and conditionally register tool or warn
