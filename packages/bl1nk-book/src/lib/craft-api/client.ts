@@ -100,7 +100,10 @@ export class CraftApiClient {
 						const retryText = await retryResponse.text();
 						let retryBody: Record<string, unknown> = {};
 						try {
-							retryBody = JSON.parse(retryText);
+          const parsedRetryBody = JSON.parse(retryText) as unknown;
+          if (parsedRetryBody && typeof parsedRetryBody === "object" && !Array.isArray(parsedRetryBody)) {
+              retryBody = parsedRetryBody as Record<string, unknown>;
+          }
 						} catch {
 							// Ignore parse errors, fall through to default error
 						}
