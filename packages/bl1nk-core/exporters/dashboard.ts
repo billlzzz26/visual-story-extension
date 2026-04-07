@@ -171,9 +171,9 @@ export function toDashboard(
                     <canvas id="actChart"></canvas>
                 </div>
                 <div class="mt-6 flex h-4 rounded-full overflow-hidden ${colors.progressBg}">
-                    <div class="act-1" style="width: ${(v.analysis.actBalance.act1 / v.analysis.eventCount) * 100}%"></div>
-                    <div class="act-2" style="width: ${(v.analysis.actBalance.act2 / v.analysis.eventCount) * 100}%"></div>
-                    <div class="act-3" style="width: ${(v.analysis.actBalance.act3 / v.analysis.eventCount) * 100}%"></div>
+                    <div class="act-1" style="width: ${(v.analysis.actBalance.act1 / (v.analysis.eventCount || 1)) * 100}%"></div>
+                    <div class="act-2" style="width: ${(v.analysis.actBalance.act2 / (v.analysis.eventCount || 1)) * 100}%"></div>
+                    <div class="act-3" style="width: ${(v.analysis.actBalance.act3 / (v.analysis.eventCount || 1)) * 100}%"></div>
                 </div>
                 <div class="mt-2 flex justify-between text-xs font-medium ${colors.progressText}">
                     <span>Act 1: ${v.analysis.actBalance.act1}</span>

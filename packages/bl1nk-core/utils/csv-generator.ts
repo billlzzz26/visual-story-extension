@@ -12,12 +12,23 @@ import type { Character, Conflict, EventNode, StoryGraph } from "../types.js";
  * Escape a value for safe CSV output.
  * Wraps in quotes if the value contains commas, quotes, or newlines,
  * and doubles any internal quotes.
+ * Also prefixes values starting with =, +, -, @ with ' to prevent formula injection.
  */
 function escapeCSV(value: string): string {
-	if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-		return `"${value.replace(/"/g, '""')}"`;
+	// Prevent CSV formula injection (Excel, Google Sheets)
+	let escaped = value;
+	if (/^[=+\-@]/.test(escaped)) {
+		escaped = `'${escaped}`;
 	}
-	return value;
+	if (
+		escaped.includes(",") ||
+		escaped.includes('"') ||
+		escaped.includes("\n") ||
+		escaped.includes("\r")
+	) {
+		return `"${escaped.replace(/"/g, '""')}"`;
+	}
+	return escaped;
 }
 
 /**
