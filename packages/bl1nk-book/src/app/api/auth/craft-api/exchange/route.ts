@@ -20,7 +20,11 @@ function clearOAuthSessionCookie(response: NextResponse) {
 
 export async function POST(request: NextRequest) {
 	try {
-		const { code, state } = await request.json();
+  const body = (await request.json().catch(() => null)) as
+      | { code?: unknown; state?: unknown }
+      | null;
+  const code = typeof body?.code === "string" ? body.code : "";
+  const state = typeof body?.state === "string" ? body.state : "";
 		if (!code || !state) {
 			const response = NextResponse.json(
 				{ error: "Missing code or state" },
