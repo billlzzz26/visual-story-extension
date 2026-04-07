@@ -1,4 +1,5 @@
 {
+  "$schema": "https://app.kilo.ai/config.json",
 	"agent": {
 		"story-analyzer": {
 			"description": "Analyzes story structure using bl1nk MCP tools — validates 3-act structure, tracks character arcs, maps conflicts, and generates visual diagrams.",
