@@ -113,17 +113,19 @@ export function extractCharacters(
 	const characters: RawEntry[] = [];
 	const lines = text.split("\n");
 
-	// 1. Regex patterns
-	const charPattern = STORY_PATTERNS.CHARACTER;
-	const dialoguePattern = STORY_PATTERNS.DIALOGUE;
+	// Clone global regex to avoid shared state race conditions
+	const charPattern = new RegExp(
+		STORY_PATTERNS.CHARACTER.source,
+		STORY_PATTERNS.CHARACTER.flags,
+	);
+	const dialoguePattern = new RegExp(
+		STORY_PATTERNS.DIALOGUE.source,
+		STORY_PATTERNS.DIALOGUE.flags,
+	);
 	const foundNames = new Set<string>();
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-
-		// Reset global regex indices for each line
-		charPattern.lastIndex = 0;
-		dialoguePattern.lastIndex = 0;
 
 		// Extract from dialogue
 		while (true) {
@@ -380,7 +382,7 @@ function generateId(type: string, name: string): string {
 	return `${prefix}_${name
 		.toLowerCase()
 		.replace(/\s+/g, "_")
-		.replace(/[^a-z0-9_]/g, "")}`;
+		.replace(/[^\p{L}\p{N}_]/gu, "")}`;
 }
 
 function extractAliasesFromMentions(mentions: Mention[]): string[] {

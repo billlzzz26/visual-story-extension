@@ -6,7 +6,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "cd packages/bl1nk && npm run check 2>nul || echo 'Biome check skipped (no changes)'"
+						"command": "cd packages/bl1nk-core && npm run check 2>nul || echo 'Biome check skipped (no changes)'"
 					}
 				]
 			}
