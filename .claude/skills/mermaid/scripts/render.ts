@@ -64,7 +64,8 @@ function parseArgs(args: string[]): Options {
               const nextArg = args[i + 1];
               if (nextArg && !nextArg.startsWith("-")) {
                   options.output = args[++i];
-              }
+              } else {
+                  throw new Error("--output requires a file path");
 		} else if (!arg.startsWith("-")) {
 			options.input = arg;
 		}
