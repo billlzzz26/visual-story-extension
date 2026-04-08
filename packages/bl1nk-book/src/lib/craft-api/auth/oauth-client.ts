@@ -185,6 +185,9 @@ try {
     return null;
 }
 
-export function clearStoredState() {
-	sessionStorage.removeItem("craft_oauth_state");
+if (typeof window === "undefined") return;
+try {
+    window.sessionStorage.removeItem("craft_oauth_state");
+} catch {
+    // Ignore storage access failures during cleanup
 }
