@@ -65,12 +65,45 @@ export async function POST(request: NextRequest) {
 			return response;
 		}
 
-		const session = JSON.parse(sessionCookie.value) as {
-			codeVerifier: string;
-			clientId: string;
-			redirectUri: string;
-			state: string;
-		};
+  let session: {
+      codeVerifier: string;
+      clientId: string;
+      redirectUri: string;
+      state: string;
+  };
+
+  try {
+      const parsed = JSON.parse(sessionCookie.value) as Partial<{
+          codeVerifier: string;
+          clientId: string;
+          redirectUri: string;
+          state: string;
+      }>;
+
+      if (
+          typeof parsed.codeVerifier !== "string" ||
+          typeof parsed.clientId !== "string" ||
+          typeof parsed.redirectUri !== "string" ||
+          typeof parsed.state !== "string"
+      ) {
+          throw new Error("Invalid session shape");
+      }
+
+      session = {
+          codeVerifier: parsed.codeVerifier,
+          clientId: parsed.clientId,
+          redirectUri: parsed.redirectUri,
+          state: parsed.state,
+      };
+  } catch {
+      const response = NextResponse.json(
+          { error: "Invalid OAuth session" },
+          { status: 400 },
+      );
+      clearOAuthSessionCookie(response);
+      applyNoStoreHeaders(response.headers);
+      return response;
+  }
 
 		if (session.state !== state) {
 			const response = NextResponse.json(

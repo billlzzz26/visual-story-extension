@@ -507,7 +507,7 @@ export class CraftApiClient {
 							retryResponse = await fetch(url, {
 								method: "POST",
 								headers: { Authorization: `Bearer ${this.accessToken}` },
-								body: buildUploadBody(),
+								body: formData,
 							});
 						} catch (retryFetchError) {
 							const networkError = new CraftApiError(

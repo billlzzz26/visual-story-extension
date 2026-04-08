@@ -31,10 +31,18 @@ function getAllowedOrigins(): Set<string> {
 }
 
 function isAllowedCallbackPath(pathname: string): boolean {
-	if (pathname === "/api/auth/craft-api/callback") return true;
-	return (
-		pathname.startsWith("/") &&
-		!pathname.startsWith("/api/") &&
+    let decodedPathname: string;
+    try {
+        decodedPathname = decodeURIComponent(pathname);
+    } catch {
+        return false;
+    }
+
+    if (decodedPathname === "/api/auth/craft-api/callback") return true;
+    return (
+        decodedPathname.startsWith("/") &&
+        !decodedPathname.startsWith("/api/") &&
+        !decodedPathname.includes("..")
 		!pathname.includes("..")
 	);
 }
