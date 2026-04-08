@@ -57,7 +57,7 @@ function BlockNode({
 					onKeyDown={(e) => {
 						if (e.key === "Enter" && !e.shiftKey) {
 							e.preventDefault();
-							e.currentTarget.blur();
+       if (e.nativeEvent.isComposing) return;
 						}
 						if (e.key === "Escape") setEditing(false);
 					}}
