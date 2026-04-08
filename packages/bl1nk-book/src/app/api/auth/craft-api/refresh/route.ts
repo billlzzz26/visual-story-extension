@@ -20,10 +20,30 @@ export async function POST() {
 			return response;
 		}
 
-		const session = JSON.parse(sessionCookie.value) as {
-			refreshToken: string;
-			clientId: string;
-		};
+  let session: {
+      refreshToken: string;
+      clientId: string;
+  };
+  try {
+      session = JSON.parse(sessionCookie.value) as {
+          refreshToken: string;
+          clientId: string;
+      };
+  } catch {
+      const response = NextResponse.json(
+          { error: "Invalid refresh session" },
+          { status: 401 },
+      );
+      response.cookies.set(REFRESH_COOKIE, "", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          path: "/api/auth/craft-api",
+          maxAge: 0,
+      });
+      applyNoStoreHeaders(response.headers);
+      return response;
+  }
 
 		const tokenResponse = await fetch(`${CONNECT_BASE_URL}/my/auth/token`, {
 			method: "POST",
@@ -59,7 +79,7 @@ export async function POST() {
 		response.cookies.set(
 			REFRESH_COOKIE,
 			JSON.stringify({
-				refreshToken: tokens.refresh_token,
+				refreshToken: tokens.refresh_token ?? session.refreshToken,
 				clientId: session.clientId,
 			}),
 			{

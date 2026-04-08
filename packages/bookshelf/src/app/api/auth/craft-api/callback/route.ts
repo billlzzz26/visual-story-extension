@@ -3,14 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { applyNoStoreHeaders } from "@/lib/craft-api/auth/server";
 
 export async function GET(request: NextRequest) {
-	const code = (request.nextUrl.searchParams.get("code") || "").replace(
-		/[^a-zA-Z0-9_-]/g,
-		"",
-	);
-	const state = (request.nextUrl.searchParams.get("state") || "").replace(
-		/[^a-zA-Z0-9_-]/g,
-		"",
-	);
+	const code = request.nextUrl.searchParams.get("code") || "";
+	const state = request.nextUrl.searchParams.get("state") || "";
 
 	const html = `<!DOCTYPE html><html><head><title>Authorizing…</title></head><body><script>
 var msg = { type: "craft-oauth-callback", code: ${JSON.stringify(code)}, state: ${JSON.stringify(state)} };
