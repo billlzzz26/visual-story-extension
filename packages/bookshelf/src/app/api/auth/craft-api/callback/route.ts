@@ -3,24 +3,26 @@ import { type NextRequest, NextResponse } from "next/server";
 import { applyNoStoreHeaders } from "@/lib/craft-api/auth/server";
 
 export async function GET(request: NextRequest) {
-	const code = request.nextUrl.searchParams.get("code") || "";
-	const state = request.nextUrl.searchParams.get("state") || "";
+	const code = request.nextUrl.searchParams.get("code");
+	const state = request.nextUrl.searchParams.get("state");
 
-	const html = `<!DOCTYPE html><html><head><title>Authorizing…</title></head><body><script>
-var msg = { type: "craft-oauth-callback", code: ${JSON.stringify(code)}, state: ${JSON.stringify(state)} };
-var origin = window.location.origin;
-if (window.parent && window.parent !== window) window.parent.postMessage(msg, origin);
-if (window.opener) { window.opener.postMessage(msg, origin); window.close(); }
-</script></body></html>`;
+	if (!code || !state) {
+		const badRequest = new NextResponse("Invalid OAuth callback parameters.", {
+			status: 400,
+			headers: {
+				"Content-Type": "text/plain; charset=utf-8",
+				"X-Content-Type-Options": "nosniff",
+			},
+		});
+		applyNoStoreHeaders(badRequest.headers);
+		return badRequest;
+	}
 
-	const response = new NextResponse(html, {
-		headers: {
-			"Content-Type": "text/html; charset=utf-8",
-			"Content-Security-Policy":
-				"default-src 'none'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'",
-			"X-Content-Type-Options": "nosniff",
-		},
-	});
+	const redirectUrl = new URL("/auth/craft-api/callback", request.nextUrl.origin);
+	redirectUrl.searchParams.set("code", code);
+	redirectUrl.searchParams.set("state", state);
+
+	const response = NextResponse.redirect(redirectUrl, 302);
 	applyNoStoreHeaders(response.headers);
 	return response;
 }
