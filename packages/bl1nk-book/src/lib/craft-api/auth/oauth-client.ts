@@ -178,8 +178,11 @@ export async function clearServerSession(): Promise<void> {
 
 // ── OAuth state helpers ─────────────────────────────────────────────────
 
-export function getStoredState(): string | null {
-	return sessionStorage.getItem("craft_oauth_state");
+if (typeof window === "undefined") return null;
+try {
+    return window.sessionStorage.getItem("craft_oauth_state");
+} catch {
+    return null;
 }
 
 export function clearStoredState() {
