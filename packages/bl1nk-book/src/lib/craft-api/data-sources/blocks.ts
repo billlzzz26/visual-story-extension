@@ -111,11 +111,13 @@ export async function fetchBlocks(
 				);
 			},
 			create: async (item) => {
-				const result = await client.insertBlocks(
-					[{ type: "text", markdown: (item.title as string) || "" }],
-					{
-						position: "end",
-						pageId: documentId,
+    const targetPageId = documentId ?? rootBlock?.id;
+                    if (!targetPageId) return undefined;
+                    const result = await client.insertBlocks(
+                        [{ type: "text", markdown: (item.title as string) || "" }],
+                        {
+                            position: "end",
+                            pageId: targetPageId,
 					},
 				);
 				const block = result.items?.[0];
