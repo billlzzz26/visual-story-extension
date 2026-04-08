@@ -15,8 +15,18 @@ import { resolve } from "node:path";
 async function ensureDependency(): Promise<void> {
 	try {
 		await import("beautiful-mermaid");
-	} catch {
-		console.error("Installing beautiful-mermaid...");
+ } catch (error) {
+     if (
+         error &&
+         typeof error === "object" &&
+         "code" in error &&
+         (error as { code?: string }).code === "ERR_MODULE_NOT_FOUND"
+     ) {
+         console.error("Installing beautiful-mermaid...");
+         execSync("npm install --no-save beautiful-mermaid", { stdio: "inherit" });
+         return;
+     }
+     throw error;
 		execSync("npm install beautiful-mermaid", { stdio: "inherit" });
 	}
 }
