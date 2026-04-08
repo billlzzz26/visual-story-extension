@@ -54,6 +54,17 @@ if (
 		return null;
 	}
 
+	if (
+		lastError instanceof CraftApiError &&
+		lastError.status === 0
+	) {
+		console.warn(
+			"[fetchBlocks] Block lookup network error; returning an empty block list for now.",
+			lastError,
+		);
+		return null;
+	}
+
 	throw lastError;
 }
 
@@ -100,11 +111,13 @@ export async function fetchBlocks(
 				);
 			},
 			create: async (item) => {
-				const result = await client.insertBlocks(
-					[{ type: "text", markdown: (item.title as string) || "" }],
-					{
-						position: "end",
-						pageId: documentId,
+    const targetPageId = documentId ?? rootBlock?.id;
+                    if (!targetPageId) return undefined;
+                    const result = await client.insertBlocks(
+                        [{ type: "text", markdown: (item.title as string) || "" }],
+                        {
+                            position: "end",
+                            pageId: targetPageId,
 					},
 				);
 				const block = result.items?.[0];

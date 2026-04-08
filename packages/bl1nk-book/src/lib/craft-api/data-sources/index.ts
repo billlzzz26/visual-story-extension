@@ -32,8 +32,8 @@ export function buildCraftBlockUrl(
 ): string | undefined {
 	if (!blockUrlTemplate || !blockId) return undefined;
 	return blockUrlTemplate
-		.replaceAll("{blockId}", blockId)
-		.replaceAll("{{blockId}}", blockId)
+     .replaceAll("{{blockId}}", blockId)
+     .replaceAll("{blockId}", blockId)
 		.replaceAll(":blockId", blockId)
 		.replaceAll("%BLOCK_ID%", blockId)
 		.replaceAll("%s", blockId);

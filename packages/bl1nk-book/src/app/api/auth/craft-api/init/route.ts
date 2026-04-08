@@ -53,10 +53,9 @@ export async function POST(request: NextRequest) {
   }
 		const redirectUri = validateOAuthRedirectUri(body?.redirectUri || "");
 
-		let clientId = STATIC_CLIENT_ID;
-		if (!clientId) {
-			const reg = await registerClient(redirectUri);
-			clientId = reg.client_id;
+  const clientId = STATIC_CLIENT_ID;
+  if (!clientId) {
+      throw new Error("Missing CRAFT_OAUTH_CLIENT_ID configuration");
 		}
 
 		const { codeVerifier, codeChallenge } = generatePKCE();

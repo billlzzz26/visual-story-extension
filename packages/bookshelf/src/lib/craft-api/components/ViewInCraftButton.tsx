@@ -9,6 +9,17 @@ interface ViewInCraftButtonProps {
 	className?: string;
 }
 
+function isSafeCraftOpenUrl(href: string): boolean {
+	try {
+		const u = new URL(href);
+		if (u.protocol !== "https:") return false;
+		const host = u.hostname.toLowerCase();
+		return host === "craft.do" || host.endsWith(".craft.do");
+	} catch {
+		return false;
+	}
+}
+
 /**
  * Collection/document-level "Open in Craft" button.
  * Only visible when connected to a Craft space (not in demo mode).
@@ -20,7 +31,9 @@ export function ViewInCraftButton({
 	className = "",
 }: ViewInCraftButtonProps) {
 	const { isConnected } = useStorageLocation();
-	const href = items[0]?.craftLink;
+	const raw = items[0]?.craftLink;
+	const href =
+		typeof raw === "string" && isSafeCraftOpenUrl(raw) ? raw : undefined;
 	if (!isConnected || !href) return null;
 
 	if (size === "sm") {
