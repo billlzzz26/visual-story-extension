@@ -49,10 +49,15 @@ export async function initOAuthFlow(): Promise<string> {
 
 		return data.authorizeUrl;
 	} catch (error) {
-		if (error instanceof Error && error.message.includes("Failed to initialize OAuth")) {
+		if (
+			error instanceof Error &&
+			error.message.includes("Failed to initialize OAuth")
+		) {
 			throw error; // Re-throw our own errors
 		}
-		throw new Error(`Network error during OAuth initialization: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		throw new Error(
+			`Network error during OAuth initialization: ${error instanceof Error ? error.message : "Unknown error"}`,
+		);
 	}
 }
 
@@ -82,10 +87,15 @@ export async function getAuthorizeUrl(): Promise<{
 		const data = (await response.json()) as OAuthInitResponse;
 		return { authorizeUrl: data.authorizeUrl, state: data.state };
 	} catch (error) {
-		if (error instanceof Error && error.message.includes("Failed to initialize OAuth")) {
+		if (
+			error instanceof Error &&
+			error.message.includes("Failed to initialize OAuth")
+		) {
 			throw error; // Re-throw our own errors
 		}
-		throw new Error(`Network error during OAuth initialization: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		throw new Error(
+			`Network error during OAuth initialization: ${error instanceof Error ? error.message : "Unknown error"}`,
+		);
 	}
 }
 
@@ -112,10 +122,15 @@ export async function exchangeCodeForToken(
 
 		return response.json() as Promise<TokenExchangeResult>;
 	} catch (error) {
-		if (error instanceof Error && error.message.includes("Token exchange failed")) {
+		if (
+			error instanceof Error &&
+			error.message.includes("Token exchange failed")
+		) {
 			throw error; // Re-throw our own errors
 		}
-		throw new Error(`Network error during token exchange: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		throw new Error(
+			`Network error during token exchange: ${error instanceof Error ? error.message : "Unknown error"}`,
+		);
 	}
 }
 
@@ -153,7 +168,9 @@ export async function refreshAccessToken(): Promise<RefreshResult> {
 
 			return response.json() as Promise<RefreshResult>;
 		} catch (error) {
-			throw new Error(`Network error during token refresh: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Network error during token refresh: ${error instanceof Error ? error.message : "Unknown error"}`,
+			);
 		}
 	})();
 
@@ -178,16 +195,22 @@ export async function clearServerSession(): Promise<void> {
 
 // ── OAuth state helpers ─────────────────────────────────────────────────
 
-if (typeof window === "undefined") return null;
-try {
-    return window.sessionStorage.getItem("craft_oauth_state");
-} catch {
-    return null;
+/** Retrieve the stored OAuth state from sessionStorage (browser-only). */
+export function getOAuthState(): string | null {
+	if (typeof window === "undefined") return null;
+	try {
+		return window.sessionStorage.getItem("craft_oauth_state");
+	} catch {
+		return null;
+	}
 }
 
-if (typeof window === "undefined") return;
-try {
-    window.sessionStorage.removeItem("craft_oauth_state");
-} catch {
-    // Ignore storage access failures during cleanup
+/** Clear the OAuth state from sessionStorage (browser-only). */
+export function clearOAuthState(): void {
+	if (typeof window === "undefined") return;
+	try {
+		window.sessionStorage.removeItem("craft_oauth_state");
+	} catch {
+		// Ignore storage access failures during cleanup
+	}
 }

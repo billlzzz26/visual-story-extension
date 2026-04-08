@@ -31,18 +31,18 @@ function getAllowedOrigins(): Set<string> {
 }
 
 function isAllowedCallbackPath(pathname: string): boolean {
-    let decodedPathname: string;
-    try {
-        decodedPathname = decodeURIComponent(pathname);
-    } catch {
-        return false;
-    }
+	let decodedPathname: string;
+	try {
+		decodedPathname = decodeURIComponent(pathname);
+	} catch {
+		return false;
+	}
 
-    if (decodedPathname === "/api/auth/craft-api/callback") return true;
-    return (
-        decodedPathname.startsWith("/") &&
-        !decodedPathname.startsWith("/api/") &&
-        !decodedPathname.includes("..")
+	if (decodedPathname === "/api/auth/craft-api/callback") return true;
+	return (
+		decodedPathname.startsWith("/") &&
+		!decodedPathname.startsWith("/api/") &&
+		!decodedPathname.includes("..") &&
 		!pathname.includes("..")
 	);
 }
@@ -60,10 +60,11 @@ export function validateOAuthRedirectUri(redirectUri: string): string {
 		throw new OAuthValidationError("Invalid redirectUri");
 	}
 
- if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-         throw new OAuthValidationError("redirectUri must use http or https");
-     }
+	if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+		throw new OAuthValidationError("redirectUri must use http or https");
+	}
 
+	if (
 		!getAllowedOrigins().has(parsed.origin) &&
 		!isLocalOrigin(parsed.origin)
 	) {
