@@ -44,11 +44,7 @@ async function fetchRootBlockWithRetry(
 	}
 
 	if (lastError instanceof CraftApiError && lastError.status === 404) {
-		console.warn(
-			"[fetchBlocks] Root block not found yet; returning an empty block list for now.",
-			lastError,
-		);
-		return null;
+     throw lastError;
 	}
 
 	if (lastError instanceof CraftApiError && lastError.status === 429) {
