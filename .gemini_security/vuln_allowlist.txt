@@ -1,0 +1,4 @@
+Vulnerability: Hardcoded API Key in Global Settings
+Location: C:\Users\billl\.qwen\settings.json (user-level config, not in repository)
+Line Content: API_KEY="1ac312c3..."
+Justification: This is a user-level global configuration file on the local machine, not part of the repository source code. It is outside the scope of a project security audit.

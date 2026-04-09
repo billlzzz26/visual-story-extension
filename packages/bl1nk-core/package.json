@@ -1,5 +1,5 @@
 {
-	"name": "@bl1nk/visual-mcp",
+	"name": "@bl1nk-core/visual-mcp",
 	"version": "3.0.0",
 	"type": "module",
 	"main": "dist/index.js",
