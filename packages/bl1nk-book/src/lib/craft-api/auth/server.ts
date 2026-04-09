@@ -61,7 +61,9 @@ export function validateOAuthRedirectUri(redirectUri: string): string {
 	}
 
 	if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-		throw new OAuthValidationError("redirectUri must use http or https");
+		throw new OAuthValidationError(
+			"redirectUri must use http or https",
+		);
 	}
 
 	if (

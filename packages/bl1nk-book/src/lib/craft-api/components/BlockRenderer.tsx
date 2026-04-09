@@ -57,7 +57,8 @@ function BlockNode({
 					onKeyDown={(e) => {
 						if (e.key === "Enter" && !e.shiftKey) {
 							e.preventDefault();
-          e.currentTarget.blur();
+							// Blur triggers a single onBlur → handleSave (avoids duplicate onUpdate)
+							e.currentTarget.blur();
 						}
 						if (e.key === "Escape") setEditing(false);
 					}}

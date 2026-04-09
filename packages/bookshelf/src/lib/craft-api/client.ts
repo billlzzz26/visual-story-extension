@@ -80,15 +80,26 @@ export class CraftApiClient {
 					const newToken = await this.onRefresh();
 					if (newToken) {
 						this.accessToken = newToken;
-						// Retry the request with the new token
-						const retryResponse = await fetch(url, {
-							...options,
-							headers: {
-								"Content-Type": "application/json",
-								Authorization: `Bearer ${this.accessToken}`,
-								...options.headers,
-							},
-						});
+						let retryResponse: Response;
+						try {
+							retryResponse = await fetch(url, {
+								...options,
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${this.accessToken}`,
+									...options.headers,
+								},
+							});
+						} catch (retryFetchError) {
+							const networkError = new CraftApiError(
+								0,
+								`Network error during retry: ${retryFetchError instanceof Error ? retryFetchError.message : "Connection failed"}`,
+								path,
+								{ networkError: true },
+							);
+							this.onError?.(networkError);
+							throw networkError;
+						}
 
 						if (retryResponse.ok) {
 							const text = await retryResponse.text();
@@ -96,10 +107,20 @@ export class CraftApiClient {
 							return JSON.parse(text) as T;
 						}
 
-						// Retry also failed — fall through to error handling
-						const retryBody = (await retryResponse
-							.json()
-							.catch(() => ({}))) as Record<string, unknown>;
+						const retryText = await retryResponse.text();
+						let retryBody: Record<string, unknown> = {};
+						try {
+							const parsedRetryBody = JSON.parse(retryText) as unknown;
+							if (
+								parsedRetryBody &&
+								typeof parsedRetryBody === "object" &&
+								!Array.isArray(parsedRetryBody)
+							) {
+								retryBody = parsedRetryBody as Record<string, unknown>;
+							}
+						} catch {
+							// Ignore parse errors, fall through to default error
+						}
 						const retryError = new CraftApiError(
 							retryResponse.status,
 							(retryBody.error as string) || retryResponse.statusText,
@@ -438,9 +459,13 @@ export class CraftApiClient {
 			position: "end",
 		},
 	): Promise<CraftBlock> {
-		const formData = new FormData();
-		formData.append("file", file);
-		formData.append("position", JSON.stringify(position));
+		// Fresh FormData per request — multipart bodies are consumed by fetch and cannot be reused.
+		const buildUploadBody = (): FormData => {
+			const fd = new FormData();
+			fd.append("file", file);
+			fd.append("position", JSON.stringify(position));
+			return fd;
+		};
 
 		const url = `${API_BASE}/upload`;
 		let response: Response;
@@ -449,7 +474,7 @@ export class CraftApiClient {
 			response = await fetch(url, {
 				method: "POST",
 				headers: { Authorization: `Bearer ${this.accessToken}` },
-				body: formData,
+				body: buildUploadBody(),
 			});
 		} catch (error) {
 			const networkError = new CraftApiError(
@@ -469,7 +494,6 @@ export class CraftApiClient {
 					unknown
 				>;
 
-				// On 401, attempt refresh and retry once
 				if (
 					(response.status === 401 ||
 						(body.error as string) === "invalid_token") &&
@@ -478,14 +502,60 @@ export class CraftApiClient {
 					const newToken = await this.onRefresh();
 					if (newToken) {
 						this.accessToken = newToken;
-						const retryResponse = await fetch(url, {
-							method: "POST",
-							headers: { Authorization: `Bearer ${this.accessToken}` },
-							body: formData,
-						});
-						if (retryResponse.ok) {
-							return retryResponse.json() as Promise<CraftBlock>;
+						let retryResponse: Response;
+						try {
+							retryResponse = await fetch(url, {
+								method: "POST",
+								headers: { Authorization: `Bearer ${this.accessToken}` },
+								body: buildUploadBody(),
+							});
+						} catch (retryFetchError) {
+							const networkError = new CraftApiError(
+								0,
+								`Network error during upload retry: ${retryFetchError instanceof Error ? retryFetchError.message : "Connection failed"}`,
+								"/upload",
+								{ networkError: true },
+							);
+							this.onError?.(networkError);
+							throw networkError;
 						}
+						if (retryResponse.ok) {
+							const retryText = await retryResponse.text();
+							if (!retryText) {
+								const emptyErr = new CraftApiError(
+									502,
+									"Empty upload response",
+									"/upload",
+									{},
+								);
+								this.onError?.(emptyErr);
+								throw emptyErr;
+							}
+							try {
+								return JSON.parse(retryText) as CraftBlock;
+							} catch (parseErr) {
+								const parseError = new CraftApiError(
+									retryResponse.status,
+									`Upload response parsing error: ${parseErr instanceof Error ? parseErr.message : "Unknown error"}`,
+									"/upload",
+									{ parseError: true },
+								);
+								this.onError?.(parseError);
+								throw parseError;
+							}
+						}
+						const retryBody = (await retryResponse.json().catch(() => ({}))) as Record<
+							string,
+							unknown
+						>;
+						const retryError = new CraftApiError(
+							retryResponse.status,
+							(retryBody.error as string) || retryResponse.statusText,
+							"/upload",
+							retryBody,
+						);
+						this.onError?.(retryError);
+						throw retryError;
 					}
 				}
 
@@ -499,14 +569,36 @@ export class CraftApiClient {
 				throw error;
 			}
 
-			return response.json() as Promise<CraftBlock>;
+			const text = await response.text();
+			if (!text) {
+				const emptyErr = new CraftApiError(
+					502,
+					"Empty upload response",
+					"/upload",
+					{},
+				);
+				this.onError?.(emptyErr);
+				throw emptyErr;
+			}
+			try {
+				return JSON.parse(text) as CraftBlock;
+			} catch (parseErr) {
+				const parseError = new CraftApiError(
+					response.status,
+					`Upload response parsing error: ${parseErr instanceof Error ? parseErr.message : "Unknown error"}`,
+					"/upload",
+					{ parseError: true },
+				);
+				this.onError?.(parseError);
+				throw parseError;
+			}
 		} catch (error) {
 			if (error instanceof CraftApiError) {
 				throw error;
 			}
 			const parseError = new CraftApiError(
 				response.status,
-				`Upload response parsing error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				`Upload response parsing error: ${error instanceof Error ? error.message : "Unknown error"}`,
 				"/upload",
 				{ parseError: true },
 			);
