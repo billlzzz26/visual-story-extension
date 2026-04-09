@@ -1,0 +1,41 @@
+{
+  "name": "@bl1nk/support-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "ai": "^3.4.32",
+    "@ai-sdk/openai": "^0.0.70",
+    "openai": "^4.76.0",
+    "zod": "^3.22.4",
+    "crypto-js": "^4.2.0",
+    "resend": "^3.5.0",
+    "frimousse": "^0.1.0",
+    "lucide-react": "^0.468.0",
+    "class-variance-authority": "^0.7.1",
+    "@radix-ui/react-slot": "^1.1.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0",
+    "next": "14.2.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@types/crypto-js": "^4.2.0",
+    "typescript": "^5.3.3",
+    "tailwindcss": "^3.4.15",
+    "postcss": "^8.4.49",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.18"
+  }
+}
