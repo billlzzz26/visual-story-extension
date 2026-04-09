@@ -2,7 +2,7 @@
 title: TODO - bl1nk-visual-mcp
 description: Source of truth for all implementation tasks
 status: in_progress
-last_updated: 2026-04-07
+last_updated: 2026-04-09
 owner: dev-team
 ---
 
@@ -15,6 +15,49 @@ owner: dev-team
 > หมายเหตุ: ให้ปรับสถานะ TODO.md ทุกครั้งเมื่อจบงานหรือเปลี่ยนสถานะงาน
 >
 > คู่มือเพิ่มเติม: `docs/INSTRUCTIONS_TH.md`
+
+---
+
+## ✅ Security Audit + Consolidation (2026-04-09)
+
+*Completed: SAST audit, security fixes, package consolidation, SkillManager*
+
+### Security Fixes (PR #37)
+
+- [x] `type:fix` `label:high-priority` Fix CSV injection in `csv-generator.ts` — escape formula prefixes (=, +, -, @)
+- [x] `type:fix` `label:high-priority` Fix `process.env` race condition in `mcp-handler.ts` — pass API key as parameter
+- [x] `type:fix` `label:high-priority` Fix OAuth redirect syntax error in `auth/server.ts` — add missing && operator
+- [x] `type:fix` `label:high-priority` Fix weak postMessage origin in `callback/route.ts` — use hardcoded allowed origin
+- [x] `type:fix` `label:core` Fix dead code in `oauth-client.ts` — wrap in proper functions
+- [x] `type:fix` `label:core` Fix indentation in `exchange/route.ts` — spaces to tabs
+- [x] `type:fix` `label:config` Bump vite to 8.0.5 — GHSA-4w7w-66w2-5vf9 path traversal fix
+
+### Package Consolidation
+
+- [x] `type:refactor` `label:core` Remove duplicate `packages/bl1nk/` — use `packages/bl1nk-core/` only
+  - bl1nk-core superior in every aspect (Unicode IDs, lazy templates, matchAll, RFC 4180 CSV, themes)
+  - Updated all workspace deps: tauri-app, bl1nk-desktop, bl1nk-sync, github-sync
+  - Updated MCP server paths: `.mcp.json`, `.qwen/mcp.json`
+  - Renamed package: `@bl1nk/visual-mcp` → `@bl1nk-core/visual-mcp`
+
+### SkillManager
+
+- [x] `type:feat` `label:core` Create `packages/bl1nk-core/src/skills/` — SkillManager inspired by Qwen
+  - Multi-level skill discovery (project > user > extension > bundled)
+  - SKILL.md parsing with YAML frontmatter validation
+  - Filesystem watchers for hot-reload (150ms debounce)
+  - Parse error tracking without throwing
+  - Exported from `@bl1nk-core/visual-mcp` package
+
+### Tooling
+
+- [x] `type:feat` `label:config` Create `scripts/ps1/fix-line.ps1` — Windows-compatible CRLF→LF converter
+
+### Pending
+
+- [ ] `type:refactor` `label:core` Restructure `packages/bl1nk-core/` — move all source files into `src/`
+  - Currently: `exporters/`, `tools/`, `utils/`, `core/`, `templates/`, `known/` at root + `src/index.ts`
+  - Target: everything under `src/` matching Qwen's `packages/core/src/` structure
 
 ---
 

@@ -14,21 +14,21 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import type { ZodRawShape } from "zod";
 import { z } from "zod";
-import { buildInitialGraph } from "../analyzer.js";
-import { formatSearchResults, searchStoryReferences } from "../exa-search.js";
-import { toCanvasJSON } from "../exporters/canvas.js";
-import { toDashboard, toMcpUiDashboard } from "../exporters/dashboard.js";
-import { toMarkdown } from "../exporters/markdown.js";
-import { toMermaid } from "../exporters/mermaid.js";
+import { buildInitialGraph } from "./src/analyzer.js";
+import { formatSearchResults, searchStoryReferences } from "./src/exa-search.js";
+import { toCanvasJSON } from "./src/exporters/canvas.js";
+import { toDashboard, toMcpUiDashboard } from "./src/exporters/dashboard.js";
+import { toMarkdown } from "./src/exporters/markdown.js";
+import { toMermaid } from "./src/exporters/mermaid.js";
 import {
 	BL1NK_VISUAL_TOOLS,
 	GRANULAR_TOOLS,
 	executeGranularTool,
 	executeStoryTool,
-} from "../tools/index.js";
-import { searchEntriesTool } from "../tools/search-entries.js";
-import { formatToolError } from "../utils/error-handler.js";
-import { validateGraph } from "../validators.js";
+} from "./src/tools/index.js";
+import { searchEntriesTool } from "./src/tools/search-entries.js";
+import { formatToolError } from "./src/utils/error-handler.js";
+import { validateGraph } from "./src/validators.js";
 
 // Re-export types and utilities for external use
 export type {
@@ -37,36 +37,36 @@ export type {
 	Conflict,
 	EventNode,
 	Relationship,
-} from "../types.js";
-export { buildInitialGraph } from "../analyzer.js";
-export { validateGraph } from "../validators.js";
-export { toMermaid } from "../exporters/mermaid.js";
-export { toCanvasJSON } from "../exporters/canvas.js";
-export { toDashboard, toMcpUiDashboard } from "../exporters/dashboard.js";
-export { toMarkdown } from "../exporters/markdown.js";
-export { searchStoryReferences, formatSearchResults } from "../exa-search.js";
+} from "./src/types.js";
+export { buildInitialGraph } from "./src/analyzer.js";
+export { validateGraph } from "./src/validators.js";
+export { toMermaid } from "./src/exporters/mermaid.js";
+export { toCanvasJSON } from "./src/exporters/canvas.js";
+export { toDashboard, toMcpUiDashboard } from "./src/exporters/dashboard.js";
+export { toMarkdown } from "./src/exporters/markdown.js";
+export { searchStoryReferences, formatSearchResults } from "./src/exa-search.js";
 export {
 	formatToolError,
 	ExaError,
 	retryWithBackoff,
 	handleRateLimitError,
-} from "../utils/error-handler.js";
+} from "./src/utils/error-handler.js";
 export {
 	BL1NK_VISUAL_TOOLS,
 	GRANULAR_TOOLS,
 	executeStoryTool,
 	executeGranularTool,
-} from "../tools/index.js";
+} from "./src/tools/index.js";
 
 // Re-export SkillManager
-export { SkillManager } from "./skill-manager/index.js";
+export { SkillManager } from "./src/skills/index.js";
 export type {
 	SkillConfig,
 	SkillLevel,
 	ListSkillsOptions,
 	SkillValidationResult,
-} from "./skill-manager/types.js";
-export { SkillError, SkillErrorCode } from "./skill-manager/types.js";
+} from "./src/skills/types.js";
+export { SkillError, SkillErrorCode } from "./src/skills/types.js";
 
 // ============================================================================
 // Schema Definitions
