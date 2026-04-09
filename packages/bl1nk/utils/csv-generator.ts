@@ -9,6 +9,21 @@
 import type { Character, Conflict, EventNode, StoryGraph } from "../types.js";
 
 /**
+ * Escape a CSV cell value to prevent formula injection attacks.
+ * Prefixes values starting with =, +, -, @ with a single quote
+ * to prevent execution in spreadsheet applications.
+ */
+function escapeCsvCell(value: string): string {
+	if (value.length === 0) return value;
+	const dangerousPrefixes = ["=", "+", "-", "@"];
+	if (dangerousPrefixes.some((p) => value.startsWith(p))) {
+		return `'${value}`;
+	}
+	// Also escape internal quotes
+	return value.replace(/"/g, '""');
+}
+
+/**
  * Generate CSV files from StoryGraph
  */
 export function generateCSV(graph: StoryGraph): string {
@@ -19,7 +34,7 @@ export function generateCSV(graph: StoryGraph): string {
 	lines.push("id,name,role,status,tags");
 	for (const char of graph.characters) {
 		lines.push(
-			`${char.id},"${char.name}",${char.role},alive,"${char.tags?.join(",") || ""}"`,
+			`${char.id},"${escapeCsvCell(char.name)}",${char.role},alive,"${escapeCsvCell(char.tags?.join(",") || "")}"`,
 		);
 	}
 
@@ -28,7 +43,7 @@ export function generateCSV(graph: StoryGraph): string {
 	lines.push("id,label,act,importance,characters");
 	for (const event of graph.events) {
 		lines.push(
-			`${event.id},"${event.label}",${event.act},${event.importance || "normal"},"${event.characters?.join(",") || ""}"`,
+			`${event.id},"${escapeCsvCell(event.label)}",${event.act},${event.importance || "normal"},"${escapeCsvCell(event.characters?.join(",") || "")}"`,
 		);
 	}
 
@@ -37,7 +52,7 @@ export function generateCSV(graph: StoryGraph): string {
 	lines.push("id,type,description,relatedCharacters");
 	for (const conflict of graph.conflicts) {
 		lines.push(
-			`${conflict.id},${conflict.type},"${conflict.description}","${conflict.relatedCharacters?.join(",") || ""}"`,
+			`${conflict.id},${conflict.type},"${escapeCsvCell(conflict.description)}","${escapeCsvCell(conflict.relatedCharacters?.join(",") || "")}"`,
 		);
 	}
 
@@ -65,10 +80,10 @@ function generateCharactersCSV(characters: Character[]): string {
 	const headers = ["id", "name", "role", "status", "tags"];
 	const rows = characters.map((char) => [
 		char.id,
-		`"${char.name}"`,
+		`"${escapeCsvCell(char.name)}"`,
 		char.role,
 		"alive",
-		`"${char.tags?.join(",") || ""}"`,
+		`"${escapeCsvCell(char.tags?.join(",") || "")}"`,
 	]);
 
 	return [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
@@ -78,10 +93,10 @@ function generateEventsCSV(events: EventNode[]): string {
 	const headers = ["id", "label", "act", "importance", "characters"];
 	const rows = events.map((event) => [
 		event.id,
-		`"${event.label}"`,
+		`"${escapeCsvCell(event.label)}"`,
 		event.act,
 		event.importance || "normal",
-		`"${event.characters?.join(",") || ""}"`,
+		`"${escapeCsvCell(event.characters?.join(",") || "")}"`,
 	]);
 
 	return [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
@@ -92,8 +107,8 @@ function generateConflictsCSV(conflicts: Conflict[]): string {
 	const rows = conflicts.map((conflict) => [
 		conflict.id,
 		conflict.type,
-		`"${conflict.description}"`,
-		`"${conflict.relatedCharacters?.join(",") || ""}"`,
+		`"${escapeCsvCell(conflict.description)}"`,
+		`"${escapeCsvCell(conflict.relatedCharacters?.join(",") || "")}"`,
 	]);
 
 	return [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");

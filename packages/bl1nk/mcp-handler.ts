@@ -6,6 +6,8 @@
  */
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { StorySearchCategory } from "./exa-search.js";
+import { searchStoryReferences } from "./exa-search.js";
 import { BL1NK_VISUAL_TOOLS, Schemas, executeStoryTool } from "./index.js";
 
 export interface McpHandlerConfig {
@@ -49,21 +51,23 @@ export function initializeMcpServer(
 			tool.description,
 			schema.shape as Record<string, unknown>,
 			async (args: Record<string, unknown>) => {
-				// Inject exaApiKey into args if provided (for exa_search_story tool)
+				// Pass exaApiKey directly to searchStoryReferences to avoid
+				// race conditions from mutating process.env
 				if (tool.name === "exa_search_story" && config.exaApiKey) {
-					// Note: exa-search.ts reads from process.env.EXA_API_KEY
-					// We need to set it dynamically here
-					const originalKey = process.env.EXA_API_KEY;
-					try {
-						process.env.EXA_API_KEY = config.exaApiKey;
-						return executeStoryTool(tool.name, args);
-					} finally {
-						if (originalKey) {
-							process.env.EXA_API_KEY = originalKey;
-						} else {
-							process.env.EXA_API_KEY = undefined;
-						}
-					}
+					const { query, category, numResults } = args as {
+						query?: string;
+						category?: StorySearchCategory;
+						numResults?: number;
+					};
+					const result = await searchStoryReferences(
+						query ?? "",
+						category,
+						numResults,
+						config.exaApiKey,
+					);
+					return {
+						content: [{ type: "text" as const, text: JSON.stringify(result) }],
+					};
 				}
 
 				return executeStoryTool(tool.name, args);

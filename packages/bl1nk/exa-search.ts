@@ -58,9 +58,10 @@ export async function searchStoryReferences(
 	query: string,
 	category: StorySearchCategory = "general",
 	numResults = 5,
+	apiKey?: string,
 ): Promise<ExaSearchResponse> {
-	const apiKey = process.env.EXA_API_KEY;
-	if (!apiKey) {
+	const key = apiKey ?? process.env.EXA_API_KEY;
+	if (!key) {
 		throw new Error(
 			"EXA_API_KEY environment variable is not set. " +
 				"Get your key at https://dashboard.exa.ai/api-keys and add it to your .env file.",
@@ -95,7 +96,7 @@ export async function searchStoryReferences(
 			response = await fetch(EXA_API_URL, {
 				method: "POST",
 				headers: {
-					"x-api-key": apiKey,
+					"x-api-key": key,
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(body),
