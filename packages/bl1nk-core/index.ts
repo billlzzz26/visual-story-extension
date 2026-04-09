@@ -58,6 +58,16 @@ export {
 	executeGranularTool,
 } from "../tools/index.js";
 
+// Re-export SkillManager
+export { SkillManager } from "./skill-manager/index.js";
+export type {
+	SkillConfig,
+	SkillLevel,
+	ListSkillsOptions,
+	SkillValidationResult,
+} from "./skill-manager/types.js";
+export { SkillError, SkillErrorCode } from "./skill-manager/types.js";
+
 // ============================================================================
 // Schema Definitions
 // ============================================================================
