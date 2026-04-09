@@ -459,9 +459,13 @@ export class CraftApiClient {
 			position: "end",
 		},
 	): Promise<CraftBlock> {
-		const formData = new FormData();
-		formData.append("file", file);
-		formData.append("position", JSON.stringify(position));
+		// Fresh FormData per request — multipart bodies are consumed by fetch and cannot be reused.
+		const buildUploadBody = (): FormData => {
+			const fd = new FormData();
+			fd.append("file", file);
+			fd.append("position", JSON.stringify(position));
+			return fd;
+		};
 
 		const url = `${API_BASE}/upload`;
 		let response: Response;
@@ -470,7 +474,7 @@ export class CraftApiClient {
 			response = await fetch(url, {
 				method: "POST",
 				headers: { Authorization: `Bearer ${this.accessToken}` },
-				body: formData,
+				body: buildUploadBody(),
 			});
 		} catch (error) {
 			const networkError = new CraftApiError(
