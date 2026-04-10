@@ -64,6 +64,8 @@ export const STORY_PATTERNS = {
 		"ทุ่งหญ้า",
 		"กำแพงเมือง",
 	],
+	// Optimized: Combined regex for location keywords (O(N) vs O(K*N))
+	LOCATION_REGEX: /$.^/g,
 	ENTITY_DICTIONARY: {
 		characters: [
 			"อิกนัส",
@@ -78,6 +80,8 @@ export const STORY_PATTERNS = {
 			"หญิงสาวเมด",
 			"การ์ดภารกิจ",
 		],
+		// Optimized: Combined regex for dictionary characters
+		CHARACTER_REGEX: /$.^/g,
 	},
 	THEMES: {
 		love: /love|romance/i,
@@ -86,6 +90,23 @@ export const STORY_PATTERNS = {
 		destiny: /destiny|heritage/i,
 	},
 };
+
+// Initialize optimized regexes
+// Sort keywords by length descending to match longest possible entity first (handles overlaps)
+STORY_PATTERNS.LOCATION_REGEX = new RegExp(
+	`\\b(${[...STORY_PATTERNS.LOCATION_KEYWORDS]
+		.sort((a, b) => b.length - a.length)
+		.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+		.join("|")})\\b`,
+	"gi",
+);
+STORY_PATTERNS.ENTITY_DICTIONARY.CHARACTER_REGEX = new RegExp(
+	`(${[...STORY_PATTERNS.ENTITY_DICTIONARY.characters]
+		.sort((a, b) => b.length - a.length)
+		.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+		.join("|")})`,
+	"g",
+);
 
 export interface ExtractedEntity {
 	type: "character" | "event" | "conflict" | "scene" | "location";
@@ -133,10 +154,12 @@ export function extractStoryEntities(text: string) {
 	}
 
 	// 2b. Dictionary extraction (bridge from v1)
-	for (const name of STORY_PATTERNS.ENTITY_DICTIONARY.characters) {
-		if (foundNames.has(name)) continue;
-		const regex = new RegExp(name, "g");
-		if (regex.test(text)) {
+	// Optimized: Single pass using combined regex
+	for (const match of text.matchAll(
+		STORY_PATTERNS.ENTITY_DICTIONARY.CHARACTER_REGEX,
+	)) {
+		const name = match[0];
+		if (!foundNames.has(name)) {
 			foundNames.add(name);
 			results.characters.push({
 				type: "character",
@@ -181,13 +204,16 @@ export function extractStoryEntities(text: string) {
 	}
 
 	// 6. Extract Locations (New: improved logic)
+	// Optimized: Single pass using combined regex
 	let locIdx = 0;
-	for (const keyword of STORY_PATTERNS.LOCATION_KEYWORDS) {
-		const regex = new RegExp(`\\b${keyword}\\b`, "gi");
-		if (regex.test(text)) {
+	const foundLocations = new Set<string>();
+	for (const match of text.matchAll(STORY_PATTERNS.LOCATION_REGEX)) {
+		const name = match[0].toLowerCase();
+		if (!foundLocations.has(name)) {
+			foundLocations.add(name);
 			results.locations.push({
 				type: "location",
-				name: keyword,
+				name: match[0],
 				index: locIdx++,
 			});
 		}
