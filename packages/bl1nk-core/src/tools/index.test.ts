@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { Schemas } from "../src/index.js";
+import { Schemas } from "../index.js";
 import { BL1NK_VISUAL_TOOLS, GRANULAR_TOOLS } from "./index.js";
 
 describe("Tool Registration Validation", () => {
