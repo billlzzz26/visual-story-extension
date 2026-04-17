@@ -15,7 +15,10 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import type { ZodRawShape } from "zod";
 import { z } from "zod";
 import { buildInitialGraph } from "./src/analyzer.js";
-import { formatSearchResults, searchStoryReferences } from "./src/exa-search.js";
+import {
+	formatSearchResults,
+	searchStoryReferences,
+} from "./src/exa-search.js";
 import { toCanvasJSON } from "./src/exporters/canvas.js";
 import { toDashboard, toMcpUiDashboard } from "./src/exporters/dashboard.js";
 import { toMarkdown } from "./src/exporters/markdown.js";
@@ -44,7 +47,10 @@ export { toMermaid } from "./src/exporters/mermaid.js";
 export { toCanvasJSON } from "./src/exporters/canvas.js";
 export { toDashboard, toMcpUiDashboard } from "./src/exporters/dashboard.js";
 export { toMarkdown } from "./src/exporters/markdown.js";
-export { searchStoryReferences, formatSearchResults } from "./src/exa-search.js";
+export {
+	searchStoryReferences,
+	formatSearchResults,
+} from "./src/exa-search.js";
 export {
 	formatToolError,
 	ExaError,

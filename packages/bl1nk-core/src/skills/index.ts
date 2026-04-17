@@ -13,18 +13,18 @@
  *   bundled   — `skills/` shipped with the package
  */
 
-import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
+import { type FSWatcher, watch as watchFs } from "node:fs";
+import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { watch as watchFs, type FSWatcher } from "node:fs";
 import {
-	type SkillConfig,
-	type SkillLevel,
 	type ListSkillsOptions,
-	type SkillValidationResult,
+	type SkillConfig,
 	type SkillError,
 	SkillError as SkillErrorClass,
 	SkillErrorCode,
+	type SkillLevel,
+	type SkillValidationResult,
 	parseSkillContent,
 	validateSkillConfig,
 } from "./types.js";
@@ -113,12 +113,7 @@ export class SkillManager {
 		}
 
 		// Precedence: project > user > extension > bundled
-		const levels: SkillLevel[] = [
-			"project",
-			"user",
-			"extension",
-			"bundled",
-		];
+		const levels: SkillLevel[] = ["project", "user", "extension", "bundled"];
 		for (const lvl of levels) {
 			const skill = await this.findSkillByNameAtLevel(name, lvl);
 			if (skill) return skill;
@@ -134,12 +129,7 @@ export class SkillManager {
 		const skillsCache = new Map<SkillLevel, SkillConfig[]>();
 		this.parseErrors.clear();
 
-		const levels: SkillLevel[] = [
-			"project",
-			"user",
-			"extension",
-			"bundled",
-		];
+		const levels: SkillLevel[] = ["project", "user", "extension", "bundled"];
 		let totalSkills = 0;
 
 		for (const level of levels) {
@@ -184,8 +174,7 @@ export class SkillManager {
 			const content = await fs.readFile(filePath, "utf8");
 			return parseSkillContent(content, filePath, level);
 		} catch (error) {
-			const msg =
-				error instanceof Error ? error.message : "Unknown error";
+			const msg = error instanceof Error ? error.message : "Unknown error";
 			const skillError = new SkillErrorClass(
 				`Failed to read skill file: ${msg}`,
 				SkillErrorCode.FILE_ERROR,
@@ -294,8 +283,7 @@ export class SkillManager {
 	private updateWatchersFromCache(): void {
 		const watchTargets = new Set<string>(
 			(["project", "user"] as const)
-				.map((level) => this.getSkillsBaseDirs(level))
-				.flat()
+				.flatMap((level) => this.getSkillsBaseDirs(level))
 				.filter((baseDir) => fsSync.existsSync(baseDir)),
 		);
 
@@ -331,8 +319,7 @@ export class SkillManager {
 	}
 
 	private async ensureUserSkillsDir(): Promise<void> {
-		const homeDir =
-			process.env.HOME ?? process.env.USERPROFILE ?? "";
+		const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? "";
 		if (!homeDir) return;
 		const baseDir = path.join(homeDir, QWEN_CONFIG_DIR, SKILLS_CONFIG_DIR);
 		try {
