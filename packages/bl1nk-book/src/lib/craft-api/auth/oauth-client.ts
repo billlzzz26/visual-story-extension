@@ -214,3 +214,13 @@ export function clearOAuthState(): void {
 		// Ignore storage access failures during cleanup
 	}
 }
+
+/** Alias for getOAuthState for backwards compatibility */
+export function getStoredState(): string | null {
+	return getOAuthState();
+}
+
+/** Alias for clearOAuthState for backwards compatibility */
+export function clearStoredState(): void {
+	clearOAuthState();
+}

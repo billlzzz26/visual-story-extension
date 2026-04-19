@@ -13,8 +13,9 @@ export function useContainerBreakpoint(
 		const el = ref.current;
 		if (!el) return;
 
-  if (typeof ResizeObserver === "undefined") return;
+		if (typeof ResizeObserver === "undefined") return;
 
+		const observer = new ResizeObserver((entries) => {
 			for (const entry of entries) {
 				const width = entry.contentRect.width;
 				if (width < 640) setBreakpoint("compact");

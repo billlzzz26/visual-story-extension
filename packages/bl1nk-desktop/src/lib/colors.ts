@@ -9,7 +9,7 @@ export function getImportanceColor(importance: string): {
 		resolution: { bg: "bg-green-100", text: "text-green-700" },
 		rising: { bg: "bg-slate-100", text: "text-slate-600" },
 	};
-	return colors[importance] || colors.rising;
+	return colors[importance] ?? { bg: "bg-slate-100", text: "text-slate-600" };
 }
 
 export function getRoleColor(role: string): { bg: string; text: string } {
@@ -19,7 +19,7 @@ export function getRoleColor(role: string): { bg: string; text: string } {
 		mentor: { bg: "bg-amber-100", text: "text-amber-700" },
 		supporting: { bg: "bg-slate-100", text: "text-slate-600" },
 	};
-	return colors[role] || colors.supporting;
+	return colors[role] ?? { bg: "bg-slate-100", text: "text-slate-600" };
 }
 
 export function getConflictColor(type: string): { bg: string; text: string } {
@@ -48,5 +48,11 @@ export function getIssueColor(severity: string): {
 			border: "border-blue-500",
 		},
 	};
-	return colors[severity] || colors.info;
+	return (
+		colors[severity] ?? {
+			bg: "bg-blue-50",
+			text: "text-blue-700",
+			border: "border-blue-500",
+		}
+	);
 }
