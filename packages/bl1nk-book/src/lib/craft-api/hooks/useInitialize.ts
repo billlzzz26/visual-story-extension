@@ -18,7 +18,7 @@ function isAuthError(err: unknown): boolean {
 		"name" in err &&
 		(err as { name: string }).name === "CraftApiError"
 	) {
-		const e = err as { status: number; message: string };
+		const e = err as unknown as { status: number; message: string };
 		return e.status === 401 || e.message === "invalid_token";
 	}
 	return false;
@@ -41,6 +41,9 @@ export interface ResolvedResources {
 export interface InitializeOptions {
 	slug?: string;
 	localPersistenceKey?: string;
+	dataSourceType?: string;
+	taskScopes?: string[];
+	layout?: string;
 }
 
 function findFolderByName(
@@ -175,6 +178,8 @@ export function useInitialize(
 			const resolved: ResolvedResources = {};
 
 			try {
+				if (!init) return;
+
 				const foldersRes = await client
 					.getFolders()
 					.catch(catchNonAuth({ items: [] as CraftFolder[] }));

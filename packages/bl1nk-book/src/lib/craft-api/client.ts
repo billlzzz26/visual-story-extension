@@ -499,16 +499,16 @@ export class CraftApiClient {
 						(body.error as string) === "invalid_token") &&
 					this.onRefresh
 				) {
-					const newToken = await this.onRefresh();
-					if (newToken) {
-						this.accessToken = newToken;
-						let retryResponse: Response;
-						try {
-							retryResponse = await fetch(url, {
-								method: "POST",
-								headers: { Authorization: `Bearer ${this.accessToken}` },
-								body: formData,
-							});
+						const newToken = await this.onRefresh();
+						if (newToken) {
+							this.accessToken = newToken;
+							let retryResponse: Response;
+							try {
+								retryResponse = await fetch(url, {
+									method: "POST",
+									headers: { Authorization: `Bearer ${this.accessToken}` },
+									body: buildUploadBody(),
+								});
 						} catch (retryFetchError) {
 							const networkError = new CraftApiError(
 								0,
