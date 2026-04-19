@@ -132,21 +132,38 @@ export function buildInitialGraph(text: string): StoryGraph {
 		}
 	}
 
-	// Assign characters to events (optimized: pre-calculate regex patterns)
-	const charData = graph.characters.map((c) => {
-		const escapedName = c.name
-			.toLowerCase()
-			.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		return {
-			id: c.id,
-			pattern: new RegExp(`\\b${escapedName}\\b`, "i"),
-		};
-	});
+	// Assign characters to events (optimized: consolidate into a single regex for O(E) scan)
+	if (graph.characters.length > 0) {
+		const nameToIds = new Map<string, string[]>();
+		for (const c of graph.characters) {
+			const lowerName = c.name.toLowerCase();
+			if (!nameToIds.has(lowerName)) {
+				nameToIds.set(lowerName, []);
+			}
+			nameToIds.get(lowerName)?.push(c.id);
+		}
 
-	for (const event of graph.events) {
-		for (const char of charData) {
-			if (char.pattern.test(event.label)) {
-				event.characters.push(char.id);
+		const uniqueEscapedNames = Array.from(nameToIds.keys())
+			.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+			.sort((a, b) => b.length - a.length);
+
+		const consolidatedPattern = new RegExp(
+              `(?<![\\p{L}\\p{N}_])(${uniqueEscapedNames.join("|")})(?![\\p{L}\\p{N}_])`,
+              "giu",
+		);
+
+		for (const event of graph.events) {
+			const matches = event.label.matchAll(consolidatedPattern);
+			for (const match of matches) {
+				const matchedName = match[1].toLowerCase();
+				const charIds = nameToIds.get(matchedName);
+				if (charIds) {
+					for (const charId of charIds) {
+						if (!event.characters.includes(charId)) {
+							event.characters.push(charId);
+						}
+					}
+				}
 			}
 		}
 	}

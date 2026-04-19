@@ -60,7 +60,10 @@ export function validateSkillConfig(
 		errors.push('Missing required field: "description"');
 	}
 
-	if (config.allowedTools !== undefined && !Array.isArray(config.allowedTools)) {
+	if (
+		config.allowedTools !== undefined &&
+		!Array.isArray(config.allowedTools)
+	) {
 		errors.push('"allowedTools" must be an array of strings');
 	}
 
@@ -69,7 +72,7 @@ export function validateSkillConfig(
 	}
 
 	if (!config.body || config.body.trim() === "") {
-		errors.push('Skill body content is empty');
+		errors.push("Skill body content is empty");
 	}
 
 	return {
@@ -204,7 +207,10 @@ function parseSimpleYaml(yaml: string): Record<string, unknown> {
 			if (rawValue === "" || rawValue === "|" || rawValue === ">") {
 				// Multi-line value or array follows
 				currentKey = key;
-				if (rawValue === "" && lines[lines.indexOf(line) + 1]?.trim().startsWith("-")) {
+				if (
+					rawValue === "" &&
+					lines[lines.indexOf(line) + 1]?.trim().startsWith("-")
+				) {
 					currentArray = [];
 				} else {
 					isMultiline = true;
