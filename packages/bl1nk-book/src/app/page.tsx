@@ -1,7 +1,8 @@
 import { CraftApp } from "@/lib/craft-api/CraftApp";
 import { CraftAuthProvider } from "@/lib/craft-api/auth/CraftAuthProvider";
+import type { AppConfig } from "@/lib/craft-api/types";
 
-const BOOK_SHELF_CONFIG = {
+const BOOK_SHELF_CONFIG: AppConfig = {
 	layout: "cards",
 	dataSource: {
 		type: "collections",
@@ -45,7 +46,7 @@ const BOOK_SHELF_CONFIG = {
 	config: {
 		showMetadata: false,
 	},
-} as const;
+};
 
 export default function Home() {
 	return (
