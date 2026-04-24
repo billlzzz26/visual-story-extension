@@ -26,13 +26,15 @@ export function toDashboard(
 	const theme = options.theme ?? "classic";
 	const isModern = theme === "modern";
 	const v = validateGraph(graph);
+	const htmlMap: Record<string, string> = {
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		'"': "&quot;",
+		"'": "&#39;",
+	};
 	const escapeHtml = (s: string) =>
-		s
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;")
-			.replace(/"/g, "&quot;")
-			.replace(/'/g, "&#39;");
+		s.replace(/[&<>"']/g, (m) => htmlMap[m] || m);
 
 	// Theme-dependent color tokens
 	const colors = {
