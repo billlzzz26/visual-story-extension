@@ -1,21 +1,9 @@
-## 2025-05-15 - [Consolidated validation passes]
+# Bolt's Journal - Critical Learnings
 
-**Learning:** Found that `validateGraph` was performing multiple iterations over the `graph.events` array to calculate act counts, check for climax/midpoint presence, and other structural checks.
-**Action:** Consolidated these checks into a single `for...of` loop to reduce complexity from O(kN) to O(N), which provides a measurable performance boost as the story size increases.
+## 2025-05-19 - [String Concatenation in Loops]
+**Learning:** Found that several exporters and utility functions were using `+=` for string concatenation in loops. While JS engines optimize this, for very large outputs (thousands of entities), this can lead to $O(N^2)$ performance due to repeated string allocations and copies.
+**Action:** Use an array to collect segments and `join('')` at the end for large-scale string construction.
 
-## 2025-05-16 - [Optimized StoryGraph building performance]
-**Learning:** The `buildInitialGraph` function was performing redundant `toLowerCase()` operations within nested loops for character-to-event assignment and during event/conflict extraction.
-**Action:** Pre-calculate lowercased strings once and reuse them. Specifically, pre-calculating character names and event labels before the assignment loop reduces complexity from $O(E \times C)$ to $O(E+C)$ string transformations.
-
-## 2025-05-17 - [Optimized story entity extraction with consolidated RegEx]
-**Learning:** Found that `extractStoryEntities` was iterating over a list of
-keywords and performing a fresh RegExp test for each keyword on the entire
-story text, resulting in O(K×N) complexity.
-**Action:** Pre-compiled a single consolidated RegExp for both location
-keywords and entity dictionary characters. This reduces text scanning
-complexity to O(N). For large story texts or extensive keyword lists, this
-prevents performance degradation.
-
-## 2025-05-18 - [Optimized character-to-event assignment with consolidated RegEx]
-**Learning:** The previous implementation used a nested loop iterating over every character for every event, creating $O(E \times C)$ complexity with repeated RegExp tests.
-**Action:** Consolidate all character names into a single pre-compiled RegExp with alternation and word boundaries. Using `matchAll` on the event label allows finding all present characters in a single pass. This reduced execution time by ~3.2x (21.58ms to 6.73ms) for 100 characters and 500 events.
+## 2025-05-19 - [Redundant Sorting in Exporters]
+**Learning:** `toMermaid` and `toMarkdown` exporters were performing redundant filtering and sorting of events by act/sequence.
+**Action:** Sort the events array once at the beginning of the exporter and iterate through the sorted list, detecting act changes if necessary.

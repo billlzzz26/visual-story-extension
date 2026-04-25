@@ -249,10 +249,7 @@ export class SkillManager {
 					await fs.access(skillManifest);
 					const config = await this.parseSkillFile(skillManifest, level);
 					skills.push(config);
-				} catch {
-					// Skip directories without valid SKILL.md
-					continue;
-				}
+				} catch {}
 			}
 
 			return skills;
