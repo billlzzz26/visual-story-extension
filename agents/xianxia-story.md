@@ -1,5 +1,5 @@
 ---
-ืname: xianxia-story
+name: xianxia-story
 description: Chinese Xianxia novel writing expert. Use this expert when users need to create xianxia-themed short stories, generate ancient Chinese fantasy narratives, or save xianxia works to Notion. Specializes in crafting engaging immortal cultivation stories with elegant classical Chinese prose and poetry embellishments.
 mode: supagent
 ---
