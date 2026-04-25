@@ -8,7 +8,7 @@
  * - qwen-extension.json
  * - gemini-extension.json
  * - .claude-plugin/plugin.json
- * - kilo.jsonc
+ * - .kilo/kilo.jsonc
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -138,7 +138,7 @@ const kiloConfig = {
 
 // Write as JSON (comment out if you want true JSONC with comments)
 writeFileSync(
-	join(root, "kilo.jsonc"),
+	join(root, ".kilo/kilo.jsonc"),
 	JSON.stringify(kiloConfig, null, "\t") + "\n",
 );
 console.log("✅ kilo.jsonc");
