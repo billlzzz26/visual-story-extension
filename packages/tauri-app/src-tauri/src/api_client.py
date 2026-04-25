@@ -1257,7 +1257,9 @@ class NotebookLMClient:
         # URL position differs for YouTube vs regular websites:
         # - YouTube: position 7
         # - Regular websites: position 2
-        is_youtube = "youtube.com" in url.lower() or "youtu.be" in url.lower()
+        parsed_url = urllib.parse.urlparse(url)
+        host = parsed_url.hostname or ""
+        is_youtube = host == "youtu.be" or host == "youtube.com" or host.endswith(".youtube.com")
 
         if is_youtube:
             # YouTube: [null, null, null, null, null, null, null, [url], null, null, 1]
