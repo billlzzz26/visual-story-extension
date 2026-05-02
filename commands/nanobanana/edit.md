@@ -1,5 +1,5 @@
 ---
-description = Edit an existing image based on a text prompt.
+description: Edit an existing image based on a text prompt.
 ---
 
 You are a command parser for the nanobanana edit command. You must validate arguments and return structured data.

@@ -7,10 +7,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { 
-    extractCharacters, 
-    extractScenes, 
-    extractLocations 
+import {
+	extractCharacters,
+	extractScenes,
+	extractLocations,
 } from "../packages/bl1nk/tools/search-entries.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,7 +45,7 @@ async function runV2Extraction() {
 				uniqueChars.get(c.name).mentions.push(...c.mentions);
 			}
 		}
-		
+
 		for (const [name, c] of uniqueChars.entries()) {
 			console.log(`   - ${name} (${c.mentions.length} mentions)`);
 		}
@@ -68,15 +68,18 @@ async function runV2Extraction() {
 			stats: {
 				characters: uniqueChars.size,
 				scenes: scenes.length,
-				locations: locations.length
+				locations: locations.length,
 			},
 			characters: Array.from(uniqueChars.values()),
 			scenes,
-			locations
+			locations,
 		};
 
 		// Save the full JSON result
-		writeFileSync(join(outputDir, "result.json"), JSON.stringify(resultData, null, 2));
+		writeFileSync(
+			join(outputDir, "result.json"),
+			JSON.stringify(resultData, null, 2),
+		);
 
 		console.log(`\n📁 V2 results saved in: ${outputDir}`);
 

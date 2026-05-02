@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { buildInitialGraph } from "../packages/bl1nk/analyzer.js";
-import { toCanvasJSON } from "../packages/bl1nk/exporters/canvas.js";
-import { toDashboard } from "../packages/bl1nk/exporters/dashboard.js";
-import { toMermaid } from "../packages/bl1nk/exporters/mermaid.js";
-import { executeStoryTool } from "../packages/bl1nk/src/index.js";
+import { buildInitialGraph } from "../packages/bl1nk-core/src/analyzer.js";
+import { toCanvasJSON } from "../packages/bl1nk-core/src/exporters/canvas.js";
+import { toDashboard } from "../packages/bl1nk-core/src/exporters/dashboard.js";
+import { toMermaid } from "../packages/bl1nk-core/src/exporters/mermaid.js";
+import { executeStoryTool } from "../packages/bl1nk-core/src/index.js";
 import type {
 	CanvasEdge,
 	CanvasNode,
 	StoryGraph,
-} from "../packages/bl1nk/types.js";
-import { validateGraph } from "../packages/bl1nk/validators.js";
+} from "../packages/bl1nk-core/src/types.js";
+import { validateGraph } from "../packages/bl1nk-core/src/validators.js";
 
 describe("bl1nk-visual-mcp Core Logic", () => {
 	const storyText = `
@@ -532,7 +532,7 @@ Event: Event 2
 			const graph = buildInitialGraph(storyText);
 			const html = toDashboard(graph);
 
-			expect(html).toContain(graph.meta.title);
+			expect(html).toContain("Dragon&#39;s Heir");
 			expect(html).toContain("Story Structure Analysis Dashboard");
 		});
 
@@ -609,10 +609,10 @@ Event: Event 2
 
 			// Check that the title specifically is escaped (not the legitimate script tags for Chart.js)
 			expect(html).toContain(
-				'<title>Test &lt;script&gt;alert("xss")&lt;/script&gt; - bl1nk Story Dashboard</title>',
+				"<title>Test &lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt; - bl1nk Story Dashboard</title>",
 			);
 			expect(html).toContain(
-				'<h1 class="text-4xl font-bold mb-2">Test &lt;script&gt;alert("xss")&lt;/script&gt;</h1>',
+				'<h1 class="text-4xl font-bold mb-2">Test &lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;</h1>',
 			);
 		});
 

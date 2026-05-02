@@ -1,3 +1,4 @@
+description = "Validate the current StoryGraph structure"
 prompt = """
 You are a story structure validator. Perform comprehensive validation of the current StoryGraph.
 

@@ -19,7 +19,7 @@
 | `npm run lint` | Markdown lint |
 | `npm run lint:fix` | Markdown lint with auto-fix |
 
-### Tauri App (`tauri-app/`)
+### Desktop App (`bl1nk-desktop/`)
 
 | Command | Description |
 |---------|-------------|
@@ -30,23 +30,33 @@
 | `npm test` | Run tests via vitest |
 | `npm run typecheck` | `tsc --noEmit` |
 
+### IDE App (`bl1nk-ide/`)
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Vite dev server |
+| `npm run build` | Vite production build |
+| `npm run preview` | Preview production build |
+| `npm test` | Run tests via vitest |
+| `npm run typecheck` | `tsc --noEmit` |
+
 ## Project Structure
 
 ```
-packages/bl1nk/
-  src/index.ts          # MCP server entry, tool registration, Zod schemas
-  tools/
-    index.ts            # Tool definitions (GRANULAR_TOOLS + BL1NK_VISUAL_TOOLS)
-    execute.ts          # Tool executors (executeGranularTool + executeStoryTool)
-    search-entries.ts   # Standalone search tool
-    generate-artifacts.ts
-  exporters/            # Output formatters (mermaid, canvas, dashboard, markdown, mcp-ui)
-  analyzer.ts           # Story text → StoryGraph builder
-  validators.ts         # Structural validation logic
-  exa-search.ts         # External search integration
-  types.ts              # TypeScript interfaces (StoryGraph, Character, etc.)
-packages/tauri-app/     # Desktop app (React + Vite + Tauri)
-packages/github-sync/   # GitHub webhook → Notion sync
+packages/bl1nk-core/    # Core MCP Server & Story Analysis
+  src/
+    index.ts            # MCP server entry, tool registration, Zod schemas
+    tools/              # Tool definitions & executors
+    exporters/          # Output formatters (mermaid, canvas, dashboard, markdown)
+    analyzer.ts         # Story text → StoryGraph builder
+    validators.ts       # Structural validation logic
+    types.ts            # TypeScript interfaces (StoryGraph, Character, etc.)
+    edge-cases.test.ts  # Test edge cases
+  tests/                # Integration tests
+packages/bl1nk-sync/    # GitHub webhook → Notion sync
+packages/bl1nk-desktop/ # Desktop app (React + Tauri)
+packages/bl1nk-ide/     # Web IDE (Vite + React)
+packages/bl1nk-book/    # Book publishing platform (development)
 packages/craft-blog-cms/# ⚠️ Orphaned (Next.js blog/CMS)
 ```
 

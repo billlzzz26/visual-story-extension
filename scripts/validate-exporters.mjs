@@ -149,7 +149,10 @@ assert(dashboard.includes("<!DOCTYPE html>"), "is valid HTML5");
 assert(dashboard.includes("Dragon"), "has title (Dragon)");
 assert(dashboard.includes("Heir"), "has title (Heir)");
 assert(dashboard.includes("chart.js"), "includes Chart.js");
-assert(dashboard.includes('<script src="https://cdn.tailwindcss.com"></script>'), "includes Tailwind CDN");
+assert(
+	dashboard.includes('<script src="https://cdn.tailwindcss.com"></script>'),
+	"includes Tailwind CDN",
+);
 assert(dashboard.includes("Aria"), "mentions Aria");
 assert(dashboard.includes("actChart"), "has act distribution chart");
 

@@ -4,7 +4,6 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"outDir": "dist",
-		"rootDir": "src",
 		"jsx": "react-jsx",
 		"lib": ["DOM", "DOM.Iterable", "ES2023"],
 		"types": ["node"],
@@ -13,8 +12,13 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
-		"noEmit": false
+		"noEmit": true
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx", "src/env.d.ts"],
+	"include": [
+		"packages/**/*.ts",
+		"packages/**/*.tsx",
+		"api/**/*.ts",
+		"vitest.config.ts"
+	],
 	"exclude": ["node_modules", "dist", "tests"]
 }

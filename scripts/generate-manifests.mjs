@@ -146,6 +146,8 @@ console.log("✅ kilo.jsonc");
 // ============================================================================
 // Summary
 // ============================================================================
-console.log(`\n📋 Generated ${Object.keys(source.tools).length} tools across all manifests`);
+console.log(
+	`\n📋 Generated ${Object.keys(source.tools).length} tools across all manifests`,
+);
 console.log(`📦 MCP server: ${source.mcpServer.entryPoint}`);
 console.log("🔗 All manifests generated from manifest-source.json");

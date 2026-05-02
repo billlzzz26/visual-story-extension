@@ -1,9 +1,7 @@
 {
 	"bl1nkVisualServer": {
 		"command": "node",
-		"args": [
-			"${extensionRoot}/packages/bl1nk-core/dist/index.js"
-		],
+		"args": ["${extensionRoot}/packages/bl1nk-core/dist/index.js"],
 		"cwd": "${extensionRoot}"
 	}
 }

@@ -15,18 +15,18 @@ import { resolve } from "node:path";
 async function ensureDependency(): Promise<void> {
 	try {
 		await import("beautiful-mermaid");
- } catch (error) {
-     if (
-         error &&
-         typeof error === "object" &&
-         "code" in error &&
-         (error as { code?: string }).code === "ERR_MODULE_NOT_FOUND"
-     ) {
-         console.error("Installing beautiful-mermaid...");
-         execSync("npm install --no-save beautiful-mermaid", { stdio: "inherit" });
-         return;
-     }
-     throw error;
+	} catch (error) {
+		if (
+			error &&
+			typeof error === "object" &&
+			"code" in error &&
+			(error as { code?: string }).code === "ERR_MODULE_NOT_FOUND"
+		) {
+			console.error("Installing beautiful-mermaid...");
+			execSync("npm install --no-save beautiful-mermaid", { stdio: "inherit" });
+			return;
+		}
+		throw error;
 		execSync("npm install beautiful-mermaid", { stdio: "inherit" });
 	}
 }
@@ -55,17 +55,18 @@ function parseArgs(args: string[]): Options {
 			options.stdin = true;
 		} else if (arg === "--ascii") {
 			options.ascii = true;
-  } else if (arg === "--theme") {
-              const nextArg = args[i + 1];
-              if (nextArg && !nextArg.startsWith("-")) {
-                  options.theme = args[++i];
-              }
-          } else if (arg === "--output") {
-              const nextArg = args[i + 1];
-              if (nextArg && !nextArg.startsWith("-")) {
-                  options.output = args[++i];
-              } else {
-                  throw new Error("--output requires a file path");
+		} else if (arg === "--theme") {
+			const nextArg = args[i + 1];
+			if (nextArg && !nextArg.startsWith("-")) {
+				options.theme = args[++i];
+			}
+		} else if (arg === "--output") {
+			const nextArg = args[i + 1];
+			if (nextArg && !nextArg.startsWith("-")) {
+				options.output = args[++i];
+			} else {
+				throw new Error("--output requires a file path");
+			}
 		} else if (!arg.startsWith("-")) {
 			options.input = arg;
 		}
@@ -185,9 +186,6 @@ Examples:
 }
 
 main().catch((error) => {
-    console.error(
-        "Fatal error:",
-        error instanceof Error ? error.message : error,
-    );
-    process.exit(1);
+	console.error("Fatal error:", error instanceof Error ? error.message : error);
+	process.exit(1);
 });

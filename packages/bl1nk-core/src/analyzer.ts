@@ -148,8 +148,8 @@ export function buildInitialGraph(text: string): StoryGraph {
 			.sort((a, b) => b.length - a.length);
 
 		const consolidatedPattern = new RegExp(
-              `(?<![\\p{L}\\p{N}_])(${uniqueEscapedNames.join("|")})(?![\\p{L}\\p{N}_])`,
-              "giu",
+			`(?<![\\p{L}\\p{N}_])(${uniqueEscapedNames.join("|")})(?![\\p{L}\\p{N}_])`,
+			"giu",
 		);
 
 		for (const event of graph.events) {
