@@ -154,17 +154,17 @@ export function buildInitialGraph(text: string): StoryGraph {
 
 		for (const event of graph.events) {
 			const matches = event.label.matchAll(consolidatedPattern);
+			const assignedCharIds = new Set<string>(event.characters);
 			for (const match of matches) {
 				const matchedName = match[1].toLowerCase();
 				const charIds = nameToIds.get(matchedName);
 				if (charIds) {
 					for (const charId of charIds) {
-						if (!event.characters.includes(charId)) {
-							event.characters.push(charId);
-						}
+						assignedCharIds.add(charId);
 					}
 				}
 			}
+			event.characters = Array.from(assignedCharIds);
 		}
 	}
 

@@ -162,7 +162,7 @@ export function parseSkillContent(
  * Handles simple key-value, arrays, and multi-line strings.
  */
 function parseSimpleYaml(yaml: string): Record<string, unknown> {
-	const result: Record<string, unknown> = Record<string, unknown>();
+	const result: Record<string, unknown> = {};
 	const lines = yaml.split("\n");
 
 	let currentKey: string | null = null;
@@ -222,7 +222,7 @@ function parseSimpleYaml(yaml: string): Record<string, unknown> {
 				currentKey = null;
 			}
 		} else if (isMultiline && currentKey) {
-			multilineValue += "\n" + line;
+			multilineValue += `\n${line}`;
 		}
 	}
 
