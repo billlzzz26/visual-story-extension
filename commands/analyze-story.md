@@ -1,4 +1,9 @@
-# /bl1nk-visual-mcp:analyze-story
+---
+name: analyze-story
+description: Analyze story text and generate a StoryGraph
+---
+
+# Command: analyze-story
 
 Analyze story text and generate a StoryGraph with 3-act structure, characters, conflicts, and relationships.
 

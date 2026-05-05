@@ -1,26 +1,46 @@
 {
-  "name": "visual-story-extension",
-  "image": "mcr.microsoft.com/devcontainers/universal:latest",
-  "remoteUser": "codespace",
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "24"
-    }
-  },
-  "remoteEnv": {
-    "NODE_OPTIONS": "--max-old-space-size=4096"
-  },
-  "forwardPorts": [3000, 3001, 5173, 5174, 8080],
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-vscode.vscode-typescript-next",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "rust-lang.rust-analyzer"
-      ]
-    }
-  },
-  "postCreateCommand": "corepack enable && pnpm install --frozen-lockfile",
-  "waitFor": "postCreateCommand"
+	"name": "bl1nk-visual-mcp-monorepo",
+	"image": "mcr.microsoft.com/devcontainers/universal:latest",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "22"
+		}
+	},
+	"remoteEnv": {
+		"NODE_OPTIONS": "--max-old-space-size=4096"
+	},
+	"forwardPorts": [3000, 3001, 5173, 5174, 8080, 5000],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.vscode-typescript-next",
+				"biomejs.biome",
+				"vitest.explorer",
+				"bradlc.vscode-tailwindcss",
+				"ms-vscode.vscode-json",
+				"ms-vscode.vscode-markdown",
+				"ms-vscode.vscode-yaml"
+			],
+			"settings": {
+				"typescript.preferences.importModuleSpecifier": "relative",
+				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "biomejs.biome",
+				"[typescript]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"[typescriptreact]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"[json]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"[javascript]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				}
+			}
+		}
+	},
+	"postCreateCommand": "corepack enable && pnpm install --frozen-lockfile",
+	"postAttachCommand": "echo '\n🚀 Dev container ready!\n\nQuick commands:\n  pnpm run build    # Build all packages\n  pnpm run test     # Run tests\n  pnpm run lint     # Lint & format code\n  pnpm run typecheck # Type check\n\n📦 Available packages:\n  packages/bl1nk-core/    # MCP Server\n  packages/bl1nk-sync/    # GitHub Sync\n  packages/bl1nk-desktop/ # Desktop UI\n  packages/bl1nk-ide/     # Web IDE\n'",
+	"waitFor": "postCreateCommand"
 }

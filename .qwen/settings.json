@@ -1,13 +1,13 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(npm run *)",
-      "Bash(findstr *)",
-      "Bash(mkdir *)",
-      "Bash(git pull *)",
-      "Bash(git push *)",
-      "mcp__securityServer__get_files_to_audit"
-    ]
-  },
-  "$version": 3
+	"permissions": {
+		"allow": [
+			"Bash(npm run *)",
+			"Bash(findstr *)",
+			"Bash(mkdir *)",
+			"Bash(git pull *)",
+			"Bash(git push *)",
+			"mcp__securityServer__get_files_to_audit"
+		]
+	},
+	"$version": 3
 }
