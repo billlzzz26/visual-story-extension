@@ -19,3 +19,7 @@ prevents performance degradation.
 ## 2025-05-18 - [Optimized character-to-event assignment with consolidated RegEx]
 **Learning:** The previous implementation used a nested loop iterating over every character for every event, creating $O(E \times C)$ complexity with repeated RegExp tests.
 **Action:** Consolidate all character names into a single pre-compiled RegExp with alternation and word boundaries. Using `matchAll` on the event label allows finding all present characters in a single pass. This reduced execution time by ~3.2x (21.58ms to 6.73ms) for 100 characters and 500 events.
+
+## 2025-05-19 - [Optimized Mermaid exporter with single-pass event processing]
+**Learning:** Found that `toMermaid` was performing multiple sorts and redundant iterations to group events by act and connect them sequentially. It also had hardcoded act IDs (1, 2, 3) which could lead to missed data.
+**Action:** Refactored to a single global sort followed by a single traversal using a state tracker (`currentAct`) to generate subgraphs and connections simultaneously. This reduces complexity from $O(A \times E \log E + E \log E + 3E)$ to $O(E \log E + E)$, making it more efficient and robust for varying act structures.

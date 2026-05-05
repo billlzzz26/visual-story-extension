@@ -62,43 +62,45 @@ export function toMermaid(
 
 	out += "graph TD\n";
 
-	// 1. Group events by Act
-	const acts: Record<number, EventNode[]> = { 1: [], 2: [], 3: [] };
-	for (const e of graph.events) {
-		if (!acts[e.act]) acts[e.act] = [];
-		acts[e.act].push(e);
-	}
-
-	// 2. Render Subgraphs for Acts
-	for (const act of [1, 2, 3] as const) {
-		if (acts[act].length === 0) continue;
-		out += `  subgraph Act_${act} ["Act ${act}"]\n`;
-		const sortedActEvents = [...acts[act]].sort(
-			(a, b) => a.sequenceInAct - b.sequenceInAct,
-		);
-
-		for (const e of sortedActEvents) {
-			const label = e.label.replace(/"/g, "'");
-			// Different shapes for different importance
-			let shape = `["${label}"]`;
-			if (e.importance === "climax") shape = `(("${label}"))`;
-			if (e.importance === "midpoint") shape = `> "${label}" ]`;
-			if (e.importance === "inciting") shape = `{{ "${label}" }}`;
-
-			out += `    ${e.id}${shape}:::${e.importance}\n`;
-		}
-		out += "  end\n";
-	}
-
-	// 3. Connect events in sequence
+	// Optimized: Single-pass event processing (O(E log E) sort + O(E) scan)
+	// Reduces redundant sorts and filters from the previous implementation.
 	const sortedEvents = [...graph.events].sort((a, b) => {
 		if (a.act !== b.act) return a.act - b.act;
 		return a.sequenceInAct - b.sequenceInAct;
 	});
 
-	for (let i = 0; i < sortedEvents.length - 1; i++) {
-		out += `  ${sortedEvents[i].id} --> ${sortedEvents[i + 1].id}\n`;
+	let connections = "";
+	let currentAct = -1;
+
+	for (let i = 0; i < sortedEvents.length; i++) {
+		const e = sortedEvents[i];
+
+		// Handle Act subgraphs
+		if (e.act !== currentAct) {
+			if (currentAct !== -1) out += "  end\n";
+			currentAct = e.act;
+			out += `  subgraph Act_${currentAct} ["Act ${currentAct}"]\n`;
+		}
+
+		const label = e.label.replace(/"/g, "'");
+		// Different shapes for different importance
+		let shape = `["${label}"]`;
+		if (e.importance === "climax") shape = `(("${label}"))`;
+		if (e.importance === "midpoint") shape = `> "${label}" ]`;
+		if (e.importance === "inciting") shape = `{{ "${label}" }}`;
+
+		out += `    ${e.id}${shape}:::${e.importance}\n`;
+
+		// Build connection string to avoid second loop
+		if (i < sortedEvents.length - 1) {
+			connections += `  ${e.id} --> ${sortedEvents[i + 1].id}\n`;
+		}
 	}
+
+	if (currentAct !== -1) out += "  end\n";
+
+	// Append all connections at once
+	out += connections;
 
 	// 4. Character interactions (optional, can be messy in flowchart)
 	// graph.relationships.forEach(r => out += `  ${r.from} -.-> ${r.to}\n`);
