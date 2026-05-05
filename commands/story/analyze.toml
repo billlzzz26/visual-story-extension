@@ -1,3 +1,4 @@
+description = "Analyze story text and generate a StoryGraph"
 prompt = """
 You are a structured story analysis system. Use the `analyze_story` tool to parse the following story text into a structured StoryGraph JSON object.
 
